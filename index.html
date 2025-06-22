@@ -8,52 +8,69 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Background Styles */
-        body {
+        /* Reset and Base Styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
             overflow-x: hidden;
+        }
+        
+        /* Background Styles */
+        .background-container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+        }
+        
+        .main-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .second-bg {
+            position: absolute;
+            top: 100vh;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        /* Content Container */
+        .content-container {
+            position: relative;
+            width: 100%;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
         
-        .main-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-        
-        .second-bg {
-            position: fixed;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-        
-        /* Content Styles */
+        /* Page Sections */
         .page-section {
             position: relative;
-            min-height: 100vh;
             width: 100%;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 2rem 1rem;
+            box-sizing: border-box;
         }
         
+        /* Media Box */
         .media-box {
             width: 90%;
             max-width: 800px;
@@ -61,15 +78,28 @@
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1;
         }
         
+        /* Content Window */
         .content-window {
             background: transparent;
             width: 90%;
             max-width: 800px;
             margin-bottom: 2rem;
+            z-index: 1;
         }
         
+        /* Text Styles */
+        .wish-text {
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            white-space: pre-line;
+        }
+        
+        /* Username Field */
         .username-field {
             border-radius: 24px;
             background: white;
@@ -78,15 +108,23 @@
             max-width: 400px;
             border: 2px solid rgba(209, 213, 219, 0.8);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            z-index: 1;
         }
         
-        /* Button Styles */
+        /* Buttons */
         .action-btn {
             padding: 0.6rem 1.8rem;
             border-radius: 24px;
             font-weight: 600;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            z-index: 1;
         }
         
         .btn-gradient {
@@ -94,6 +132,7 @@
             color: white;
         }
         
+        /* Translate Text */
         .translate-text {
             color: white;
             text-decoration: underline;
@@ -101,9 +140,29 @@
             font-size: 0.9rem;
             margin-top: 1rem;
             text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            z-index: 1;
         }
         
-        /* Footer Ad */
+        /* Ads */
+        .bottom-ad-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+            box-sizing: border-box;
+            z-index: 1;
+        }
+        
+        .bottom-ad {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            min-height: 90px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
         .footer-ad {
             position: fixed;
             bottom: 0;
@@ -117,82 +176,77 @@
             z-index: 100;
         }
         
-        /* Bottom Ad */
-        .bottom-ad {
-            width: 100%;
-            padding: 1rem;
-            display: flex;
-            justify-content: center;
-            margin-top: auto;
-        }
-        
-        /* Text Styles */
-        .wish-text {
-            font-weight: bold;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        .footer-ad-content {
+            width: 300px;
+            height: 50px;
+            background-color: #e0e0e0;
         }
     </style>
 </head>
 <body class="font-sans">
-    <!-- Backgrounds -->
-    <div id="mainBackground" class="main-bg"></div>
-    <div id="secondBackground" class="second-bg"></div>
-    
-    <!-- First Page -->
-    <section class="page-section">
-        <!-- Media Box -->
-        <div id="mediaBox" class="media-box">
-            <!-- Media will be inserted here -->
+    <!-- Background Container -->
+    <div class="background-container">
+        <!-- Backgrounds -->
+        <div id="mainBackground" class="main-bg"></div>
+        <div id="secondBackground" class="second-bg"></div>
+        
+        <!-- Content Container -->
+        <div class="content-container">
+            <!-- First Page -->
+            <section class="page-section">
+                <!-- Media Box -->
+                <div id="mediaBox" class="media-box">
+                    <!-- Media will be inserted here -->
+                </div>
+                
+                <!-- Title -->
+                <h1 id="festivalTitle" class="text-4xl sm:text-5xl font-bold text-center text-white drop-shadow-lg" style="z-index: 1;"></h1>
+                
+                <!-- Content Window -->
+                <div id="wishesContainer" class="content-window">
+                    <p id="hindiWish" class="wish-text text-xl sm:text-2xl mb-4 text-center text-white"></p>
+                    <p id="englishWish" class="wish-text text-xl sm:text-2xl text-center text-white"></p>
+                    <div id="translateBtn" class="translate-text text-center">Translate</div>
+                </div>
+                
+                <!-- Username Field -->
+                <input type="text" id="userName" placeholder="Enter your name" class="username-field focus:ring-2 focus:ring-purple-500 focus:border-transparent font-medium text-gray-800">
+                
+                <!-- Action Buttons -->
+                <div id="actionButtons" class="hidden flex flex-col items-center gap-3 mt-6" style="z-index: 1;">
+                    <button id="shareBtn" class="action-btn btn-gradient hover:shadow-lg hover:scale-105 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"/>
+                        </svg>
+                        Share
+                    </button>
+                    <button id="copyBtn" class="action-btn btn-gradient hover:shadow-lg hover:scale-105 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                        </svg>
+                        Copy
+                    </button>
+                </div>
+                
+                <!-- Bottom Ad Placeholder -->
+                <div class="bottom-ad-container">
+                    <div id="bottomAd" class="bottom-ad">
+                        <!-- Ad will be inserted here -->
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Second Page (if content exists) -->
+            <section id="secondPage" class="page-section" style="display: none;">
+                <!-- Additional content can be added here -->
+            </section>
         </div>
-        
-        <!-- Title -->
-        <h1 id="festivalTitle" class="text-4xl sm:text-5xl font-bold text-center text-white drop-shadow-lg"></h1>
-        
-        <!-- Content Window -->
-        <div id="wishesContainer" class="content-window relative">
-            <p id="hindiWish" class="wish-text text-xl sm:text-2xl mb-4 text-center text-white"></p>
-            <p id="englishWish" class="wish-text text-xl sm:text-2xl text-center text-white"></p>
-            <div id="translateBtn" class="translate-text text-center">Translate</div>
-        </div>
-        
-        <!-- Username Field -->
-        <input type="text" id="userName" placeholder="Enter your name" class="username-field focus:ring-2 focus:ring-purple-500 focus:border-transparent font-medium text-gray-800">
-        
-        <!-- Action Buttons -->
-        <div id="actionButtons" class="hidden flex flex-col items-center gap-3 mt-6">
-            <button id="shareBtn" class="action-btn btn-gradient hover:shadow-lg hover:scale-105 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"/>
-                </svg>
-                Share
-            </button>
-            <button id="copyBtn" class="action-btn btn-gradient hover:shadow-lg hover:scale-105 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-                    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-                </svg>
-                Copy
-            </button>
-        </div>
-        
-        <!-- Bottom Ad Placeholder -->
-        <div id="bottomAd" class="bottom-ad">
-            <div class="bg-gray-200 rounded-lg overflow-hidden" style="width: 100%; max-width: 800px; height: 90px;">
-                <!-- Ad will be inserted here -->
-            </div>
-        </div>
-    </section>
-    
-    <!-- Second Page -->
-    <section class="page-section">
-        <!-- Additional content can be added here -->
-    </section>
+    </div>
     
     <!-- Fixed Footer Ad -->
     <div class="footer-ad">
-        <div id="footerAd" class="w-[300px] h-[50px] bg-gray-200"></div>
+        <div id="footerAd" class="footer-ad-content"></div>
     </div>
     
     <!-- Audio Element -->
@@ -218,6 +272,7 @@
         const backgroundAudio = document.getElementById('backgroundAudio');
         const bottomAd = document.getElementById('bottomAd');
         const footerAd = document.getElementById('footerAd');
+        const secondPage = document.getElementById('secondPage');
         
         // Current page URL
         const pageUrl = window.location.href;
@@ -225,6 +280,7 @@
         let originalHindiWish = '';
         let originalEnglishWish = '';
         let shareDescription = '';
+        let hasSecondPageContent = false;
         
         // Load settings from Supabase
         async function loadSettings() {
@@ -248,13 +304,13 @@
                     if (data.value.secondBackground) {
                         if (data.value.secondBackground.startsWith('http') || data.value.secondBackground.startsWith('data:')) {
                             secondBackground.style.backgroundImage = `url('${data.value.secondBackground}')`;
+                            secondBackground.style.display = 'block';
                         } else {
                             secondBackground.style.backgroundColor = data.value.secondBackground;
+                            secondBackground.style.display = 'block';
                         }
                     } else {
-                        // If no second background, use same as main
-                        secondBackground.style.backgroundImage = mainBackground.style.backgroundImage;
-                        secondBackground.style.backgroundColor = mainBackground.style.backgroundColor;
+                        secondBackground.style.display = 'none';
                     }
                     
                     // Set title with custom styles
@@ -262,13 +318,12 @@
                     festivalTitle.textContent = data.value.title || '';
                     festivalTitle.style.fontFamily = data.value.titleFont || "'Poppins', sans-serif";
                     festivalTitle.style.color = data.value.titleColor || '#ffffff';
-                    festivalTitle.className = `${data.value.titleSize || 'text-4xl'} font-bold text-center drop-shadow-lg`;
                     
                     // Set wishes with formatting
                     originalHindiWish = data.value.hindiWish || '';
                     originalEnglishWish = data.value.englishWish || '';
-                    hindiWish.innerHTML = originalHindiWish.replace(/\n/g, '<br>');
-                    englishWish.innerHTML = originalEnglishWish.replace(/\n/g, '<br>');
+                    hindiWish.textContent = originalHindiWish;
+                    englishWish.textContent = originalEnglishWish;
                     
                     // Apply Hindi text styles
                     hindiWish.style.fontFamily = data.value.hindiFont || "'Noto Sans Devanagari', sans-serif";
@@ -318,16 +373,7 @@
                                 }, { once: true });
                             });
                         };
-                        
-                        // Try to play immediately
                         playAudio();
-                        
-                        // Also try when page becomes visible
-                        document.addEventListener('visibilitychange', () => {
-                            if (document.visibilityState === 'visible' && backgroundAudio.src) {
-                                playAudio();
-                            }
-                        });
                     }
                     
                     // Set button styles
@@ -335,6 +381,15 @@
                         data.value.buttonStyle,
                         data.value.buttonColor
                     );
+                    
+                    // Check if second page should be visible
+                    if (data.value.secondPageContent) {
+                        secondPage.style.display = 'flex';
+                        hasSecondPageContent = true;
+                    }
+                    
+                    // Adjust scroll height based on content
+                    adjustScrollHeight();
                 }
             } catch (error) {
                 console.error('Error loading settings:', error);
@@ -362,6 +417,15 @@
                 ('0' + Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).slice(-2));
         }
         
+        // Adjust scroll height based on content
+        function adjustScrollHeight() {
+            if (!hasSecondPageContent) {
+                document.body.style.overflowY = 'auto';
+                const contentHeight = document.querySelector('.content-container').scrollHeight;
+                document.body.style.height = contentHeight + 'px';
+            }
+        }
+        
         // Show name input and buttons when name is entered
         userName.addEventListener('input', () => {
             if (userName.value.trim()) {
@@ -374,14 +438,14 @@
         // Translate button click
         translateBtn.addEventListener('click', () => {
             if (isTranslated) {
-                hindiWish.innerHTML = originalHindiWish.replace(/\n/g, '<br>');
-                englishWish.innerHTML = originalEnglishWish.replace(/\n/g, '<br>');
+                hindiWish.textContent = originalHindiWish;
+                englishWish.textContent = originalEnglishWish;
                 translateBtn.textContent = 'Translate';
             } else {
                 if (originalHindiWish && !originalEnglishWish) {
-                    englishWish.innerHTML = "[Translated] " + originalHindiWish.replace(/\n/g, '<br>');
+                    englishWish.textContent = "[Translated] " + originalHindiWish;
                 } else if (!originalHindiWish && originalEnglishWish) {
-                    hindiWish.innerHTML = "[Translated] " + originalEnglishWish.replace(/\n/g, '<br>');
+                    hindiWish.textContent = "[Translated] " + originalEnglishWish;
                 }
                 translateBtn.textContent = 'Show Original';
             }
@@ -439,6 +503,11 @@
         
         // Load settings when page loads
         document.addEventListener('DOMContentLoaded', loadSettings);
+        
+        // Handle line breaks in wishes
+        function processWishText(text) {
+            return text.replace(/\n/g, '<br>');
+        }
     </script>
 </body>
 </html>
