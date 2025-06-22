@@ -9,45 +9,37 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         /* Background Styles */
+        body {
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
         .main-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 200vh;
+            height: 100%;
             z-index: -1;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            background-attachment: scroll;
+            background-attachment: fixed;
         }
         
         .second-bg {
             position: fixed;
-            top: 100vh;
+            top: 100%;
             left: 0;
             width: 100%;
-            height: 100vh;
+            height: 100%;
             z-index: -1;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            background-attachment: scroll;
-        }
-        
-        /* Animation Styles */
-        .emoji-float {
-            position: fixed;
-            font-size: 1.5rem;
-            pointer-events: none;
-            z-index: 0;
-            animation: float linear infinite;
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+            background-attachment: fixed;
         }
         
         /* Content Styles */
@@ -69,17 +61,10 @@
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-            border: 4px solid rgba(255, 255, 255, 0.3);
         }
         
         .content-window {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            padding: 2rem;
+            background: transparent;
             width: 90%;
             max-width: 800px;
             margin-bottom: 2rem;
@@ -109,12 +94,13 @@
             color: white;
         }
         
-        .translate-btn {
-            position: absolute;
-            right: 5%;
-            bottom: 20px;
-            padding: 0.4rem 1rem;
-            font-size: 0.8rem;
+        .translate-text {
+            color: white;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
         
         /* Footer Ad */
@@ -139,9 +125,17 @@
             justify-content: center;
             margin-top: auto;
         }
+        
+        /* Text Styles */
+        .wish-text {
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
-<body class="font-sans overflow-x-hidden">
+<body class="font-sans">
     <!-- Backgrounds -->
     <div id="mainBackground" class="main-bg"></div>
     <div id="secondBackground" class="second-bg"></div>
@@ -158,9 +152,9 @@
         
         <!-- Content Window -->
         <div id="wishesContainer" class="content-window relative">
-            <p id="hindiWish" class="text-xl sm:text-2xl mb-4 text-center"></p>
-            <p id="englishWish" class="text-xl sm:text-2xl text-center"></p>
-            <button id="translateBtn" class="translate-btn action-btn btn-gradient">Translate</button>
+            <p id="hindiWish" class="wish-text text-xl sm:text-2xl mb-4 text-center text-white"></p>
+            <p id="englishWish" class="wish-text text-xl sm:text-2xl text-center text-white"></p>
+            <div id="translateBtn" class="translate-text text-center">Translate</div>
         </div>
         
         <!-- Username Field -->
@@ -185,7 +179,7 @@
         
         <!-- Bottom Ad Placeholder -->
         <div id="bottomAd" class="bottom-ad">
-            <div class="bg-gray-200 rounded-lg overflow-hidden" style="max-width: 100%;">
+            <div class="bg-gray-200 rounded-lg overflow-hidden" style="width: 100%; max-width: 800px; height: 90px;">
                 <!-- Ad will be inserted here -->
             </div>
         </div>
@@ -273,16 +267,16 @@
                     // Set wishes with formatting
                     originalHindiWish = data.value.hindiWish || '';
                     originalEnglishWish = data.value.englishWish || '';
-                    hindiWish.textContent = originalHindiWish;
-                    englishWish.textContent = originalEnglishWish;
+                    hindiWish.innerHTML = originalHindiWish.replace(/\n/g, '<br>');
+                    englishWish.innerHTML = originalEnglishWish.replace(/\n/g, '<br>');
                     
                     // Apply Hindi text styles
                     hindiWish.style.fontFamily = data.value.hindiFont || "'Noto Sans Devanagari', sans-serif";
-                    hindiWish.style.color = data.value.hindiColor || '#4c1d95';
+                    hindiWish.style.color = data.value.hindiColor || '#ffffff';
                     
                     // Apply English text styles
                     englishWish.style.fontFamily = data.value.englishFont || "'Poppins', sans-serif";
-                    englishWish.style.color = data.value.englishColor || '#4c1d95';
+                    englishWish.style.color = data.value.englishColor || '#ffffff';
                     
                     // Set share description
                     shareDescription = data.value.shareDescription || '';
@@ -312,21 +306,28 @@
                     }
                     
                     // Set audio
-                    if (data.value.audioUrl && data.value.autoplay) {
+                    if (data.value.audioUrl) {
                         backgroundAudio.src = data.value.audioUrl;
-                        backgroundAudio.play().catch(e => console.log('Autoplay prevented:', e));
-                    }
-                    
-                    // Create animations if enabled
-                    if (data.value.animationEnable) {
-                        createAnimations(
-                            data.value.animationSpeed,
-                            data.value.emojiType,
-                            data.value.customEmojis,
-                            data.value.animationQuantity === 'custom' ? 
-                                data.value.customQuantity : 
-                                data.value.animationQuantity
-                        );
+                        // Try to play audio immediately
+                        const playAudio = () => {
+                            backgroundAudio.play().catch(e => {
+                                console.log('Autoplay prevented, will try again:', e);
+                                // Try again after user interaction
+                                document.body.addEventListener('click', () => {
+                                    backgroundAudio.play().catch(e => console.log('Still prevented:', e));
+                                }, { once: true });
+                            });
+                        };
+                        
+                        // Try to play immediately
+                        playAudio();
+                        
+                        // Also try when page becomes visible
+                        document.addEventListener('visibilitychange', () => {
+                            if (document.visibilityState === 'visible' && backgroundAudio.src) {
+                                playAudio();
+                            }
+                        });
                     }
                     
                     // Set button styles
@@ -340,56 +341,9 @@
             }
         }
         
-        // Create animations
-        function createAnimations(speed, emojiType, customEmojis, quantity) {
-            const emojis = {
-                flowers: ['🌸', '🌺', '🌻', '🌼', '🌷', '💐', '🏵️'],
-                diyas: ['🪔', '🪔', '🪔', '🪔', '🪔', '🪔', '🪔'],
-                rangoli: ['✨', '🎨', '🌈', '🌟', '🎆', '🎇', '🧿'],
-                mixed: ['🌸', '🪔', '✨', '🌺', '🪔', '🎨', '🌻']
-            };
-            
-            let selectedEmojis = emojis[emojiType] || emojis.flowers;
-            if (emojiType === 'custom' && customEmojis) {
-                selectedEmojis = customEmojis.split(',').map(e => e.trim()).filter(e => e);
-            }
-            
-            const speedClass = `speed-${speed.toString().replace('.', '_')}`;
-            let qty = 15;
-            
-            if (quantity === 'low') qty = 10;
-            else if (quantity === 'medium') qty = 15;
-            else if (quantity === 'high') qty = 25;
-            else if (quantity === 'very-high') qty = 40;
-            else if (!isNaN(quantity)) qty = Math.min(100, Math.max(1, parseInt(quantity)));
-            
-            for (let i = 0; i < qty; i++) {
-                setTimeout(() => createEmoji(speedClass, selectedEmojis), i * 300);
-            }
-            
-            setInterval(() => {
-                createEmoji(speedClass, selectedEmojis);
-            }, 3000);
-        }
-        
-        function createEmoji(speedClass, emojis) {
-            const emoji = document.createElement('div');
-            emoji.className = `emoji-float ${speedClass}`;
-            emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-            emoji.style.left = `${Math.random() * 100}vw`;
-            emoji.style.top = `${100 + Math.random() * 20}vh`;
-            emoji.style.opacity = Math.random() * 0.5 + 0.3;
-            emoji.style.fontSize = `${Math.random() * 1 + 1}rem`;
-            document.body.appendChild(emoji);
-            
-            setTimeout(() => {
-                emoji.remove();
-            }, 8000);
-        }
-        
         // Apply button styles
         function applyButtonStyles(style, color) {
-            const buttons = [shareBtn, copyBtn, translateBtn];
+            const buttons = [shareBtn, copyBtn];
             
             if (style === 'gradient') {
                 const color1 = color;
@@ -420,14 +374,14 @@
         // Translate button click
         translateBtn.addEventListener('click', () => {
             if (isTranslated) {
-                hindiWish.textContent = originalHindiWish;
-                englishWish.textContent = originalEnglishWish;
+                hindiWish.innerHTML = originalHindiWish.replace(/\n/g, '<br>');
+                englishWish.innerHTML = originalEnglishWish.replace(/\n/g, '<br>');
                 translateBtn.textContent = 'Translate';
             } else {
                 if (originalHindiWish && !originalEnglishWish) {
-                    englishWish.textContent = "[Translated] " + originalHindiWish;
+                    englishWish.innerHTML = "[Translated] " + originalHindiWish.replace(/\n/g, '<br>');
                 } else if (!originalHindiWish && originalEnglishWish) {
-                    hindiWish.textContent = "[Translated] " + originalEnglishWish;
+                    hindiWish.innerHTML = "[Translated] " + originalEnglishWish.replace(/\n/g, '<br>');
                 }
                 translateBtn.textContent = 'Show Original';
             }
@@ -436,7 +390,8 @@
         
         // Share button click
         shareBtn.addEventListener('click', () => {
-            const shareMessage = `${userName.value.trim()} ${shareDescription}\n${pageUrl}`;
+            const name = userName.value.trim() || "Someone";
+            const shareMessage = `${name} ${shareDescription}\n${pageUrl}`;
             
             if (navigator.share) {
                 navigator.share({
@@ -472,22 +427,14 @@
         
         // Copy button click
         copyBtn.addEventListener('click', () => {
-            const shareMessage = `${userName.value.trim()} ${shareDescription}\n${pageUrl}`;
+            const name = userName.value.trim() || "Someone";
+            const shareMessage = `${name} ${shareDescription}\n${pageUrl}`;
             
             navigator.clipboard.writeText(shareMessage).then(() => {
                 alert('Wish copied to clipboard!');
             }).catch(err => {
                 console.error('Could not copy text: ', err);
             });
-        });
-        
-        // Play audio when page is visible
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && backgroundAudio.src) {
-                backgroundAudio.play().catch(e => console.log('Play prevented:', e));
-            } else {
-                backgroundAudio.pause();
-            }
         });
         
         // Load settings when page loads
