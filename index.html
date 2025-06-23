@@ -22,11 +22,10 @@
             position: relative;
             width: 100%;
             min-height: 100vh;
-            overflow: hidden;
         }
         
         .main-bg {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -38,7 +37,7 @@
         }
         
         .second-bg {
-            position: fixed;
+            position: absolute;
             top: 100vh;
             left: 0;
             width: 100%;
@@ -95,7 +94,7 @@
         .wish-text {
             font-weight: bold;
             line-height: 1.6;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
             white-space: pre-line;
         }
@@ -116,7 +115,7 @@
         
         /* Buttons */
         .action-btn {
-            padding: 0.8rem 2rem;
+            padding: 0.6rem 1.8rem;
             border-radius: 24px;
             font-weight: 600;
             transition: all 0.3s ease;
@@ -201,12 +200,12 @@
                 </div>
                 
                 <!-- Title -->
-                <h1 id="festivalTitle" class="text-5xl md:text-6xl font-bold text-center text-white drop-shadow-lg mb-6" style="z-index: 1;"></h1>
+                <h1 id="festivalTitle" class="text-4xl sm:text-5xl font-bold text-center text-white drop-shadow-lg" style="z-index: 1;"></h1>
                 
                 <!-- Content Window -->
                 <div id="wishesContainer" class="content-window">
-                    <p id="hindiWish" class="wish-text text-2xl sm:text-3xl mb-6 text-center text-white"></p>
-                    <p id="englishWish" class="wish-text text-2xl sm:text-3xl text-center text-white"></p>
+                    <p id="hindiWish" class="wish-text text-xl sm:text-2xl mb-4 text-center text-white"></p>
+                    <p id="englishWish" class="wish-text text-xl sm:text-2xl text-center text-white"></p>
                     <div id="translateBtn" class="translate-text text-center">Translate</div>
                 </div>
                 
@@ -214,7 +213,7 @@
                 <input type="text" id="userName" placeholder="Enter your name" class="username-field focus:ring-2 focus:ring-purple-500 focus:border-transparent font-medium text-gray-800">
                 
                 <!-- Action Buttons -->
-                <div id="actionButtons" class="hidden flex flex-col items-center gap-4 mt-6" style="z-index: 1;">
+                <div id="actionButtons" class="hidden flex flex-col items-center gap-3 mt-6" style="z-index: 1;">
                     <button id="shareBtn" class="action-btn btn-gradient hover:shadow-lg hover:scale-105 flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"/>
@@ -323,8 +322,8 @@
                     // Set wishes with formatting
                     originalHindiWish = data.value.hindiWish || '';
                     originalEnglishWish = data.value.englishWish || '';
-                    hindiWish.innerHTML = processWishText(originalHindiWish);
-                    englishWish.innerHTML = processWishText(originalEnglishWish);
+                    hindiWish.textContent = originalHindiWish;
+                    englishWish.textContent = originalEnglishWish;
                     
                     // Apply Hindi text styles
                     hindiWish.style.fontFamily = data.value.hindiFont || "'Noto Sans Devanagari', sans-serif";
@@ -421,9 +420,9 @@
         // Adjust scroll height based on content
         function adjustScrollHeight() {
             if (!hasSecondPageContent) {
-                document.body.style.overflowY = 'hidden';
+                document.body.style.overflowY = 'auto';
                 const contentHeight = document.querySelector('.content-container').scrollHeight;
-                document.documentElement.style.height = contentHeight + 'px';
+                document.body.style.height = contentHeight + 'px';
             }
         }
         
@@ -439,14 +438,14 @@
         // Translate button click
         translateBtn.addEventListener('click', () => {
             if (isTranslated) {
-                hindiWish.innerHTML = processWishText(originalHindiWish);
-                englishWish.innerHTML = processWishText(originalEnglishWish);
+                hindiWish.textContent = originalHindiWish;
+                englishWish.textContent = originalEnglishWish;
                 translateBtn.textContent = 'Translate';
             } else {
                 if (originalHindiWish && !originalEnglishWish) {
-                    englishWish.innerHTML = "[Translated] " + processWishText(originalHindiWish);
+                    englishWish.textContent = "[Translated] " + originalHindiWish;
                 } else if (!originalHindiWish && originalEnglishWish) {
-                    hindiWish.innerHTML = "[Translated] " + processWishText(originalEnglishWish);
+                    hindiWish.textContent = "[Translated] " + originalEnglishWish;
                 }
                 translateBtn.textContent = 'Show Original';
             }
@@ -454,28 +453,41 @@
         });
         
         // Share button click
-        shareBtn.addEventListener('click', async () => {
+        shareBtn.addEventListener('click', () => {
             const name = userName.value.trim() || "Someone";
             const shareMessage = `${name} ${shareDescription}\n${pageUrl}`;
             
-            try {
-                if (navigator.share) {
-                    await navigator.share({
-                        title: document.title,
-                        text: shareMessage,
-                        url: pageUrl
-                    });
-                } else {
-                    // Fallback for desktop
-                    await navigator.clipboard.writeText(shareMessage);
-                    alert('Share text copied to clipboard!');
-                }
-            } catch (err) {
-                console.error('Error sharing:', err);
-                // Final fallback
-                window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
+            if (navigator.share) {
+                navigator.share({
+                    title: document.title,
+                    text: shareMessage,
+                    url: pageUrl
+                }).catch(err => {
+                    console.log('Error sharing:', err);
+                    fallbackShare(shareMessage);
+                });
+            } else {
+                fallbackShare(shareMessage);
             }
         });
+        
+        // Fallback share method
+        function fallbackShare(message) {
+            const textArea = document.createElement('textarea');
+            textArea.value = message;
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                alert('Share text copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+            }
+            
+            document.body.removeChild(textArea);
+        }
         
         // Copy button click
         copyBtn.addEventListener('click', () => {
@@ -494,7 +506,6 @@
         
         // Handle line breaks in wishes
         function processWishText(text) {
-            if (!text) return '';
             return text.replace(/\n/g, '<br>');
         }
     </script>
