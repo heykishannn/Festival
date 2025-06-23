@@ -8,6 +8,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* Reset and Base Styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        
         /* Animation Container */
         .animation-container {
             position: fixed;
@@ -16,7 +25,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 1;
+            z-index: 5;
             overflow: hidden;
         }
         
@@ -59,7 +68,6 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            z-index: 2;
         }
         
         /* Page Sections */
@@ -83,14 +91,16 @@
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1;
         }
         
         /* Content Window */
         .content-window {
-            background: transparent;
+            background:transparent;
             width: 90%;
             max-width: 800px;
             margin-bottom: 2rem;
+            z-index: 1;
         }
         
         /* Text Styles */
@@ -113,6 +123,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             font-family: 'Poppins', sans-serif;
             font-size: 1rem;
+            z-index: 1;
         }
         
         /* Buttons */
@@ -126,6 +137,7 @@
             font-size: 1rem;
             border: none;
             cursor: pointer;
+            z-index: 1;
         }
         
         .btn-gradient {
@@ -141,8 +153,48 @@
             font-size: 0.9rem;
             margin-top: 1rem;
             text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            z-index: 1;
         }
         
+        /* Ads */
+        .bottom-ad-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+            box-sizing: border-box;
+            z-index: 1;
+        }
+        
+        .bottom-ad {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            min-height: 90px;
+            background-color: transparent;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .footer-ad {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .footer-ad-content {
+            width: 468px;
+            height: 60px;
+            background-color: #e0e0e0;
+        }
+
         /* Animation Styles */
         @keyframes float {
             0% { transform: translateY(0px) rotate(0deg); }
@@ -150,41 +202,11 @@
             100% { transform: translateY(0px) rotate(0deg); }
         }
         
-        @keyframes fall {
-            0% { transform: translateY(-100px); }
-            100% { transform: translateY(100vh); }
-        }
-        
-        @keyframes swirl {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(50px, 50px) rotate(180deg); }
-            100% { transform: translate(0, 0) rotate(360deg); }
-        }
-        
-        @keyframes fireworks {
-            0% { transform: translate(0, 0) scale(0.5); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; }
-        }
-        
         .floating-emoji {
             position: absolute;
             animation: float 3s ease-in-out infinite;
             font-size: 24px;
-        }
-        
-        .falling-emoji {
-            position: absolute;
-            animation: fall linear forwards;
-        }
-        
-        .swirling-emoji {
-            position: absolute;
-            animation: swirl 5s linear infinite;
-        }
-        
-        .fireworks-emoji {
-            position: absolute;
-            animation: fireworks 1s ease-out forwards;
+            z-index: 1;
         }
     </style>
 </head>
@@ -208,7 +230,7 @@
                 </div>
                 
                 <!-- Title -->
-                <h1 id="festivalTitle" class="text-3xl md:text-6xl font-bold text-center text-white drop-shadow-lg mb-6"></h1>
+                <h1 id="festivalTitle" class="text-3xl md:text-6xl font-bold text-center text-white drop-shadow-lg mb-6" style="z-index: 1;"></h1>
                 
                 <!-- Content Window -->
                 <div id="wishesContainer" class="content-window">
@@ -221,7 +243,7 @@
                 <input type="text" id="userName" placeholder="Enter your name" class="username-field focus:ring-2 focus:ring-purple-500 focus:border-transparent font-medium text-gray-800">
                 
                 <!-- Action Buttons -->
-                <div id="actionButtons" class="hidden flex flex-col items-center gap-4 mt-6">
+                <div id="actionButtons" class="hidden flex flex-col items-center gap-4 mt-6" style="z-index: 1;">
                     <button id="shareBtn" class="action-btn btn-gradient hover:shadow-lg hover:scale-105 flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"/>
@@ -309,37 +331,6 @@
         let originalEnglishWish = '';
         let shareDescription = '';
         let hasSecondPageContent = false;
-        let audioPlayAttempted = false;
-
-        // Auto-play audio when page becomes visible
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                playBackgroundAudio();
-            } else {
-                backgroundAudio.pause();
-            }
-        });
-
-        // Play audio function
-        function playBackgroundAudio() {
-            if (backgroundAudio.src && !audioPlayAttempted) {
-                const playPromise = backgroundAudio.play();
-                
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        audioPlayAttempted = true;
-                    })
-                    .catch(error => {
-                        console.log('Autoplay prevented:', error);
-                        // Try again when user interacts
-                        const onceOptions = { once: true };
-                        document.body.addEventListener('click', () => {
-                            backgroundAudio.play().catch(e => console.log('Still prevented:', e));
-                        }, onceOptions);
-                    });
-                }
-            }
-        }
         
         // Load settings from Supabase
         async function loadSettings() {
@@ -431,7 +422,16 @@
                     if (data.value.audioUrl) {
                         backgroundAudio.src = data.value.audioUrl;
                         // Try to play audio immediately
-                        playBackgroundAudio();
+                        const playAudio = () => {
+                            backgroundAudio.play().catch(e => {
+                                console.log('Autoplay prevented, will try again:', e);
+                                // Try again after user interaction
+                                document.body.addEventListener('click', () => {
+                                    backgroundAudio.play().catch(e => console.log('Still prevented:', e));
+                                }, { once: true });
+                            });
+                        };
+                        playAudio();
                     }
                     
                     // Set button styles
@@ -476,66 +476,20 @@
         
         function createEmoji(emojiSet, speed, animationType) {
             const emoji = document.createElement('div');
+            emoji.className = 'floating-emoji';
             emoji.textContent = emojiSet[Math.floor(Math.random() * emojiSet.length)];
-            emoji.style.fontSize = `${Math.random() * 20 + 16}px`;
             
-            // Set animation based on type
-            switch(animationType) {
-                case 'fall':
-                    emoji.className = 'falling-emoji';
-                    emoji.style.animationDuration = `${5 / speed}s`;
-                    emoji.style.left = `${Math.random() * 100}%`;
-                    emoji.style.top = '-50px';
-                    break;
-                case 'swirl':
-                    emoji.className = 'swirling-emoji';
-                    emoji.style.animationDuration = `${8 / speed}s`;
-                    emoji.style.left = `${Math.random() * 100}%`;
-                    emoji.style.top = `${Math.random() * 100}%`;
-                    break;
-                case 'fireworks':
-                    emoji.className = 'fireworks-emoji';
-                    emoji.style.setProperty('--tx', `${Math.random() * 100 - 50}px`);
-                    emoji.style.setProperty('--ty', `${Math.random() * 100 - 50}px`);
-                    emoji.style.left = '50%';
-                    emoji.style.top = '50%';
-                    emoji.style.animationDuration = `${1 / speed}s`;
-                    break;
-                case 'confetti':
-                    // Similar to fireworks but with different animation
-                    emoji.className = 'fireworks-emoji';
-                    emoji.style.setProperty('--tx', `${Math.random() * 200 - 100}px`);
-                    emoji.style.setProperty('--ty', `${Math.random() * 200 - 100}px`);
-                    emoji.style.left = '50%';
-                    emoji.style.top = '50%';
-                    emoji.style.animationDuration = `${1.5 / speed}s`;
-                    break;
-                default: // float
-                    emoji.className = 'floating-emoji';
-                    emoji.style.animationDuration = `${3 / speed}s`;
-                    emoji.style.left = `${Math.random() * 100}%`;
-                    emoji.style.top = `${Math.random() * 100}%`;
-            }
+            // Random position
+            const posX = Math.random() * 100;
+            const posY = Math.random() * 100;
+            emoji.style.left = `${posX}%`;
+            emoji.style.top = `${posY}%`;
+            
+            // Random animation delay
+            emoji.style.animationDelay = `${Math.random() * 2}s`;
+            emoji.style.animationDuration = `${3 / speed}s`;
             
             animationContainer.appendChild(emoji);
-            
-            // For falling emojis, remove after animation completes
-            if (animationType === 'fall') {
-                emoji.addEventListener('animationend', () => {
-                    emoji.remove();
-                    // Create new falling emoji to maintain quantity
-                    createEmoji(emojiSet, speed, animationType);
-                });
-            }
-            
-            // For fireworks/confetti, remove after animation completes
-            if (animationType === 'fireworks' || animationType === 'confetti') {
-                emoji.addEventListener('animationend', () => {
-                    emoji.remove();
-                    // Create new firework to maintain quantity
-                    createEmoji(emojiSet, speed, animationType);
-                });
-            }
         }
         
         function getEmojiSet(type, customEmojis) {
@@ -635,65 +589,47 @@
             isTranslated = !isTranslated;
         });
         
-        // Universal Share Function
-        async function shareContent() {
+        // Share button click - FIXED VERSION
+        shareBtn.addEventListener('click', async () => {
             const name = userName.value.trim() || "Someone";
-            const message = `${name} ${shareDescription}`.trim();
-            const url = pageUrl;
+            let shareMessage = `${name} ${shareDescription}`;
             
-            // Remove any existing URL from the message
-            const cleanMessage = message.replace(url, '').trim();
-            const shareText = `${cleanMessage}\n${url}`;
+            // Ensure only one URL appears
+            if (!shareMessage.includes(pageUrl)) {
+                shareMessage += `\n${pageUrl}`;
+            }
 
             try {
                 if (navigator.share) {
-                    // Use Web Share API if available
                     await navigator.share({
                         title: document.title,
-                        text: cleanMessage,
-                        url: url
+                        text: shareMessage,
+                        url: pageUrl
                     });
                 } else {
-                    // Fallback for browsers without Web Share API
-                    try {
-                        // Try WhatsApp first
-                        window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
-                    } catch (e) {
-                        // Try Telegram if WhatsApp fails
-                        window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(cleanMessage)}`, '_blank');
-                    }
+                    // Fallback for browsers that don't support Web Share API
+                    await navigator.clipboard.writeText(shareMessage);
+                    alert('Share text copied to clipboard!');
                 }
             } catch (err) {
-                console.log('Share failed:', err);
-                // Final fallback - copy to clipboard
-                try {
-                    await navigator.clipboard.writeText(shareText);
-                    alert('Copied to clipboard: ' + shareText);
-                } catch (clipboardErr) {
-                    console.error('Clipboard copy failed:', clipboardErr);
-                    prompt('Copy this to share:', shareText);
-                }
-            }
-        }
-
-        // Copy button click
-        copyBtn.addEventListener('click', async () => {
-            const name = userName.value.trim() || "Someone";
-            const message = `${name} ${shareDescription}`.trim();
-            const url = pageUrl;
-            const textToCopy = `${message}\n${url}`;
-            
-            try {
-                await navigator.clipboard.writeText(textToCopy);
-                alert('Copied to clipboard!');
-            } catch (err) {
-                console.error('Copy failed:', err);
-                prompt('Copy this text:', textToCopy);
+                console.error('Error sharing:', err);
+                // Final fallback - open WhatsApp with share message
+                const shareUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
+                window.open(shareUrl, '_blank');
             }
         });
-
-        // Share button click
-        shareBtn.addEventListener('click', shareContent);
+        
+        // Copy button click
+        copyBtn.addEventListener('click', () => {
+            const name = userName.value.trim() || "Someone";
+            const shareMessage = `${name} ${shareDescription}\n${pageUrl}`;
+            
+            navigator.clipboard.writeText(shareMessage).then(() => {
+                alert('Wish copied to clipboard!');
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });
+        });
         
         // Handle line breaks in wishes
         function processWishText(text) {
