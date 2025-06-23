@@ -22,157 +22,6 @@
             position: relative;
             width: 100%;
             min-height: 100vh;
-        }
-        
-        .main-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            z-index: -1;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-        
-        .second-bg {
-            position: absolute;
-            top: 100vh;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            z-index: -1;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-        
-        /* Content Container */
-        .content-container {
-            position: relative;
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Page Sections */
-        .page-section {
-            position: relative;
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem 1rem;
-            box-sizing: border-box;
-        }
-        
-        /* Media Box */
-        .media-box {
-            width: 90%;
-            max-width: 800px;
-            margin: 0 auto 3rem;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-        }
-        
-        /* Content Window */
-        .content-window {
-            background: transparent;
-            width: 90%;
-            max-width: 800px;
-            margin-bottom: 2rem;
-            z-index: 1;
-        }
-        
-        /* Text Styles */
-        .wish-text {
-            font-weight: bold;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            white-space: pre-line;
-        }
-        
-        /* Username Field */
-        .username-field {
-            border-radius: 24px;
-            background: white;
-            padding: 0.8rem 1.5rem;
-            width: 90%;
-            max-width: 400px;
-            border: 2px solid rgba(209, 213, 219, 0.8);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
-            z-index: 1;
-        }
-        
-        /* Buttons */
-        .action-btn {
-            padding: 0.6rem 1.8rem;
-            border-radius: 24px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
-            border: none;
-            cursor: pointer;
-            z-index: 1;
-        }
-        
-        .btn-gradient {
-            background: linear-gradient(90deg, var(--btn-color-1), var(--btn-color-2));
-            color: white;
-        }
-        
-        /* Translate Text */
-        .translate-text {
-            color: blue;
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: 0.9rem;
-            margin-top: 1rem;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-            z-index: 1;
-        }
-        
-        /* Ads */
-        .bottom-ad-container {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            padding: 1rem;
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Festival Wishes</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        /* Reset and Base Styles */
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow-x: hidden;
-        }
-        
-        /* Background Styles */
-        .background-container {
-            position: relative;
-            width: 100%;
-            min-height: 100vh;
             overflow: hidden;
         }
         
@@ -329,8 +178,8 @@
         }
         
         .footer-ad-content {
-            width: 300px;
-            height: 50px;
+            width: 468px;
+            height: 60px;
             background-color: #e0e0e0;
         }
     </style>
@@ -352,12 +201,12 @@
                 </div>
                 
                 <!-- Title -->
-                <h1 id="festivalTitle" class="text-4xl sm:text-5xl font-bold text-center text-white drop-shadow-lg" style="z-index: 1;"></h1>
+                <h1 id="festivalTitle" class="text-5xl md:text-6xl font-bold text-center text-white drop-shadow-lg mb-6" style="z-index: 1;"></h1>
                 
                 <!-- Content Window -->
                 <div id="wishesContainer" class="content-window">
-                    <p id="hindiWish" class="wish-text text-xl sm:text-2xl mb-4 text-center text-white"></p>
-                    <p id="englishWish" class="wish-text text-xl sm:text-2xl text-center text-white"></p>
+                    <p id="hindiWish" class="wish-text text-2xl sm:text-3xl mb-6 text-center text-white"></p>
+                    <p id="englishWish" class="wish-text text-2xl sm:text-3xl text-center text-white"></p>
                     <div id="translateBtn" class="translate-text text-center">Translate</div>
                 </div>
                 
@@ -365,7 +214,7 @@
                 <input type="text" id="userName" placeholder="Enter your name" class="username-field focus:ring-2 focus:ring-purple-500 focus:border-transparent font-medium text-gray-800">
                 
                 <!-- Action Buttons -->
-                <div id="actionButtons" class="hidden flex flex-col items-center gap-3 mt-6" style="z-index: 1;">
+                <div id="actionButtons" class="hidden flex flex-col items-center gap-4 mt-6" style="z-index: 1;">
                     <button id="shareBtn" class="action-btn btn-gradient hover:shadow-lg hover:scale-105 flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"/>
@@ -385,6 +234,16 @@
                 <div class="bottom-ad-container">
                     <div id="bottomAd" class="bottom-ad">
                         <!-- Ad will be inserted here -->
+<script type="text/javascript">
+	atOptions = {
+		'key' : '8a596a14d2ea184cd9b6372e267b931c',
+		'format' : 'iframe',
+		'height' : 50,
+		'width' : 320,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/8a596a14d2ea184cd9b6372e267b931c/invoke.js"></script>
                     </div>
                 </div>
             </section>
@@ -398,7 +257,16 @@
     
     <!-- Fixed Footer Ad -->
     <div class="footer-ad">
-        <div id="footerAd" class="footer-ad-content"></div>
+        <div id="footerAd" class="footer-ad-content"><script type="text/javascript">
+	atOptions = {
+		'key' : 'f3980c7d80f3803dbaf4228f02da605b',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/f3980c7d80f3803dbaf4228f02da605b/invoke.js"></script></div>
     </div>
     
     <!-- Audio Element -->
@@ -474,8 +342,8 @@
                     // Set wishes with formatting
                     originalHindiWish = data.value.hindiWish || '';
                     originalEnglishWish = data.value.englishWish || '';
-                    hindiWish.textContent = originalHindiWish;
-                    englishWish.textContent = originalEnglishWish;
+                    hindiWish.innerHTML = processWishText(originalHindiWish);
+                    englishWish.innerHTML = processWishText(originalEnglishWish);
                     
                     // Apply Hindi text styles
                     hindiWish.style.fontFamily = data.value.hindiFont || "'Noto Sans Devanagari', sans-serif";
@@ -574,7 +442,7 @@
             if (!hasSecondPageContent) {
                 document.body.style.overflowY = 'auto';
                 const contentHeight = document.querySelector('.content-container').scrollHeight;
-                document.body.style.height = contentHeight + 'px';
+                document.documentElement.style.height = contentHeight + 'px';
             }
         }
         
@@ -590,14 +458,14 @@
         // Translate button click
         translateBtn.addEventListener('click', () => {
             if (isTranslated) {
-                hindiWish.textContent = originalHindiWish;
-                englishWish.textContent = originalEnglishWish;
+                hindiWish.innerHTML = processWishText(originalHindiWish);
+                englishWish.innerHTML = processWishText(originalEnglishWish);
                 translateBtn.textContent = 'Translate';
             } else {
                 if (originalHindiWish && !originalEnglishWish) {
-                    englishWish.textContent = "[Translated] " + originalHindiWish;
+                    englishWish.innerHTML = "[Translated] " + processWishText(originalHindiWish);
                 } else if (!originalHindiWish && originalEnglishWish) {
-                    hindiWish.textContent = "[Translated] " + originalEnglishWish;
+                    hindiWish.innerHTML = "[Translated] " + processWishText(originalEnglishWish);
                 }
                 translateBtn.textContent = 'Show Original';
             }
@@ -617,7 +485,7 @@
                         url: pageUrl
                     });
                 } else {
-                    // Fallback for desktop
+           // Fallback for desktop
                     await navigator.clipboard.writeText(shareMessage);
                     alert('Share text copied to clipboard!');
                 }
@@ -643,7 +511,7 @@
         // Load settings when page loads
         document.addEventListener('DOMContentLoaded', loadSettings);
         
-         // Handle line breaks in wishes
+        // Handle line breaks in wishes
         function processWishText(text) {
             if (!text) return '';
             return text.replace(/\n/g, '<br>');
