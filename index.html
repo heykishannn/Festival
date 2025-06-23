@@ -149,6 +149,158 @@
             display: flex;
             justify-content: center;
             padding: 1rem;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Festival Wishes</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and Base Styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Background Styles */
+        .background-container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .main-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .second-bg {
+            position: absolute;
+            top: 100vh;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        /* Content Container */
+        .content-container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Page Sections */
+        .page-section {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            box-sizing: border-box;
+        }
+        
+        /* Media Box */
+        .media-box {
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+        
+        /* Content Window */
+        .content-window {
+            background:transparent;
+            width: 90%;
+            max-width: 800px;
+            margin-bottom: 2rem;
+            z-index: 1;
+        }
+        
+        /* Text Styles */
+        .wish-text {
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            white-space: pre-line;
+        }
+        
+        /* Username Field */
+        .username-field {
+            border-radius: 24px;
+            background: white;
+            padding: 0.8rem 1.5rem;
+            width: 90%;
+            max-width: 400px;
+            border: 2px solid rgba(209, 213, 219, 0.8);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            z-index: 1;
+        }
+        
+        /* Buttons */
+        .action-btn {
+            padding: 0.8rem 2rem;
+            border-radius: 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            z-index: 1;
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(90deg, var(--btn-color-1), var(--btn-color-2));
+            color: white;
+        }
+        
+        /* Translate Text */
+        .translate-text {
+            color: blue;
+            text-decoration: ;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            z-index: 1;
+        }
+        
+        /* Ads */
+        .bottom-ad-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
             box-sizing: border-box;
             z-index: 1;
         }
@@ -158,7 +310,7 @@
             max-width: 800px;
             height: auto;
             min-height: 90px;
-            background-color: #f0f0f0;
+            background-color: transparent;
             border-radius: 8px;
             overflow: hidden;
         }
