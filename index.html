@@ -453,40 +453,28 @@
         });
         
         // Share button click
-        shareBtn.addEventListener('click', () => {
+        shareBtn.addEventListener('click', async () => {
             const name = userName.value.trim() || "Someone";
             const shareMessage = `${name} ${shareDescription}\n${pageUrl}`;
             
-            if (navigator.share) {
-                navigator.share({
-                    title: document.title,
-                    text: shareMessage,
-                    url: pageUrl
-                }).catch(err => {
-                    console.log('Error sharing:', err);
-                    fallbackShare(shareMessage);
-                });
-            } else {
-                fallbackShare(shareMessage);
+            try {
+                if (navigator.share) {
+                    await navigator.share({
+                        title: document.title,
+                        text: shareMessage,
+                        url: pageUrl
+                    });
+                } else {
+                    // Fallback for desktop
+                    await navigator.clipboard.writeText(shareMessage);
+                    alert('Share text copied to clipboard!');
+                }
+            } catch (err) {
+                console.error('Error sharing:', err);
+                // Final fallback
+                window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
             }
         });
-        
-        // Fallback share method
-        function fallbackShare(message) {
-            const textArea = document.createElement('textarea');
-            textArea.value = message;
-            document.body.appendChild(textArea);
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
-                alert('Share text copied to clipboard!');
-            } catch (err) {
-                console.error('Failed to copy:', err);
-                window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
-            }
-            
-    
         
         // Copy button click
         copyBtn.addEventListener('click', () => {
