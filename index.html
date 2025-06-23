@@ -506,6 +506,7 @@
         
         // Handle line breaks in wishes
         function processWishText(text) {
+            if (!text) return '';
             return text.replace(/\n/g, '<br>');
         }
     </script>
