@@ -466,7 +466,7 @@
             const name = userName.value.trim() || "Someone";
             const shareMessage = `${name} ${shareDescription}\n${pageUrl}`;
             
-            if (navigator.share) {
+            if (navigator.share.writeText(shareMessage). {
                 navigator.share({
                     title: document.title,
                     text: shareMessage,
