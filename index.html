@@ -17,6 +17,18 @@
             overflow-x: hidden;
         }
         
+        /* Animation Container */
+        .animation-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            overflow: hidden;
+        }
+        
         /* Background Styles */
         .background-container {
             position: relative;
@@ -136,7 +148,7 @@
         /* Translate Text */
         .translate-text {
             color: blue;
-            text-decoration: ;
+            text-decoration: underline;
             cursor: pointer;
             font-size: 0.9rem;
             margin-top: 1rem;
@@ -182,9 +194,26 @@
             height: 60px;
             background-color: #e0e0e0;
         }
+
+        /* Animation Styles */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        
+        .floating-emoji {
+            position: absolute;
+            animation: float 3s ease-in-out infinite;
+            font-size: 24px;
+            z-index: 1;
+        }
     </style>
 </head>
 <body class="font-sans">
+    <!-- Animation Container -->
+    <div id="animationContainer" class="animation-container"></div>
+    
     <!-- Background Container -->
     <div class="background-container">
         <!-- Backgrounds -->
@@ -206,7 +235,7 @@
                 <!-- Content Window -->
                 <div id="wishesContainer" class="content-window">
                     <p id="hindiWish" class="wish-text text-1xl sm:text-3xl mb-6 text-center text-white"></p>
-                    <p id="englishWish" class="wish-text text-1xl sm:text-3xl text-center text-white"></p>
+                    <p id="englishWish" class="wish-text text-1xl sm:text-3xl text-center text-white hidden"></p>
                     <div id="translateBtn" class="translate-text text-center">Translate</div>
                 </div>
                 
@@ -293,6 +322,7 @@
         const bottomAd = document.getElementById('bottomAd');
         const footerAd = document.getElementById('footerAd');
         const secondPage = document.getElementById('secondPage');
+        const animationContainer = document.getElementById('animationContainer');
         
         // Current page URL
         const pageUrl = window.location.href;
@@ -343,7 +373,15 @@
                     originalHindiWish = data.value.hindiWish || '';
                     originalEnglishWish = data.value.englishWish || '';
                     hindiWish.innerHTML = processWishText(originalHindiWish);
-                    englishWish.innerHTML = processWishText(originalEnglishWish);
+                    
+                    // Only show English wish if it exists
+                    if (originalEnglishWish) {
+                        englishWish.innerHTML = processWishText(originalEnglishWish);
+                        translateBtn.classList.remove('hidden');
+                    } else {
+                        englishWish.innerHTML = '';
+                        translateBtn.classList.add('hidden');
+                    }
                     
                     // Apply Hindi text styles
                     hindiWish.style.fontFamily = data.value.hindiFont || "'Noto Sans Devanagari', sans-serif";
@@ -408,12 +446,88 @@
                         hasSecondPageContent = true;
                     }
                     
+                    // Initialize animations if enabled
+                    if (data.value.animationEnable) {
+                        initAnimations(data.value);
+                    }
+                    
                     // Adjust scroll height based on content
                     adjustScrollHeight();
                 }
             } catch (error) {
                 console.error('Error loading settings:', error);
             }
+        }
+        
+        // Initialize animations
+        function initAnimations(settings) {
+            // Clear existing animations
+            animationContainer.innerHTML = '';
+            
+            // Create emojis based on settings
+            const emojiSet = getEmojiSet(settings.emojiType, settings.customEmojis);
+            const quantity = getAnimationQuantity(settings.animationQuantity, settings.customQuantity);
+            const speed = getAnimationSpeed(settings.animationSpeed, settings.customSpeed);
+            
+            for (let i = 0; i < quantity; i++) {
+                createEmoji(emojiSet, speed, settings.animationType);
+            }
+        }
+        
+        function createEmoji(emojiSet, speed, animationType) {
+            const emoji = document.createElement('div');
+            emoji.className = 'floating-emoji';
+            emoji.textContent = emojiSet[Math.floor(Math.random() * emojiSet.length)];
+            
+            // Random position
+            const posX = Math.random() * 100;
+            const posY = Math.random() * 100;
+            emoji.style.left = `${posX}%`;
+            emoji.style.top = `${posY}%`;
+            
+            // Random animation delay
+            emoji.style.animationDelay = `${Math.random() * 2}s`;
+            emoji.style.animationDuration = `${3 / speed}s`;
+            
+            animationContainer.appendChild(emoji);
+        }
+        
+        function getEmojiSet(type, customEmojis) {
+            const sets = {
+                flowers: ['🌸', '🌺', '🌻', '🌼', '🌷', '💐'],
+                diyas: ['🪔', '✨', '🕯️', '🌟'],
+                rangoli: ['🟡', '🔴', '🟢', '🔵', '🟣'],
+                festive: ['🎉', '🎊', '🪅', '🎁', '🧧'],
+                hearts: ['❤️', '🧡', '💛', '💚', '💙', '💜'],
+                stars: ['⭐', '🌟', '✨', '💫'],
+                mixed: ['🌸', '🪔', '🎉', '❤️', '⭐', '✨']
+            };
+            
+            if (type === 'custom' && customEmojis) {
+                return customEmojis.split(',').map(e => e.trim());
+            }
+            return sets[type] || sets.mixed;
+        }
+        
+        function getAnimationQuantity(type, customQuantity) {
+            const quantities = {
+                low: 5,
+                medium: 10,
+                high: 20,
+                'very-high': 30
+            };
+            
+            if (type === 'custom' && customQuantity) {
+                return Math.min(100, Math.max(1, parseInt(customQuantity)));
+            }
+            return quantities[type] || 10;
+        }
+        
+        function getAnimationSpeed(type, customSpeed) {
+            if (type === 'custom' && customSpeed) {
+                return parseFloat(customSpeed);
+            }
+            return parseFloat(type) || 1;
         }
         
         // Apply button styles
@@ -457,26 +571,34 @@
         
         // Translate button click
         translateBtn.addEventListener('click', () => {
+            if (!originalEnglishWish) {
+                // If no English wish set, don't show anything when translating
+                englishWish.textContent = "";
+                return;
+            }
+            
             if (isTranslated) {
-                hindiWish.innerHTML = processWishText(originalHindiWish);
-                englishWish.innerHTML = processWishText(originalEnglishWish);
-                translateBtn.textContent = 'Translate';
+                hindiWish.classList.remove('hidden');
+                englishWish.classList.add('hidden');
+                translateBtn.textContent = 'Translate to English';
             } else {
-                if (originalHindiWish && !originalEnglishWish) {
-                    englishWish.innerHTML = "[Translated] " + processWishText(originalHindiWish);
-                } else if (!originalHindiWish && originalEnglishWish) {
-                    hindiWish.innerHTML = "[Translated] " + processWishText(originalEnglishWish);
-                }
-                translateBtn.textContent = 'Show Original';
+                hindiWish.classList.add('hidden');
+                englishWish.classList.remove('hidden');
+                translateBtn.textContent = 'Show in Hindi';
             }
             isTranslated = !isTranslated;
         });
         
-        // Share button click
+        // Share button click - FIXED VERSION
         shareBtn.addEventListener('click', async () => {
             const name = userName.value.trim() || "Someone";
-            const shareMessage = `${name} ${shareDescription}\n${pageUrl}`;
+            let shareMessage = `${name} ${shareDescription}`;
             
+            // Ensure only one URL appears
+            if (!shareMessage.includes(pageUrl)) {
+                shareMessage += `\n${pageUrl}`;
+            }
+
             try {
                 if (navigator.share) {
                     await navigator.share({
@@ -485,14 +607,15 @@
                         url: pageUrl
                     });
                 } else {
-           // Fallback for desktop
+                    // Fallback for browsers that don't support Web Share API
                     await navigator.clipboard.writeText(shareMessage);
                     alert('Share text copied to clipboard!');
                 }
             } catch (err) {
                 console.error('Error sharing:', err);
-                // Final fallback
-                window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
+                // Final fallback - open WhatsApp with share message
+                const shareUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
+                window.open(shareUrl, '_blank');
             }
         });
         
@@ -508,14 +631,14 @@
             });
         });
         
-        // Load settings when page loads
-        document.addEventListener('DOMContentLoaded', loadSettings);
-        
         // Handle line breaks in wishes
         function processWishText(text) {
             if (!text) return '';
             return text.replace(/\n/g, '<br>');
         }
+        
+        // Load settings when page loads
+        document.addEventListener('DOMContentLoaded', loadSettings);
     </script>
 </body>
 </html>
