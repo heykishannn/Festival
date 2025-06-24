@@ -412,7 +412,7 @@
                     
                     if (data.value.secondBackground) {
                         if (data.value.secondBackground.startsWith('http') || data.value.secondBackground.startsWith('data:')) {
-                            secondBackground.style.backgroundImage = data.value.secondBackground.startsWith('linear-gradient') ? data.value.secondBackground : '';
+                            secondBackground.style.backgroundImage = `url('${data.value.secondBackground}')`;
                             secondBackground.style.background = !data.value.secondBackground.startsWith('linear-gradient') ? data.value.secondBackground : '';
                         } else {
                             secondBackground.style.background = data.value.secondBackground;
