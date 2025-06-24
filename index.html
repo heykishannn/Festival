@@ -503,21 +503,66 @@
         
         function createEmoji(emojiSet, speed, animationType) {
             const emoji = document.createElement('div');
-            emoji.className = 'floating-emoji';
             emoji.textContent = emojiSet[Math.floor(Math.random() * emojiSet.length)];
-            
-            // Random position
-            const posX = Math.random() * 100;
-            const posY = Math.random() * 100;
-            emoji.style.left = `${posX}%`;
-            emoji.style.top = `${posY}%`;
-            
-            // Random animation delay
-            emoji.style.animationDelay = `${Math.random() * 2}s`;
-            emoji.style.animationDuration = `${3 / speed}s`;
-            
+            emoji.style.fontSize = `${Math.random() * 20 + 16}px`;
+		
+            // Set animation based on type
+            switch(animationType) {
+                case 'fall':
+                    emoji.className = 'falling-emoji';
+                    emoji.style.animationDuration = `${5 / speed}s`;
+                    emoji.style.left = `${Math.random() * 100}%`;
+                    emoji.style.top = '-50px';
+                    break;
+                case 'swirl':
+                    emoji.className = 'swirling-emoji';
+                    emoji.style.animationDuration = `${8 / speed}s`;
+                    emoji.style.left = `${Math.random() * 100}%`;
+                    emoji.style.top = `${Math.random() * 100}%`;
+                    break;
+                case 'fireworks':
+                    emoji.className = 'fireworks-emoji';
+                    emoji.style.setProperty('--tx', `${Math.random() * 100 - 50}px`);
+                    emoji.style.setProperty('--ty', `${Math.random() * 100 - 50}px`);
+                    emoji.style.left = '50%';
+                    emoji.style.top = '50%';
+                    emoji.style.animationDuration = `${1 / speed}s`;
+                    break;
+                case 'confetti':
+                    // Similar to fireworks but with different animation
+                    emoji.className = 'fireworks-emoji';
+                    emoji.style.setProperty('--tx', `${Math.random() * 200 - 100}px`);
+                    emoji.style.setProperty('--ty', `${Math.random() * 200 - 100}px`);
+                    emoji.style.left = '50%';
+                    emoji.style.top = '50%';
+                    emoji.style.animationDuration = `${1.5 / speed}s`;
+                    break;
+                default: // float
+                    emoji.className = 'floating-emoji';
+                    emoji.style.animationDuration = `${3 / speed}s`;
+                    emoji.style.left = `${Math.random() * 100}%`;
+                    emoji.style.top = `${Math.random() * 100}%`;
+	    }
+		
             animationContainer.appendChild(emoji);
-        }
+              // For falling emojis, remove after animation completes
+            if (animationType === 'fall') {
+                emoji.addEventListener('animationend', () => {
+                    emoji.remove();
+                    // Create new falling emoji to maintain quantity
+                    createEmoji(emojiSet, speed, animationType);
+                });
+            }
+            
+            // For fireworks/confetti, remove after animation completes
+            if (animationType === 'fireworks' || animationType === 'confetti') {
+                emoji.addEventListener('animationend', () => {
+                    emoji.remove();
+                    // Create new firework to maintain quantity
+                    createEmoji(emojiSet, speed, animationType);
+                });
+	    }
+	}
         
         function getEmojiSet(type, customEmojis) {
             const sets = {
