@@ -380,15 +380,13 @@
                     
                     if (data.value.secondBackground) {
                         if (data.value.secondBackground.startsWith('http') || data.value.secondBackground.startsWith('data:')) {
-                            secondBackground.style.backgroundImage = `url('${data.value.secondBackground}')`;
-                            secondBackground.style.display = 'block';
+                            secondBackground.style.backgroundImage = data.value.secondBackground.startsWith('linear-gradient') ? data.value.secondBackground : '';
+                            secondBackground.style.background = !data.value.secondBackground.startsWith('linear-gradient') ? data.value.secondBackground : '';
                         } else {
-                            mainBackground.style.background = data.value.background;
+                            secondBackground.style.background = data.value.secondBackground;
                             secondBackground.style.display = 'block';
-                        }
-                    } else {
-                        secondBackground.style.display = 'none';
-                    }
+                       			}    
+		    }
                     
                     // Set title with custom styles
                     document.title = data.value.title || 'Festival Wishes';
