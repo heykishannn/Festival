@@ -59,6 +59,7 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            display: none;
         }
         
         /* Content Container */
@@ -83,6 +84,34 @@
             box-sizing: border-box;
         }
         
+        /* Title Glass Effect */
+        .title-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Frame Image */
+        .frame-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
         /* Media Box */
         .media-box {
             width: 90%;
@@ -94,13 +123,20 @@
             z-index: 1;
         }
         
-        /* Content Window */
+        /* Content Window - Glass Effect */
         .content-window {
-            background:transparent;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
             width: 90%;
             max-width: 800px;
             margin-bottom: 2rem;
-            z-index: 1;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
         }
         
         /* Text Styles */
@@ -114,17 +150,19 @@
         
         /* Username Field */
         .username-field {
-               background: rgba(255, 255, 255, 0.1); /* transparent white */
-            border: 3px solid white;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid white;
             backdrop-filter: blur(10px);
-           -webkit-backdrop-filter: blur(10px); /* for Safari */
+            -webkit-backdrop-filter: blur(10px);
             border-radius: 40px;
-            padding: 10px 15px;
-            color: #fff;
+            padding: 12px 20px;
+            color: white;
             font-size: 16px;
             outline: none;
             width: 90%;
-            box-shadow: 0 2px 10px red;
+            max-width: 400px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            margin-bottom: 1rem;
         }
         
         /* Buttons */
@@ -133,7 +171,7 @@
             border-radius: 24px;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             font-family: 'Poppins', sans-serif;
             font-size: 1rem;
             border: none;
@@ -142,7 +180,7 @@
         }
         
         .btn-gradient {
-            background: green;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
             color: white;
         }
         
@@ -203,39 +241,39 @@
             100% { transform: translateY(0px) rotate(0deg); }
         }
 
-	@keyframes fall {
+        @keyframes fall {
             0% { transform: translateY(-100px); }
             100% { transform: translateY(100vh); }
-	}
+        }
 
-	@keyframes swirl {
+        @keyframes swirl {
             0% { transform: translate(0, 0) rotate(0deg); }
             50% { transform: translate(50px, 50px) rotate(180deg); }
             100% { transform: translate(0, 0) rotate(360deg); }
-	}
+        }
 
-	@keyframes fireworks {
+        @keyframes fireworks {
             0% { transform: translate(0, 0) scale(0.5); opacity: 1; }
             100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; }
-	}
+        }
 
         .floating-emoji {
             position: absolute;
             animation: float 3s ease-in-out infinite;
             font-size: 24px;
-	}
-	.falling-emoji {
+        }
+        .falling-emoji {
             position: absolute;
             animation: fall linear forwards;
-	}
+        }
         .swirling-emoji {
             position: absolute;
             animation: swirl 5s linear infinite;
-	}
-	.fireworks-emoji {
+        }
+        .fireworks-emoji {
             position: absolute;
             animation: fireworks 1s ease-out forwards;
-	}
+        }
     </style>
 </head>
 <body class="font-sans">
@@ -257,18 +295,22 @@
                     <!-- Media will be inserted here -->
                 </div>
                 
-                <!-- Title -->
-                <h1 id="festivalTitle" class="text-3xl md:text-6xl font-bold text-center text-white drop-shadow-lg mb-6" style="z-index: 1;"></h1>
+                <!-- Title with Glass Effect -->
+                <div id="titleContainer" class="title-container">
+                    <div id="frameOverlayTitle" class="frame-overlay"></div>
+                    <h1 id="festivalTitle" class="text-3xl md:text-4xl font-bold text-center text-white drop-shadow-lg"></h1>
+                </div>
                 
-                <!-- Content Window -->
+                <!-- Content Window with Glass Effect -->
                 <div id="wishesContainer" class="content-window">
-                    <p id="hindiWish" class="wish-text text-1xl sm:text-3xl mb-6 text-center text-white"></p>
-                    <p id="englishWish" class="wish-text text-1xl sm:text-3xl text-center text-white hidden"></p>
+                    <div id="frameOverlayContent" class="frame-overlay"></div>
+                    <p id="hindiWish" class="wish-text text-xl sm:text-2xl mb-6 text-center text-white"></p>
+                    <p id="englishWish" class="wish-text text-xl sm:text-2xl text-center text-white hidden"></p>
                     <div id="translateBtn" class="translate-text text-center">Translate</div>
                 </div>
                 
                 <!-- Username Field -->
-                <input type="text" id="userName" placeholder="Enter your name" class="username-field focus:ring-transparent focus:ring-transparent focus:border-white-1000 font-medium text-gray-800">
+                <input type="text" id="userName" placeholder="Enter your name" class="username-field focus:ring-transparent focus:border-white-1000 font-medium">
                 
                 <!-- Action Buttons -->
                 <div id="actionButtons" class="hidden flex flex-col items-center gap-4 mt-6" style="z-index: 1;">
@@ -338,7 +380,10 @@
         const mainBackground = document.getElementById('mainBackground');
         const secondBackground = document.getElementById('secondBackground');
         const mediaBox = document.getElementById('mediaBox');
+        const titleContainer = document.getElementById('titleContainer');
         const festivalTitle = document.getElementById('festivalTitle');
+        const frameOverlayTitle = document.getElementById('frameOverlayTitle');
+        const frameOverlayContent = document.getElementById('frameOverlayContent');
         const hindiWish = document.getElementById('hindiWish');
         const englishWish = document.getElementById('englishWish');
         const userName = document.getElementById('userName');
@@ -352,8 +397,8 @@
         const secondPage = document.getElementById('secondPage');
         const animationContainer = document.getElementById('animationContainer');
         
-        // Current page URL
-        const pageUrl = window.location.href;
+        // Fixed URL for sharing
+        const fixedShareUrl = 'https://heykishannn.github.io/Festival/';
         let isTranslated = false;
         let originalHindiWish = '';
         let originalEnglishWish = '';
@@ -389,7 +434,7 @@
                     });
                 }
             }
-	}
+	    }
 	    
         // Load settings from Supabase
         async function loadSettings() {
@@ -413,18 +458,27 @@
                     if (data.value.secondBackground) {
                         if (data.value.secondBackground.startsWith('http') || data.value.secondBackground.startsWith('data:')) {
                             secondBackground.style.backgroundImage = `url('${data.value.secondBackground}')`;
-                            secondBackground.style.background = !data.value.secondBackground.startsWith('linear-gradient') ? data.value.secondBackground : '';
+                            secondBackground.style.display = 'block';
                         } else {
                             secondBackground.style.background = data.value.secondBackground;
                             secondBackground.style.display = 'block';
-                       			}    
-		    }
+                        }    
+                    }
                     
                     // Set title with custom styles
                     document.title = data.value.title || 'Festival Wishes';
                     festivalTitle.textContent = data.value.title || '';
-                    festivalTitle.style.fontFamily = data.value.titleFont || "'Poppins', sans-serif";
-                    festivalTitle.style.color = data.value.titleColor || '#ffffff';
+                    
+                    // Apply title styles from admin panel
+                    if (data.value.titleFont) {
+                        festivalTitle.style.fontFamily = data.value.titleFont;
+                    }
+                    if (data.value.titleColor) {
+                        festivalTitle.style.color = data.value.titleColor;
+                    }
+                    if (data.value.titleSize) {
+                        festivalTitle.classList.add(data.value.titleSize);
+                    }
                     
                     // Set wishes with formatting
                     originalHindiWish = data.value.hindiWish || '';
@@ -440,13 +494,21 @@
                         translateBtn.classList.add('hidden');
                     }
                     
-                    // Apply Hindi text styles
-                    hindiWish.style.fontFamily = data.value.hindiFont || "'Noto Sans Devanagari', sans-serif";
-                    hindiWish.style.color = data.value.hindiColor || '#ffffff';
+                    // Apply Hindi text styles from admin panel
+                    if (data.value.hindiFont) {
+                        hindiWish.style.fontFamily = data.value.hindiFont;
+                    }
+                    if (data.value.hindiColor) {
+                        hindiWish.style.color = data.value.hindiColor;
+                    }
                     
-                    // Apply English text styles
-                    englishWish.style.fontFamily = data.value.englishFont || "'Poppins', sans-serif";
-                    englishWish.style.color = data.value.englishColor || '#ffffff';
+                    // Apply English text styles from admin panel
+                    if (data.value.englishFont) {
+                        englishWish.style.fontFamily = data.value.englishFont;
+                    }
+                    if (data.value.englishColor) {
+                        englishWish.style.color = data.value.englishColor;
+                    }
                     
                     // Set share description
                     shareDescription = data.value.shareDescription || '';
@@ -475,12 +537,31 @@
                         }
                     }
                     
+                    // Set frame images
+                    if (data.value.frameUrl) {
+                        frameOverlayTitle.style.backgroundImage = `url('${data.value.frameUrl}')`;
+                        frameOverlayTitle.style.opacity = (data.value.frameOpacity || 100) / 100;
+                        frameOverlayTitle.style.objectFit = data.value.framePosition || 'cover';
+                        
+                        // Use same frame for content or different if specified
+                        frameOverlayContent.style.backgroundImage = `url('${data.value.frameUrl}')`;
+                        frameOverlayContent.style.opacity = (data.value.frameOpacity || 100) / 100;
+                        frameOverlayContent.style.objectFit = data.value.framePosition || 'cover';
+                    }
+                    
+                    // Set wish box background
+                    if (data.value.wishBgUrl) {
+                        contentWindow.style.backgroundImage = `url('${data.value.wishBgUrl}')`;
+                        contentWindow.style.backgroundSize = data.value.wishBgSize || 'cover';
+                        contentWindow.style.backgroundRepeat = data.value.wishBgRepeat || 'no-repeat';
+                    }
+                    
                     // Set audio
                     if (data.value.audioUrl) {
                         backgroundAudio.src = data.value.audioUrl;
                         // Try to play audio immediately
                         playBackgroundAudio();
-		    }
+                    }
                     
                     // Set button styles
                     applyButtonStyles(
@@ -566,7 +647,8 @@
 	    }
 		
             animationContainer.appendChild(emoji);
-              // For falling emojis, remove after animation completes
+            
+            // For falling emojis, remove after animation completes
             if (animationType === 'fall') {
                 emoji.addEventListener('animationend', () => {
                     emoji.remove();
@@ -632,8 +714,17 @@
                 const color2 = adjustColor(color, 20);
                 
                 buttons.forEach(btn => {
-                    btn.style.setProperty('--btn-color-1', color1);
-                    btn.style.setProperty('--btn-color-2', color2);
+                    btn.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+                });
+            } else if (style === 'solid') {
+                buttons.forEach(btn => {
+                    btn.style.background = color;
+                });
+            } else if (style === 'outline') {
+                buttons.forEach(btn => {
+                    btn.style.background = 'transparent';
+                    btn.style.border = `2px solid ${color}`;
+                    btn.style.color = color;
                 });
             }
         }
@@ -682,47 +773,102 @@
             isTranslated = !isTranslated;
         });
         
-        // Share button click - FIXED VERSION
+        // Share button click - Universal Share Function
         shareBtn.addEventListener('click', async () => {
             const name = userName.value.trim() || "Someone";
-            let shareMessage = `${name} ${shareDescription}`;
-            
-            // Ensure only one URL appears
-            if (!shareMessage.includes(pageUrl)) {
-                shareMessage += `\n${pageUrl}`;
-            }
+            let shareMessage = `${name} ${shareDescription}\n${fixedShareUrl}`;
 
             try {
                 if (navigator.share) {
+                    // Web Share API (mobile devices)
                     await navigator.share({
                         title: document.title,
                         text: shareMessage,
-                        url: pageUrl
+                        url: fixedShareUrl
                     });
-                } else {
-                    // Fallback for browsers that don't support Web Share API
+                } else if (navigator.clipboard) {
+                    // Clipboard API (desktop browsers)
                     await navigator.clipboard.writeText(shareMessage);
                     alert('Share text copied to clipboard!');
+                    
+                    // Fallback to WhatsApp if possible
+                    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                        window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
+                    }
+                } else {
+                    // Final fallback - open WhatsApp or SMS
+                    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                        window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
+                    } else {
+                        // For desktop browsers that don't support clipboard
+                        const textArea = document.createElement('textarea');
+                        textArea.value = shareMessage;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        alert('Share text copied to clipboard!');
+                    }
                 }
             } catch (err) {
                 console.error('Error sharing:', err);
-                // Final fallback - open WhatsApp with share message
-                const shareUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
-                window.open(shareUrl, '_blank');
+                
+                // Ultimate fallback - try different methods based on platform
+                try {
+                    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                        // Mobile devices - try WhatsApp
+                        window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
+                    } else {
+                        // Desktop - copy to clipboard
+                        const textArea = document.createElement('textarea');
+                        textArea.value = shareMessage;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        alert('Share text copied to clipboard!');
+                    }
+                } catch (fallbackErr) {
+                    console.error('Fallback share error:', fallbackErr);
+                    alert('Could not share. Please copy the URL manually: ' + fixedShareUrl);
+                }
             }
         });
         
         // Copy button click
         copyBtn.addEventListener('click', () => {
             const name = userName.value.trim() || "Someone";
-            const shareMessage = `${name} ${shareDescription}\n${pageUrl}`;
+            const shareMessage = `${name} ${shareDescription}\n${fixedShareUrl}`;
             
-            navigator.clipboard.writeText(shareMessage).then(() => {
-                alert('Wish copied to clipboard!');
-            }).catch(err => {
-                console.error('Could not copy text: ', err);
-            });
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareMessage).then(() => {
+                    alert('Wish copied to clipboard!');
+                }).catch(err => {
+                    console.error('Could not copy text: ', err);
+                    fallbackCopyText(shareMessage);
+                });
+            } else {
+                fallbackCopyText(shareMessage);
+            }
         });
+        
+        // Fallback copy method for older browsers
+        function fallbackCopyText(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                alert('Wish copied to clipboard!');
+            } catch (err) {
+                console.error('Fallback copy failed:', err);
+                alert('Could not copy text. Please select and copy manually.');
+            }
+            
+            document.body.removeChild(textArea);
+        }
         
         // Handle line breaks in wishes
         function processWishText(text) {
