@@ -358,7 +358,38 @@
         let originalEnglishWish = '';
         let shareDescription = '';
         let hasSecondPageContent = false;
-        
+        let audioPlayAttempted = false;
+	    
+        // Auto-play audio when page becomes visible
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                playBackgroundAudio();
+            } else {
+                backgroundAudio.pause();
+            }
+        });
+
+        // Play audio function
+        function playBackgroundAudio() {
+            if (backgroundAudio.src && !audioPlayAttempted) {
+                const playPromise = backgroundAudio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        audioPlayAttempted = true;
+                    })
+                    .catch(error => {
+                        console.log('Autoplay prevented:', error);
+                        // Try again when user interacts
+                        const onceOptions = { once: true };
+                        document.body.addEventListener('click', () => {
+                            backgroundAudio.play().catch(e => console.log('Still prevented:', e));
+                        }, onceOptions);
+                    });
+                }
+            }
+	}
+	    
         // Load settings from Supabase
         async function loadSettings() {
             try {
@@ -447,17 +478,8 @@
                     if (data.value.audioUrl) {
                         backgroundAudio.src = data.value.audioUrl;
                         // Try to play audio immediately
-                        const playAudio = () => {
-                            backgroundAudio.play().catch(e => {
-                                console.log('Autoplay prevented, will try again:', e);
-                                // Try again after user interaction
-                                document.body.addEventListener('click', () => {
-                                    backgroundAudio.play().catch(e => console.log('Still prevented:', e));
-                                }, { once: true });
-                            });
-                        };
-                        playAudio();
-                    }
+                        playBackgroundAudio();
+		    }
                     
                     // Set button styles
                     applyButtonStyles(
