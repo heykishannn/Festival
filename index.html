@@ -101,7 +101,7 @@
             box-sizing: border-box; /* Ensures padding is included in the element's total dimensions */
         }
         
-        /* Title Frame Container - Holds the frame image and the title text */
+        /* Title Frame Container - Holds the title image and the title text */
         .title-frame-container {
             position: relative; /* For absolute positioning of the text */
             width: auto; /* Width determined by the image or max-width */
@@ -134,7 +134,7 @@
         }
         
         .title-text {
-            font-size: 2px; /* Default font size, adjusted dynamically by JavaScript */
+            font-size: 2rem; /* Default font size, adjusted dynamically by JavaScript */
             font-weight: bold;
             color: white; /* Default text color */
             text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Text shadow for better readability */
@@ -153,7 +153,7 @@
             justify-content: center;
             align-items: center;
             z-index: 1; /* Above background layers */
-            /* Aspect ratio is set dynamically by JS based on image */
+            /* Aspect ratio will be set dynamically by JS based on image dimensions */
         }
         
         .content-frame-image {
@@ -356,7 +356,7 @@
                     <!-- Media element will be dynamically inserted here -->
                 </div>
                 
-                <!-- Title Frame: Holds the frame image and the title text -->
+                <!-- Title Frame: Holds the title frame image and overlaid title text -->
                 <div class="title-frame-container">
                     <img id="titleFrameImage" class="title-frame-image" src="" alt="Title Frame">
                     <div class="title-text-container">
@@ -364,7 +364,7 @@
                     </div>
                 </div>
                 
-                <!-- Content Frame: Holds the wish box background image and overlaid text -->
+                <!-- Content Frame: Holds the wish box background image and overlaid wishes -->
                 <div class="content-frame-container">
                     <img id="contentFrameImage" class="content-frame-image" src="" alt="Content Frame">
                     <div class="wish-text-container">
@@ -449,9 +449,9 @@
         const mainBackground = document.getElementById('mainBackground');
         const secondBackground = document.getElementById('secondBackground');
         const mediaBox = document.getElementById('mediaBox');
-        const titleFrameImage = document.getElementById('titleFrameImage');
+        const titleFrameImage = document.getElementById('titleFrameImage'); // Image for title frame
         const festivalTitle = document.getElementById('festivalTitle');
-        const contentFrameImage = document.getElementById('contentFrameImage');
+        const contentFrameImage = document.getElementById('contentFrameImage'); // Image for wish box background
         const hindiWishElement = document.getElementById('hindiWish');
         const englishWishElement = document.getElementById('englishWish');
         const userNameInput = document.getElementById('userName');
@@ -483,9 +483,9 @@
             hindiWish: 'शुभकामनाएं',
             englishWish: 'Best Wishes',
             shareDescription: 'sent you festival wishes!',
-            frameUrl: '',
-            wishBgUrl: '',
-            mediaUrl: '',
+            mediaUrl: '', // URL for the main media (image/video)
+            titleFrameUrl: '', // URL for the title frame image
+            wishBgUrl: '', // URL for the wish box background image
             audioUrl: '',
             animationEnable: false,
             animationType: 'float',
@@ -494,9 +494,9 @@
             animationQuantity: 'medium',
             customQuantity: '',
             animationSpeed: '1',
-            titleFont: "'Poppins', sans-serif", titleColor: '#4c1d95', titleSize: 'text-3xl',
-            hindiFont: "'Noto Sans Devanagari', sans-serif", hindiColor: '#4c1d95', hindiSize: '1.5rem',
-            englishFont: "'Poppins', sans-serif", englishColor: '#4c1d95', englishSize: '1.5rem',
+            titleFont: "'Poppins', sans-serif", titleColor: '#4c1d95', titleSize: '2rem', // Default title styles with size
+            hindiFont: "'Noto Sans Devanagari', sans-serif", hindiColor: '#4c1d95', hindiSize: '1.5rem', // Default Hindi wish styles with size
+            englishFont: "'Poppins', sans-serif", englishColor: '#4c1d95', englishSize: '1.5rem', // Default English wish styles with size
             buttonStyle: 'gradient', buttonColor: '#4CAF50'
         };
         
@@ -543,14 +543,9 @@
                     const containerWidth = titleFrameImage.parentElement.offsetWidth;
                     titleFrameImage.parentElement.style.height = `${containerWidth * aspectRatio}px`; // Set height based on aspect ratio
                     
-                    // Responsive font size for title based on screen width and container size
-                    const maxWidthPixels = 800; // Reference max width for scaling calculation
-                    const responsiveScale = Math.min(1, containerWidth / maxWidthPixels); // Scale factor (0 to 1)
-                    let baseFontSizePx = 36; // Base font size for large screens
-                    if (window.innerWidth < 768) baseFontSizePx = 28; // Smaller base for tablets/phones
-                    if (window.innerWidth < 480) baseFontSizePx = 24; // Even smaller for small phones
-                    
-                    festivalTitle.style.fontSize = `${baseFontSizePx * responsiveScale}px`; // Apply calculated font size
+                    // Apply the font size directly from settings, not based on responsiveness adjustments
+                    // The font size is already set in px or rem by admin.
+                    // Responsive scaling is not needed here as per new requirement.
                     
                 } else { // Handle broken image links or zero dimensions
                     titleFrameImage.parentElement.style.display = 'none'; 
@@ -594,7 +589,7 @@
             return text.replace(/\n/g, '<br>'); // Replace newline characters with <br> tags
         }
 
-        // Function to load settings from Supabase
+        // Function to load settings from Supabase and apply them to the page
         async function loadSettings() {
             try {
                 const { data, error } = await supaClient
@@ -633,8 +628,10 @@
                 // Apply Title Styles (Font, Color, Size)
                 festivalTitle.style.fontFamily = settings.titleFont || defaultSettings.titleFont;
                 festivalTitle.style.color = settings.titleColor || defaultSettings.titleColor;
-                // Apply font size directly as it comes in CSS units (e.g., '2rem', 'text-4xl')
-                festivalTitle.style.fontSize = settings.titleSize || defaultSettings.titleSize; 
+                // Apply font size directly from settings. If 'custom' is selected, use custom value, else use the selected value.
+                festivalTitle.style.fontSize = (settings.titleSize === 'custom' && settings.customTitleSize)
+                                             ? settings.customTitleSize
+                                             : settings.titleSize || defaultSettings.titleSize;
 
                 // Set Wishes and their styles
                 originalHindiWish = settings.hindiWish || defaultSettings.hindiWish;
@@ -643,16 +640,21 @@
                 hindiWishElement.innerHTML = processWishText(originalHindiWish); // Set Hindi wish with <br> tags
                 hindiWishElement.style.fontFamily = settings.hindiFont || defaultSettings.hindiFont;
                 hindiWishElement.style.color = settings.hindiColor || defaultSettings.hindiColor;
-                hindiWishElement.style.fontSize = settings.hindiSize || defaultSettings.hindiSize; // Apply font size directly
+                // Apply font size directly from settings. If 'custom', use custom value, else selected value.
+                hindiWishElement.style.fontSize = (settings.hindiSize === 'custom' && settings.customHindiSize)
+                                                ? settings.customHindiSize
+                                                : settings.hindiSize || defaultSettings.hindiSize;
 
                 // Handle English wish and translation button visibility
                 if (originalEnglishWish && originalEnglishWish.trim() !== '') {
                     englishWishElement.innerHTML = processWishText(originalEnglishWish);
                     englishWishElement.style.fontFamily = settings.englishFont || defaultSettings.englishFont;
                     englishWishElement.style.color = settings.englishColor || defaultSettings.englishColor;
-                    englishWishElement.style.fontSize = settings.englishSize || defaultSettings.englishSize; // Apply font size directly
+                    englishWishElement.style.fontSize = (settings.englishSize === 'custom' && settings.customEnglishSize)
+                                                      ? settings.customEnglishSize
+                                                      : settings.englishSize || defaultSettings.englishSize; // Apply size directly
                     
-                    translateBtn.classList.remove('hidden'); // Show the translate button
+                    translateBtn.classList.remove('hidden'); // Show translate button
                 } else {
                     englishWishElement.classList.add('hidden'); // Hide if no English wish is available
                     translateBtn.classList.add('hidden');
@@ -661,7 +663,7 @@
                 // Set Share Description text
                 shareDescription = settings.shareDescription || defaultSettings.shareDescription;
 
-                // Set Media (Image or Video)
+                // Set Media (Image or Video) for the main media box
                 if (settings.mediaUrl && settings.mediaUrl.trim() !== '') {
                     mediaBox.innerHTML = ''; // Clear any previous media content
                     let mediaElement = null;
@@ -683,8 +685,8 @@
                 }
 
                 // Set Title Frame Image
-                if (settings.frameUrl && settings.frameUrl.trim() !== '') {
-                    titleFrameImage.src = settings.frameUrl;
+                if (settings.titleFrameUrl && settings.titleFrameUrl.trim() !== '') {
+                    titleFrameImage.src = settings.titleFrameUrl;
                     // Use onload event to ensure dimensions are ready before adjusting layout
                     titleFrameImage.onload = adjustFrameHeightsAndTextPadding; 
                     titleFrameImage.onerror = function() { // Handle cases where image loading fails
@@ -736,7 +738,7 @@
                 // Adjust scroll height and overflow properties based on the presence of the second page
                 adjustScrollHeight();
 
-                // Perform a final adjustment after all elements might have loaded to ensure correct layout
+                // Perform a final adjustment after all elements might have loaded, to ensure correct layout
                 // Using a small timeout helps ensure all DOM manipulations are complete
                 setTimeout(adjustFrameHeightsAndTextPadding, 100); 
 
