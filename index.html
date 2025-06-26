@@ -15,6 +15,7 @@
             width: 100%;
             height: 100%;
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
         
         /* Animation Container */
@@ -36,6 +37,17 @@
             min-height: 100vh;
             overflow: hidden;
         }
+
+        /* Media Box */
+        .media-box {
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+	}
         
         .main-bg {
             position: absolute;
@@ -54,12 +66,12 @@
             top: 100vh;
             left: 0;
             width: 100%;
-            height: 100vh;
+            height: 300vh;
             z-index: -1;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            display: none;
+            display: none; /* Initially hidden */
         }
         
         /* Content Container */
@@ -85,56 +97,89 @@
             box-sizing: border-box;
         }
         
-        /* Title Container - Now with Image Background */
-        .title-container {
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
-            background-position: center;
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            width: 90%;
-            max-width: 800px;
+        /* PERFECT FIT TITLE CONTAINER */
+        .title-frame-container {
             position: relative;
+            width: auto;
+            max-width: 800px;
+            margin-bottom: 2rem;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 150px; /* Adjust based on your image aspect ratio */
         }
         
-        /* Content Window - Now with Image Background */
-        .content-window {
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
-            background-position: center;
-            border-radius: 16px;
-            padding: 2rem;
-            width: 90%;
+        .title-frame-image {
+            width: 100%;
+            display: block;
+            height: auto; /* Let aspect ratio define height */
+        }
+        
+        .title-text-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-sizing: border-box;
+            pointer-events: none;
+        }
+        
+        .title-text {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 100%; /* Prevent text from touching edges */
+        }
+        
+        /* PERFECT FIT CONTENT CONTAINER */
+        .content-frame-container {
+            position: relative;
+            width: 100%;
             max-width: 800px;
             margin-bottom: 2rem;
-            position: relative;
-            min-height: 200px; /* Adjust based on content */
-	}
-
-	/* Media Box */
-        .media-box {
-            width: 90%;
-            max-width: 800px;
-            margin: 0 auto 3rem;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-            z-index: 2;
-	}
-	    
-        /* Text Styles */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .content-frame-image {
+            width: 100%;
+            display: block;
+            height: 100%; /* Make image fill its parent container */
+            object-fit: contain; /* Scales the image to fit within the container while maintaining aspect ratio */
+        }
+        
+        .wish-text-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: auto;
+            height: auto; /* This height will be relative to the parent container */
+            display: flex; /* Use flexbox for centering */
+            flex-direction: column;
+            justify-content: center; /* Vertically center */
+            align-items: center; /* Horizontally center */
+            text-align: center;
+            box-sizing: border-box;
+            pointer-events: none; /* Allows clicks to pass through to elements below */
+            overflow: hidden; /* Prevents content from spilling out if padding is too small */
+        }
+        
         .wish-text {
             font-weight: bold;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5 rem;
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
             white-space: pre-line;
-            text-align: center;
+            width: 100%;
+            color: white;
+            max-width: 100%; /* Prevent text from touching edges */
         }
         
         /* Username Field */
@@ -182,6 +227,7 @@
             margin-top: 1rem;
             text-shadow: 0 1px 3px rgba(0,0,0,0.3);
             z-index: 1;
+            pointer-events: auto; /* Make it clickable */
         }
         
         /* Ads */
@@ -232,8 +278,8 @@
         }
 
         @keyframes fall {
-            0% { transform: translateY(-100px); }
-            100% { transform: translateY(100vh); }
+            0% { transform: translateY(-100px); opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 1; }
         }
 
         @keyframes swirl {
@@ -264,6 +310,19 @@
             position: absolute;
             animation: fireworks 1s ease-out forwards;
         }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .title-text {
+                font-size: 1.5rem;
+            }
+            .wish-text {
+                font-size: 1rem;
+            }
+            .title-text-container, .wish-text-container {
+                padding: 10%;
+            }
+        }
     </style>
 </head>
 <body class="font-sans">
@@ -281,20 +340,26 @@
             <!-- First Page -->
             <section class="page-section">
                 <!-- Media Box -->
-                <div id="mediaBox" class="media-box">
+                <div id="mediaBox" class="media-box" style="width: 90%; max-width: 800px; margin-bottom: 2rem;">
                     <!-- Media will be inserted here -->
                 </div>
                 
-                <!-- Title with Image Background -->
-                <div id="titleContainer" class="title-container">
-                    <h1 id="festivalTitle" class="text-3xl md:text-4xl font-bold text-center text-white drop-shadow-lg"></h1>
+                <!-- Title Frame -->
+                <div class="title-frame-container">
+                    <img id="titleFrameImage" class="title-frame-image" src="" alt="Title Frame">
+                    <div class="title-text-container">
+                        <h1 id="festivalTitle" class="title-text">Festival Wishes</h1>
+                    </div>
                 </div>
                 
-                <!-- Content Window with Image Background -->
-                <div id="wishesContainer" class="content-window">
-                    <p id="hindiWish" class="wish-text text-[0.900rem] sm:text-2xl mb-6 text-center text-white"></p>
-                    <p id="englishWish" class="wish-text text-[0.900rem] sm:text-2xl text-center text-white hidden"></p>
-                    <div id="translateBtn" class="translate-text text-center">Translate</div>
+                <!-- Content Frame -->
+                <div class="content-frame-container">
+                    <img id="contentFrameImage" class="content-frame-image" src="" alt="Content Frame">
+                    <div class="wish-text-container">
+                        <p id="hindiWish" class="wish-text">शुभकामनाएं</p>
+                        <p id="englishWish" class="wish-text hidden">Best Wishes</p>
+                        <div id="translateBtn" class="translate-text">Translate</div>
+                    </div>
                 </div>
                 
                 <!-- Username Field -->
@@ -368,8 +433,9 @@
         const mainBackground = document.getElementById('mainBackground');
         const secondBackground = document.getElementById('secondBackground');
         const mediaBox = document.getElementById('mediaBox');
-        const titleContainer = document.getElementById('titleContainer');
+        const titleFrameImage = document.getElementById('titleFrameImage');
         const festivalTitle = document.getElementById('festivalTitle');
+        const contentFrameImage = document.getElementById('contentFrameImage');
         const hindiWish = document.getElementById('hindiWish');
         const englishWish = document.getElementById('englishWish');
         const userName = document.getElementById('userName');
@@ -382,17 +448,41 @@
         const footerAd = document.getElementById('footerAd');
         const secondPage = document.getElementById('secondPage');
         const animationContainer = document.getElementById('animationContainer');
-        const wishesContainer = document.getElementById('wishesContainer');
         
         // Fixed URL for sharing
         const fixedShareUrl = 'https://heykishannn.github.io/Festival/';
         let isTranslated = false;
-        let originalHindiWish = '';
-        let originalEnglishWish = '';
-        let shareDescription = '';
+        let originalHindiWish = 'शुभकामनाएं';
+        let originalEnglishWish = 'Best Wishes';
+        let shareDescription = 'sent you festival wishes!';
         let hasSecondPageContent = false;
         let audioPlayAttempted = false;
-	    
+        
+        // Default settings if Supabase fails
+        const defaultSettings = {
+            background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+            title: 'Festival Wishes',
+            hindiWish: 'शुभकामनाएं',
+            englishWish: 'Best Wishes',
+            shareDescription: 'sent you festival wishes!',
+            frameUrl: '',
+            wishBgUrl: '',
+            mediaUrl: '',
+            audioUrl: '',
+            animationEnable: false,
+            animationType: 'float',
+            emojiType: 'mixed',
+            customEmojis: '',
+            animationQuantity: 'medium',
+            customQuantity: '',
+            animationSpeed: 1,
+            customSpeed: '',
+            titleFont: '', titleColor: '', titleSize: '',
+            hindiFont: '', hindiColor: '', hindiSize: '',
+            englishFont: '', englishColor: '', englishSize: '',
+            buttonStyle: 'gradient', buttonColor: '#4CAF50'
+        };
+        
         // Auto-play audio when page becomes visible
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
@@ -410,20 +500,64 @@
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
                         audioPlayAttempted = true;
+                        console.log('Background audio playing.');
                     })
                     .catch(error => {
                         console.log('Autoplay prevented:', error);
-                        // Try again when user interacts
                         const onceOptions = { once: true };
                         document.body.addEventListener('click', () => {
-                            backgroundAudio.play().catch(e => console.log('Still prevented:', e));
+                            backgroundAudio.play().then(() => {
+                                audioPlayAttempted = true;
+                                console.log('Background audio playing after user interaction.');
+                            }).catch(e => console.log('Autoplay still prevented:', e));
                         }, onceOptions);
                     });
                 }
             }
-	    }
-	    
-        // Load settings from Supabase
+        }
+        
+        // Function to adjust frame heights and text padding
+        function adjustFrameHeightsAndTextPadding() {
+            // Adjust Title Frame
+            if (titleFrameImage.src && titleFrameImage.complete) {
+                if (titleFrameImage.naturalHeight > 0 && titleFrameImage.naturalWidth > 0) {
+                    const aspectRatio = titleFrameImage.naturalHeight / titleFrameImage.naturalWidth;
+                    const containerWidth = titleFrameImage.parentElement.offsetWidth;
+                    titleFrameImage.parentElement.style.height = `${containerWidth * aspectRatio}px`;
+                    
+                    // Adjust title font size responsively
+                    const fontSize = Math.min(4, containerWidth / 15); // Responsive font size
+                    festivalTitle.style.fontSize = `${fontSize}vw`;
+                } else {
+                    titleFrameImage.parentElement.style.display = 'none';
+                }
+            }
+            
+            // Adjust Content Frame
+            if (contentFrameImage.src && contentFrameImage.complete) {
+                if (contentFrameImage.naturalHeight > 0 && contentFrameImage.naturalWidth > 0) {
+                    const aspectRatio = contentFrameImage.naturalHeight / contentFrameImage.naturalWidth;
+                    const containerWidth = contentFrameImage.parentElement.offsetWidth;
+                    contentFrameImage.parentElement.style.height = `${containerWidth * aspectRatio}px`;
+                    
+                    // Adjust wish text container padding based on text length for better fit
+                    const textLength = Math.max(
+                        originalHindiWish ? originalHindiWish.length : 0,
+                        originalEnglishWish ? originalEnglishWish.length : 0
+                    );
+                    
+                    // Padding calculation: Less padding for longer text to show more background.
+                    // Min padding is 8%, max is around 25%. Adjust divisor (30) for sensitivity.
+                    const paddingPercent = Math.max(8, 25 - (textLength / 30)); 
+                    document.querySelector('.wish-text-container').style.padding = `${paddingPercent}%`;
+
+                } else {
+                    contentFrameImage.parentElement.style.display = 'none';
+                }
+            }
+        }
+
+        // Load settings from Supabase with proper error handling
         async function loadSettings() {
             try {
                 const { data, error } = await supaClient
@@ -431,171 +565,186 @@
                     .select('value')
                     .eq('id', 'festival_settings')
                     .single();
-                
-                if (data) {
-                    // Set backgrounds
-                    if (data.value.background) {
-                        if (data.value.background.startsWith('http') || data.value.background.startsWith('data:')) {
-                            mainBackground.style.backgroundImage = `url('${data.value.background}')`;
-                        } else {
-                            mainBackground.style.background = data.value.background;
-                        }
-                    }
-                    
-                    if (data.value.secondBackground) {
-                        if (data.value.secondBackground.startsWith('http') || data.value.secondBackground.startsWith('data:')) {
-                            secondBackground.style.backgroundImage = `url('${data.value.secondBackground}')`;
-                            secondBackground.style.display = 'block';
-                        } else {
-                            secondBackground.style.background = data.value.secondBackground;
-                            secondBackground.style.display = 'block';
-                        }    
-                    }
-                    
-                    // Set title with custom styles
-                    document.title = data.value.title || 'Festival Wishes';
-                    festivalTitle.textContent = data.value.title || '';
-                    
-                    // Apply title styles from admin panel
-                    if (data.value.titleFont) {
-                        festivalTitle.style.fontFamily = data.value.titleFont;
-                    }
-                    if (data.value.titleColor) {
-                        festivalTitle.style.color = data.value.titleColor;
-                    }
-                    if (data.value.titleSize) {
-                        festivalTitle.classList.add(data.value.titleSize);
-                    }
-                    
-                    // Set wishes with formatting
-                    originalHindiWish = data.value.hindiWish || '';
-                    originalEnglishWish = data.value.englishWish || '';
-                    hindiWish.innerHTML = processWishText(originalHindiWish);
-                    
-                    // Only show English wish if it exists
-                    if (originalEnglishWish) {
-                        englishWish.innerHTML = processWishText(originalEnglishWish);
-                        translateBtn.classList.remove('hidden');
+
+                const settings = (data && data.value) ? { ...defaultSettings, ...data.value } : defaultSettings;
+
+                // Apply Backgrounds
+                if (settings.background) {
+                    if (settings.background.startsWith('http') || settings.background.startsWith('data:')) {
+                        mainBackground.style.backgroundImage = `url('${settings.background}')`;
                     } else {
-                        englishWish.innerHTML = '';
-                        translateBtn.classList.add('hidden');
+                        mainBackground.style.background = settings.background;
                     }
-                    
-                    // Apply Hindi text styles from admin panel
-                    if (data.value.hindiFont) {
-                        hindiWish.style.fontFamily = data.value.hindiFont;
-                    }
-                    if (data.value.hindiColor) {
-                        hindiWish.style.color = data.value.hindiColor;
-                    }
-                    
-                    // Apply English text styles from admin panel
-                    if (data.value.englishFont) {
-                        englishWish.style.fontFamily = data.value.englishFont;
-                    }
-                    if (data.value.englishColor) {
-                        englishWish.style.color = data.value.englishColor;
-                    }
-                    
-                    // Set share description
-                    shareDescription = data.value.shareDescription || '';
-                    
-                    // Set media
-                    if (data.value.mediaUrl) {
-                        mediaBox.innerHTML = '';
-                        if (data.value.mediaUrl.includes('.mp4') || data.value.mediaUrl.includes('.webm')) {
-                            const video = document.createElement('video');
-                            video.src = data.value.mediaUrl;
-                            video.autoplay = true;
-                            video.loop = true;
-                            video.muted = true;
-                            video.controls = false;
-                            video.style.width = '100%';
-                            video.style.height = 'auto';
-                            video.style.display = 'block';
-                            mediaBox.appendChild(video);
-                        } else {
-                            const img = document.createElement('img');
-                            img.src = data.value.mediaUrl;
-                            img.style.width = '100%';
-                            img.style.height = 'auto';
-                            img.style.display = 'block';
-                            mediaBox.appendChild(img);
-                        }
-                    }
-                    
-                    // Set title container background image (NEW)
-                    if (data.value.frameUrl) {
-                        titleContainer.style.backgroundImage = `url('${data.value.frameUrl}')`;
-                        titleContainer.style.backgroundSize = 'contain'; // Adjust as needed
-                    }
-                    
-                    // Set content window background image (NEW)
-                    if (data.value.wishBgUrl) {
-                        wishesContainer.style.backgroundImage = `url('${data.value.wishBgUrl}')`;
-                        wishesContainer.style.backgroundSize = 'contain'; // Adjust as needed
-                    }
-                    
-                    // Set audio
-                    if (data.value.audioUrl) {
-                        backgroundAudio.src = data.value.audioUrl;
-                        // Try to play audio immediately
-                        playBackgroundAudio();
-                    }
-                    
-                    // Set button styles
-                    applyButtonStyles(
-                        data.value.buttonStyle,
-                        data.value.buttonColor
-                    );
-                    
-                    // Check if second page should be visible
-                    if (data.value.secondPageContent) {
-                        secondPage.style.display = 'flex';
-                        hasSecondPageContent = true;
-                    }
-                    
-                    // Initialize animations if enabled
-                    if (data.value.animationEnable) {
-                        initAnimations(data.value);
-                    }
-                    
-                    // Adjust scroll height based on content
-                    adjustScrollHeight();
                 }
+
+                if (settings.secondBackground) {
+                    if (settings.secondBackground.startsWith('http') || settings.secondBackground.startsWith('data:')) {
+                        secondBackground.style.backgroundImage = `url('${settings.secondBackground}')`;
+                        secondBackground.style.display = 'block';
+                    } else {
+                        secondBackground.style.background = settings.secondBackground;
+                        secondBackground.style.display = 'block';
+                    }    
+                }
+
+                // Set Title
+                document.title = settings.title || defaultSettings.title;
+                festivalTitle.textContent = settings.title || defaultSettings.title;
+
+                if (settings.titleFont) festivalTitle.style.fontFamily = settings.titleFont;
+                if (settings.titleColor) festivalTitle.style.color = settings.titleColor;
+                if (settings.titleSize) festivalTitle.style.fontSize = settings.titleSize;
+
+                // Set Wishes
+                originalHindiWish = settings.hindiWish || defaultSettings.hindiWish;
+                originalEnglishWish = settings.englishWish || defaultSettings.englishWish;
+                hindiWish.innerHTML = processWishText(originalHindiWish);
+
+                if (originalEnglishWish && originalEnglishWish.trim() !== '') {
+                    englishWish.innerHTML = processWishText(originalEnglishWish);
+                    translateBtn.classList.remove('hidden');
+                } else {
+                    englishWish.classList.add('hidden');
+                    translateBtn.classList.add('hidden');
+                }
+
+                if (settings.hindiFont) hindiWish.style.fontFamily = settings.hindiFont;
+                if (settings.hindiColor) hindiWish.style.color = settings.hindiColor;
+                if (settings.hindiSize) hindiWish.style.fontSize = settings.hindiSize;
+
+                if (settings.englishFont) englishWish.style.fontFamily = settings.englishFont;
+                if (settings.englishColor) englishWish.style.color = settings.englishColor;
+                if (settings.englishSize) englishWish.style.fontSize = settings.englishSize;
+
+                // Set Share Description
+                shareDescription = settings.shareDescription || defaultSettings.shareDescription;
+
+                // Set Media (Video or Image)
+                if (settings.mediaUrl) {
+                    mediaBox.innerHTML = ''; // Clear previous content
+                    if (settings.mediaUrl.toLowerCase().endsWith('.mp4') || settings.mediaUrl.toLowerCase().endsWith('.webm')) {
+                        const video = document.createElement('video');
+                        video.src = settings.mediaUrl;
+                        video.autoplay = true;
+                        video.loop = true;
+                        video.muted = true;
+                        video.controls = false;
+                        video.style.width = '100%';
+                        video.style.height = 'auto';
+                        video.style.display = 'block';
+                        mediaBox.appendChild(video);
+                    } else if (settings.mediaUrl.trim() !== '') {
+                        const img = document.createElement('img');
+                        img.src = settings.mediaUrl;
+                        img.style.width = '100%';
+                        img.style.height = 'auto';
+                        img.style.display = 'block';
+                        mediaBox.appendChild(img);
+                    }
+                }
+
+                // Set Title Frame Image
+                if (settings.frameUrl && settings.frameUrl.trim() !== '') {
+                    titleFrameImage.src = settings.frameUrl;
+                    titleFrameImage.onload = adjustFrameHeightsAndTextPadding; // Call adjustment function
+                    titleFrameImage.onerror = function() {
+                        this.parentElement.style.display = 'none';
+                        console.error('Failed to load title frame image:', this.src);
+                    };
+                } else {
+                    titleFrameImage.style.display = 'none';
+                }
+
+                // Set Content Frame Image
+                if (settings.wishBgUrl && settings.wishBgUrl.trim() !== '') {
+                    contentFrameImage.src = settings.wishBgUrl;
+                    contentFrameImage.onload = adjustFrameHeightsAndTextPadding; // Call adjustment function
+                    contentFrameImage.onerror = function() {
+                        contentFrameImage.style.display = 'none';
+                        console.error('Failed to load content frame image:', this.src);
+                    };
+                } else {
+                    contentFrameImage.style.display = 'none';
+                }
+
+                // Set Audio
+                if (settings.audioUrl && settings.audioUrl.trim() !== '') {
+                    backgroundAudio.src = settings.audioUrl;
+                    playBackgroundAudio();
+                }
+
+                // Apply Button Styles
+                applyButtonStyles(settings.buttonStyle, settings.buttonColor);
+
+                // Check for Second Page Content
+                if (settings.secondPageContent) {
+                    secondPage.style.display = 'flex';
+                    hasSecondPageContent = true;
+                }
+
+                // Initialize Animations
+                if (settings.animationEnable) {
+                    initAnimations(settings);
+                }
+
+                // Adjust scroll height
+                adjustScrollHeight();
+
             } catch (error) {
-                console.error('Error loading settings:', error);
+                console.error('Error loading settings from Supabase:', error);
+                applyDefaultSettings();
             }
         }
         
+        // Apply default settings when Supabase fails or no data found
+        function applyDefaultSettings() {
+            document.title = defaultSettings.title;
+            festivalTitle.textContent = defaultSettings.title;
+            hindiWish.innerHTML = processWishText(defaultSettings.hindiWish);
+            englishWish.innerHTML = processWishText(defaultSettings.englishWish);
+            shareDescription = defaultSettings.shareDescription;
+            
+            titleFrameImage.style.display = 'none';
+            contentFrameImage.style.display = 'none';
+            
+            if (defaultSettings.englishWish && defaultSettings.englishWish.trim() !== '') {
+                translateBtn.classList.remove('hidden');
+            } else {
+                translateBtn.classList.add('hidden');
+            }
+
+            applyButtonStyles(defaultSettings.buttonStyle, defaultSettings.buttonColor);
+            adjustScrollHeight();
+        }
+
         // Initialize animations
         function initAnimations(settings) {
-            // Clear existing animations
             animationContainer.innerHTML = '';
             
-            // Create emojis based on settings
             const emojiSet = getEmojiSet(settings.emojiType, settings.customEmojis);
             const quantity = getAnimationQuantity(settings.animationQuantity, settings.customQuantity);
             const speed = getAnimationSpeed(settings.animationSpeed, settings.customSpeed);
+            const animationType = settings.animationType || 'float';
             
             for (let i = 0; i < quantity; i++) {
-                createEmoji(emojiSet, speed, settings.animationType);
+                createEmoji(emojiSet, speed, animationType);
             }
         }
         
+        // Function to create a single animated emoji element
         function createEmoji(emojiSet, speed, animationType) {
             const emoji = document.createElement('div');
             emoji.textContent = emojiSet[Math.floor(Math.random() * emojiSet.length)];
             emoji.style.fontSize = `${Math.random() * 20 + 16}px`;
-		
-            // Set animation based on type
-            switch(animationType) {
-                case 'fall':
-                    emoji.className = 'falling-emoji';
-                    emoji.style.animationDuration = `${5 / speed}s`;
-                    emoji.style.left = `${Math.random() * 100}%`;
-                    emoji.style.top = '-50px';
-                    break;
+        
+                switch(animationType) {
+              case 'fall':
+                  emoji.className = 'falling-emoji';
+                  emoji.style.top = '-50px';
+                  emoji.style.left = `${Math.random() * 100}%`; // random horizontal position
+                  emoji.style.fontSize = `${1 + Math.random() * 2}rem`; // optional: random size
+                  emoji.style.animationDuration = `${(2 + Math.random() * 3) / speed}s`; // random speed
+                  break;              
                 case 'swirl':
                     emoji.className = 'swirling-emoji';
                     emoji.style.animationDuration = `${8 / speed}s`;
@@ -611,7 +760,6 @@
                     emoji.style.animationDuration = `${1 / speed}s`;
                     break;
                 case 'confetti':
-                    // Similar to fireworks but with different animation
                     emoji.className = 'fireworks-emoji';
                     emoji.style.setProperty('--tx', `${Math.random() * 200 - 100}px`);
                     emoji.style.setProperty('--ty', `${Math.random() * 200 - 100}px`);
@@ -619,34 +767,24 @@
                     emoji.style.top = '50%';
                     emoji.style.animationDuration = `${1.5 / speed}s`;
                     break;
-                default: // float
+                default: // 'float' animation
                     emoji.className = 'floating-emoji';
                     emoji.style.animationDuration = `${3 / speed}s`;
                     emoji.style.left = `${Math.random() * 100}%`;
                     emoji.style.top = `${Math.random() * 100}%`;
-	    }
-		
+            }
+        
             animationContainer.appendChild(emoji);
             
-            // For falling emojis, remove after animation completes
-            if (animationType === 'fall') {
+            if (animationType === 'fall' || animationType === 'fireworks' || animationType === 'confetti') {
                 emoji.addEventListener('animationend', () => {
                     emoji.remove();
-                    // Create new falling emoji to maintain quantity
                     createEmoji(emojiSet, speed, animationType);
                 });
             }
-            
-            // For fireworks/confetti, remove after animation completes
-            if (animationType === 'fireworks' || animationType === 'confetti') {
-                emoji.addEventListener('animationend', () => {
-                    emoji.remove();
-                    // Create new firework to maintain quantity
-                    createEmoji(emojiSet, speed, animationType);
-                });
-	    }
-	}
+        }
         
+        // Helper function to get a set of emojis
         function getEmojiSet(type, customEmojis) {
             const sets = {
                 flowers: ['🌸', '🌺', '🌻', '🌼', '🌷', '💐'],
@@ -655,15 +793,16 @@
                 festive: ['🎉', '🎊', '🪅', '🎁', '🧧'],
                 hearts: ['❤️', '🧡', '💛', '💚', '💙', '💜'],
                 stars: ['⭐', '🌟', '✨', '💫'],
-                mixed: ['🌸', '🪔', '🎉', '❤️', '⭐', '✨']
+                mixed: ['🎉', '✨', '❤️', '🌸', '🌟', '🎶']
             };
             
             if (type === 'custom' && customEmojis) {
-                return customEmojis.split(',').map(e => e.trim());
+                return customEmojis.split(',').map(e => e.trim()).filter(e => e.length > 0);
             }
             return sets[type] || sets.mixed;
         }
         
+        // Helper function to get animation quantity
         function getAnimationQuantity(type, customQuantity) {
             const quantities = {
                 low: 5,
@@ -673,14 +812,17 @@
             };
             
             if (type === 'custom' && customQuantity) {
-                return Math.min(100, Math.max(1, parseInt(customQuantity)));
+                const qty = parseInt(customQuantity);
+                return !isNaN(qty) && qty > 0 ? Math.min(100, qty) : 10; 
             }
             return quantities[type] || 10;
         }
         
+        // Helper function to get animation speed
         function getAnimationSpeed(type, customSpeed) {
             if (type === 'custom' && customSpeed) {
-                return parseFloat(customSpeed);
+                const speed = parseFloat(customSpeed);
+                return !isNaN(speed) && speed > 0 ? speed : 1; 
             }
             return parseFloat(type) || 1;
         }
@@ -689,16 +831,23 @@
         function applyButtonStyles(style, color) {
             const buttons = [shareBtn, copyBtn];
             
+            if (!style) style = 'gradient';
+            if (!color) color = '#4CAF50';
+
             if (style === 'gradient') {
                 const color1 = color;
-                const color2 = adjustColor(color, 20);
+                const color2 = adjustColor(color, -20);
                 
                 buttons.forEach(btn => {
                     btn.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+                    btn.style.border = 'none';
+                    btn.style.color = 'white';
                 });
             } else if (style === 'solid') {
                 buttons.forEach(btn => {
                     btn.style.background = color;
+                    btn.style.border = 'none';
+                    btn.style.color = 'white';
                 });
             } else if (style === 'outline') {
                 buttons.forEach(btn => {
@@ -709,18 +858,36 @@
             }
         }
         
-        // Helper function to adjust color
+        // Helper function to adjust color brightness/darkness
         function adjustColor(color, amount) {
-            return '#' + color.replace(/^#/, '').replace(/../g, color => 
-                ('0' + Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).slice(-2));
+            let usePound = false;
+            if (color[0] === "#") {
+                color = color.slice(1);
+                usePound = true;
+            }
+
+            let r = parseInt(color.substring(0, 2), 16);
+            let g = parseInt(color.substring(2, 4), 16);
+            let b = parseInt(color.substring(4, 6), 16);
+
+            r = Math.min(255, Math.max(0, r + amount));
+            g = Math.min(255, Math.max(0, g + amount));
+            b = Math.min(255, Math.max(0, b + amount));
+
+            const newColor = `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+            return usePound ? newColor : newColor.slice(1);
         }
         
-        // Adjust scroll height based on content
+        // Adjust scroll behavior for the body
         function adjustScrollHeight() {
             if (!hasSecondPageContent) {
+                 document.body.style.minHeight = '100vh';
+                 document.documentElement.style.height = 'auto';
+                 document.body.style.overflowY = 'auto';
+            } else {
+                document.body.style.minHeight = '100vh';
+                document.body.style.height = 'auto';
                 document.body.style.overflowY = 'auto';
-                const contentHeight = document.querySelector('.content-container').scrollHeight;
-                document.documentElement.style.height = contentHeight + 'px';
             }
         }
         
@@ -733,11 +900,11 @@
             }
         });
         
-        // Translate button click
+        // Translate button click handler
         translateBtn.addEventListener('click', () => {
-            if (!originalEnglishWish) {
-                // If no English wish set, don't show anything when translating
+            if (!originalEnglishWish || originalEnglishWish.trim() === '') {
                 englishWish.textContent = "";
+                translateBtn.classList.add('hidden');
                 return;
             }
             
@@ -753,69 +920,49 @@
             isTranslated = !isTranslated;
         });
         
-        // Share button click - Universal Share Function
+        // Share button click handler
         shareBtn.addEventListener('click', async () => {
             const name = userName.value.trim() || "Someone";
             let shareMessage = `${name} ${shareDescription}\n${fixedShareUrl}`;
 
             try {
                 if (navigator.share) {
-                    // Web Share API (mobile devices)
                     await navigator.share({
                         title: document.title,
                         text: shareMessage,
                         url: fixedShareUrl
                     });
                 } else if (navigator.clipboard) {
-                    // Clipboard API (desktop browsers)
                     await navigator.clipboard.writeText(shareMessage);
                     alert('Share text copied to clipboard!');
-                    
-                    // Fallback to WhatsApp if possible
                     if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                         window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
                     }
                 } else {
-                    // Final fallback - open WhatsApp or SMS
                     if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                         window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
                     } else {
-                        // For desktop browsers that don't support clipboard
                         const textArea = document.createElement('textarea');
                         textArea.value = shareMessage;
                         document.body.appendChild(textArea);
                         textArea.select();
-                        document.execCommand('copy');
+                        try {
+                            document.execCommand('copy');
+                            alert('Share text copied to clipboard!');
+                        } catch (e) {
+                            console.error('execCommand copy failed:', e);
+                            alert('Could not copy text automatically. Please copy manually: ' + shareMessage);
+                        }
                         document.body.removeChild(textArea);
-                        alert('Share text copied to clipboard!');
                     }
                 }
             } catch (err) {
-                console.error('Error sharing:', err);
-                
-                // Ultimate fallback - try different methods based on platform
-                try {
-                    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                        // Mobile devices - try WhatsApp
-                        window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
-                    } else {
-                        // Desktop - copy to clipboard
-                        const textArea = document.createElement('textarea');
-                        textArea.value = shareMessage;
-                        document.body.appendChild(textArea);
-                        textArea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(textArea);
-                        alert('Share text copied to clipboard!');
-                    }
-                } catch (fallbackErr) {
-                    console.error('Fallback share error:', fallbackErr);
-                    alert('Could not share. Please copy the URL manually: ' + fixedShareUrl);
-                }
+                console.error('Error during sharing:', err);
+                alert('Could not share the wish. Please try copying the link manually: ' + fixedShareUrl);
             }
         });
         
-        // Copy button click
+        // Copy button click handler
         copyBtn.addEventListener('click', () => {
             const name = userName.value.trim() || "Someone";
             const shareMessage = `${name} ${shareDescription}\n${fixedShareUrl}`;
@@ -824,7 +971,7 @@
                 navigator.clipboard.writeText(shareMessage).then(() => {
                     alert('Wish copied to clipboard!');
                 }).catch(err => {
-                    console.error('Could not copy text: ', err);
+                    console.error('Failed to copy text using Clipboard API:', err);
                     fallbackCopyText(shareMessage);
                 });
             } else {
@@ -832,10 +979,12 @@
             }
         });
         
-        // Fallback copy method for older browsers
+        // Fallback copy method using execCommand
         function fallbackCopyText(text) {
             const textArea = document.createElement('textarea');
             textArea.value = text;
+            textArea.style.position = 'absolute';
+            textArea.style.left = '-9999px';
             document.body.appendChild(textArea);
             textArea.select();
             
@@ -850,13 +999,13 @@
             document.body.removeChild(textArea);
         }
         
-        // Handle line breaks in wishes
+        // Helper function to process wish text, replacing newlines with <br> tags
         function processWishText(text) {
             if (!text) return '';
             return text.replace(/\n/g, '<br>');
         }
         
-        // Load settings when page loads
+        // Load settings and initialize the page when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', loadSettings);
     </script>
 </body>
