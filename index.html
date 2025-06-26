@@ -16,6 +16,7 @@
             height: 100%;
             overflow-x: hidden;
             scroll-behavior: smooth;
+            font-family: 'Poppins', sans-serif; /* Default font */
         }
         
         /* Animation Container */
@@ -47,14 +48,14 @@
             overflow: hidden;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
             z-index: 2;
-	}
+	    }
         
         .main-bg {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100vh;
+            height: 100vh; /* Initial height */
             z-index: -1;
             background-size: cover;
             background-position: center;
@@ -63,15 +64,15 @@
         
         .second-bg {
             position: absolute;
-            top: 100vh;
+            top: 100vh; /* Starts after the first page */
             left: 0;
             width: 100%;
-            height: 300vh;
+            height: 300vh; /* Generous height for potential scrolling */
             z-index: -1;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            display: none; /* Initially hidden */
+            display: none; /* Initially hidden, shown if second background is set */
         }
         
         /* Content Container */
@@ -100,12 +101,13 @@
         /* PERFECT FIT TITLE CONTAINER */
         .title-frame-container {
             position: relative;
-            width: auto;
-            max-width: 800px;
+            width: auto; /* Let image define width */
+            max-width: 800px; /* Max width to align with other elements */
             margin-bottom: 2rem;
             display: flex;
             justify-content: center;
             align-items: center;
+            z-index: 1; /* Ensure it's above backgrounds */
         }
         
         .title-frame-image {
@@ -125,42 +127,45 @@
             align-items: center;
             text-align: center;
             box-sizing: border-box;
-            pointer-events: none;
+            pointer-events: none; /* Allows clicks to pass through */
         }
         
         .title-text {
-            font-size: 2rem;
+            font-size: 2rem; /* Default size */
             font-weight: bold;
             color: white;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
             width: 100%;
             max-width: 100%; /* Prevent text from touching edges */
+            line-height: 1.2; /* Good line height for titles */
         }
         
         /* PERFECT FIT CONTENT CONTAINER */
         .content-frame-container {
             position: relative;
-            width: 100%;
-            max-width: 800px;
+            width: 90%; /* Relative to parent */
+            max-width: 800px; /* Max width for consistency */
             margin-bottom: 2rem;
             display: flex;
             justify-content: center;
             align-items: center;
+            z-index: 1; /* Above backgrounds */
+            aspect-ratio: 16 / 9; /* Default aspect ratio, will be adjusted by JS */
         }
         
         .content-frame-image {
             width: 100%;
-            display: block;
             height: 100%; /* Make image fill its parent container */
-            object-fit: contain; /* Scales the image to fit within the container while maintaining aspect ratio */
+            object-fit: contain; /* Scales the image to fit while maintaining aspect ratio */
+            display: block; /* Remove bottom space */
         }
         
         .wish-text-container {
             position: absolute;
             top: 0;
             left: 0;
-            width: auto;
-            height: auto; /* This height will be relative to the parent container */
+            width: 100%;
+            height: 100%;
             display: flex; /* Use flexbox for centering */
             flex-direction: column;
             justify-content: center; /* Vertically center */
@@ -168,17 +173,17 @@
             text-align: center;
             box-sizing: border-box;
             pointer-events: none; /* Allows clicks to pass through to elements below */
-            overflow: hidden; /* Prevents content from spilling out if padding is too small */
+            overflow: hidden; /* Prevents content from spilling out */
         }
         
         .wish-text {
             font-weight: bold;
             line-height: 1.2;
-            margin-bottom: 1.5 rem;
+            margin-bottom: 1rem; /* Spacing between lines */
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            white-space: pre-line;
+            white-space: pre-line; /* Respect newlines in text */
             width: 100%;
-            color: white;
+            color: white; /* Default text color */
             max-width: 100%; /* Prevent text from touching edges */
         }
         
@@ -197,6 +202,7 @@
             max-width: 400px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             margin-bottom: 1rem;
+            font-family: inherit; /* Inherit from body */
         }
         
         /* Buttons */
@@ -206,7 +212,7 @@
             font-weight: 600;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Poppins', sans-serif; /* Ensure button font is consistent */
             font-size: 1rem;
             border: none;
             cursor: pointer;
@@ -314,13 +320,13 @@
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .title-text {
-                font-size: 1.5rem;
+                font-size: 1.5rem; /* Smaller title on small screens */
             }
             .wish-text {
-                font-size: 1rem;
+                font-size: 1rem; /* Smaller wish text on small screens */
             }
             .title-text-container, .wish-text-container {
-                padding: 10%;
+                padding: 10%; /* More padding for smaller screens */
             }
         }
     </style>
@@ -340,7 +346,7 @@
             <!-- First Page -->
             <section class="page-section">
                 <!-- Media Box -->
-                <div id="mediaBox" class="media-box" style="width: 90%; max-width: 800px; margin-bottom: 2rem;">
+                <div id="mediaBox" class="media-box">
                     <!-- Media will be inserted here -->
                 </div>
                 
@@ -358,7 +364,7 @@
                     <div class="wish-text-container">
                         <p id="hindiWish" class="wish-text">शुभकामनाएं</p>
                         <p id="englishWish" class="wish-text hidden">Best Wishes</p>
-                        <div id="translateBtn" class="translate-text">Translate</div>
+                        <div id="translateBtn" class="translate-text hidden">Translate to English</div>
                     </div>
                 </div>
                 
@@ -369,7 +375,7 @@
                 <div id="actionButtons" class="hidden flex flex-col items-center gap-4 mt-6" style="z-index: 1;">
                     <button id="shareBtn" class="action-btn btn-gradient hover:shadow-lg hover:scale-105 flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"/>
+                            <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12a2.5 2.5 0 0 1 1.088 2.076z"/>
                         </svg>
                         Share
                     </button>
@@ -386,16 +392,16 @@
                 <div class="bottom-ad-container">
                     <div id="bottomAd" class="bottom-ad">
                         <!-- Ad will be inserted here -->
-<script type="text/javascript">
-	atOptions = {
-		'key' : '8a596a14d2ea184cd9b6372e267b931c',
-		'format' : 'iframe',
-		'height' : 50,
-		'width' : 320,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/8a596a14d2ea184cd9b6372e267b931c/invoke.js"></script>
+                        <script type="text/javascript">
+                            atOptions = {
+                                'key' : '8a596a14d2ea184cd9b6372e267b931c',
+                                'format' : 'iframe',
+                                'height' : 50,
+                                'width' : 320,
+                                'params' : {}
+                            };
+                        </script>
+                        <script type="text/javascript" src="//www.highperformanceformat.com/8a596a14d2ea184cd9b6372e267b931c/invoke.js"></script>
                     </div>
                 </div>
             </section>
@@ -409,16 +415,18 @@
     
     <!-- Fixed Footer Ad -->
     <div class="footer-ad">
-        <div id="footerAd" class="footer-ad-content"><script type="text/javascript">
-	atOptions = {
-		'key' : 'f3980c7d80f3803dbaf4228f02da605b',
-		'format' : 'iframe',
-		'height' : 60,
-		'width' : 468,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/f3980c7d80f3803dbaf4228f02da605b/invoke.js"></script></div>
+        <div id="footerAd" class="footer-ad-content">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : 'f3980c7d80f3803dbaf4228f02da605b',
+                    'format' : 'iframe',
+                    'height' : 60,
+                    'width' : 468,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="//www.highperformanceformat.com/f3980c7d80f3803dbaf4228f02da605b/invoke.js"></script>
+        </div>
     </div>
     
     <!-- Audio Element -->
@@ -436,21 +444,22 @@
         const titleFrameImage = document.getElementById('titleFrameImage');
         const festivalTitle = document.getElementById('festivalTitle');
         const contentFrameImage = document.getElementById('contentFrameImage');
-        const hindiWish = document.getElementById('hindiWish');
-        const englishWish = document.getElementById('englishWish');
-        const userName = document.getElementById('userName');
-        const actionButtons = document.getElementById('actionButtons');
+        const hindiWishElement = document.getElementById('hindiWish'); /* Renamed to avoid conflict */
+        const englishWishElement = document.getElementById('englishWish'); /* Renamed to avoid conflict */
+        const userNameInput = document.getElementById('userName'); /* Renamed to avoid conflict */
+        const actionButtonsContainer = document.getElementById('actionButtons');
         const shareBtn = document.getElementById('shareBtn');
         const copyBtn = document.getElementById('copyBtn');
         const translateBtn = document.getElementById('translateBtn');
         const backgroundAudio = document.getElementById('backgroundAudio');
         const bottomAd = document.getElementById('bottomAd');
         const footerAd = document.getElementById('footerAd');
-        const secondPage = document.getElementById('secondPage');
+        const secondPageSection = document.getElementById('secondPage');
         const animationContainer = document.getElementById('animationContainer');
         
         // Fixed URL for sharing
-        const fixedShareUrl = 'https://heykishannn.github.io/Festival/';
+        const FIXED_SHARE_URL = 'https://heykishannn.github.io/Festival/'; /* Use constant for fixed URL */
+        
         let isTranslated = false;
         let originalHindiWish = 'शुभकामनाएं';
         let originalEnglishWish = 'Best Wishes';
@@ -458,7 +467,7 @@
         let hasSecondPageContent = false;
         let audioPlayAttempted = false;
         
-        // Default settings if Supabase fails
+        // Default settings if Supabase fails or no data found
         const defaultSettings = {
             background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
             title: 'Festival Wishes',
@@ -475,11 +484,10 @@
             customEmojis: '',
             animationQuantity: 'medium',
             customQuantity: '',
-            animationSpeed: 1,
-            customSpeed: '',
-            titleFont: '', titleColor: '', titleSize: '',
-            hindiFont: '', hindiColor: '', hindiSize: '',
-            englishFont: '', englishColor: '', englishSize: '',
+            animationSpeed: '1', /* Store as string to match select values */
+            titleFont: "'Poppins', sans-serif", titleColor: '#4c1d95', titleSize: 'text-3xl',
+            hindiFont: "'Noto Sans Devanagari', sans-serif", hindiColor: '#4c1d95', hindiSize: '1.5rem',
+            englishFont: "'Poppins', sans-serif", englishColor: '#4c1d95', englishSize: '1.5rem',
             buttonStyle: 'gradient', buttonColor: '#4CAF50'
         };
         
@@ -492,7 +500,7 @@
             }
         });
 
-        // Play audio function
+        // Play audio function with interaction requirement
         function playBackgroundAudio() {
             if (backgroundAudio.src && !audioPlayAttempted) {
                 const playPromise = backgroundAudio.play();
@@ -504,6 +512,7 @@
                     })
                     .catch(error => {
                         console.log('Autoplay prevented:', error);
+                        // Request user interaction to play audio
                         const onceOptions = { once: true };
                         document.body.addEventListener('click', () => {
                             backgroundAudio.play().then(() => {
@@ -516,7 +525,7 @@
             }
         }
         
-        // Function to adjust frame heights and text padding
+        // Function to adjust frame heights and text padding based on content and settings
         function adjustFrameHeightsAndTextPadding() {
             // Adjust Title Frame
             if (titleFrameImage.src && titleFrameImage.complete) {
@@ -525,36 +534,58 @@
                     const containerWidth = titleFrameImage.parentElement.offsetWidth;
                     titleFrameImage.parentElement.style.height = `${containerWidth * aspectRatio}px`;
                     
-                    // Adjust title font size responsively
-                    const fontSize = Math.min(4, containerWidth / 15); // Responsive font size
-                    festivalTitle.style.fontSize = `${fontSize}vw`;
+                    // Adjust title font size responsively based on container width
+                    const maxWidthPixels = 800; // Max width of the title frame container
+                    const responsiveScale = Math.min(1, containerWidth / maxWidthPixels); // Scale factor
+                    let baseFontSizePx = 36; // Base font size for the largest container
+                    if (window.innerWidth < 768) baseFontSizePx = 28; // Smaller base for mobile
+                    if (window.innerWidth < 480) baseFontSizePx = 24; 
+                    
+                    // Adjust font size relative to the available width and base size
+                    festivalTitle.style.fontSize = `${baseFontSizePx * responsiveScale}px`;
+                    
                 } else {
-                    titleFrameImage.parentElement.style.display = 'none';
+                    titleFrameImage.parentElement.style.display = 'none'; // Hide if image is broken or zero dimensions
                 }
+            } else {
+                // If image is not yet loaded or src is empty, hide container
+                titleFrameImage.parentElement.style.display = titleFrameImage.src ? 'flex' : 'none';
             }
             
-            // Adjust Content Frame
+            // Adjust Content Frame and Wish Text Container
             if (contentFrameImage.src && contentFrameImage.complete) {
                 if (contentFrameImage.naturalHeight > 0 && contentFrameImage.naturalWidth > 0) {
                     const aspectRatio = contentFrameImage.naturalHeight / contentFrameImage.naturalWidth;
                     const containerWidth = contentFrameImage.parentElement.offsetWidth;
                     contentFrameImage.parentElement.style.height = `${containerWidth * aspectRatio}px`;
                     
-                    // Adjust wish text container padding based on text length for better fit
-                    const textLength = Math.max(
-                        originalHindiWish ? originalHindiWish.length : 0,
-                        originalEnglishWish ? originalEnglishWish.length : 0
-                    );
+                    // Adjust wish text container padding for better fit
+                    const textElement = isTranslated ? englishWishElement : hindiWishElement;
+                    const textContent = textElement.innerHTML.replace(/<br>/g, ''); // Remove <br> for length calculation
+                    const textLength = textContent.length;
                     
-                    // Padding calculation: Less padding for longer text to show more background.
-                    // Min padding is 8%, max is around 25%. Adjust divisor (30) for sensitivity.
-                    const paddingPercent = Math.max(8, 25 - (textLength / 30)); 
+                    // Padding calculation: less padding for longer text to show more background.
+                    // Base padding 25%, decrease by ~0.5% for each character over 50, minimum 8%.
+                    const basePaddingPercent = 25;
+                    const minPaddingPercent = 8;
+                    const sensitivityFactor = 0.5; // Adjust this for sensitivity
+                    const paddingPercent = Math.max(minPaddingPercent, basePaddingPercent - (textLength - 50) * sensitivityFactor); 
+                    
                     document.querySelector('.wish-text-container').style.padding = `${paddingPercent}%`;
 
                 } else {
-                    contentFrameImage.parentElement.style.display = 'none';
+                    contentFrameImage.parentElement.style.display = 'none'; // Hide if image is broken or zero dimensions
                 }
+            } else {
+                // If image is not yet loaded or src is empty, hide container
+                contentFrameImage.parentElement.style.display = contentFrameImage.src ? 'flex' : 'none';
             }
+        }
+
+        // Function to process wish text, replacing newlines with <br> tags
+        function processWishText(text) {
+            if (!text) return '';
+            return text.replace(/\n/g, '<br>');
         }
 
         // Load settings from Supabase with proper error handling
@@ -566,6 +597,7 @@
                     .eq('id', 'festival_settings')
                     .single();
 
+                // Merge fetched settings with defaults
                 const settings = (data && data.value) ? { ...defaultSettings, ...data.value } : defaultSettings;
 
                 // Apply Backgrounds
@@ -587,98 +619,101 @@
                     }    
                 }
 
-                // Set Title
+                // Set Title and Meta Title
                 document.title = settings.title || defaultSettings.title;
                 festivalTitle.textContent = settings.title || defaultSettings.title;
 
-                if (settings.titleFont) festivalTitle.style.fontFamily = settings.titleFont;
-                if (settings.titleColor) festivalTitle.style.color = settings.titleColor;
-                if (settings.titleSize) festivalTitle.style.fontSize = settings.titleSize;
+                // Apply Title Styles
+                festivalTitle.style.fontFamily = settings.titleFont || defaultSettings.titleFont;
+                festivalTitle.style.color = settings.titleColor || defaultSettings.titleColor;
+                festivalTitle.style.fontSize = settings.titleSize || defaultSettings.titleSize; // Direct CSS value
 
                 // Set Wishes
                 originalHindiWish = settings.hindiWish || defaultSettings.hindiWish;
                 originalEnglishWish = settings.englishWish || defaultSettings.englishWish;
-                hindiWish.innerHTML = processWishText(originalHindiWish);
+                
+                hindiWishElement.innerHTML = processWishText(originalHindiWish);
+                hindiWishElement.style.fontFamily = settings.hindiFont || defaultSettings.hindiFont;
+                hindiWishElement.style.color = settings.hindiColor || defaultSettings.hindiColor;
+                hindiWishElement.style.fontSize = settings.hindiSize || defaultSettings.hindiSize; // Direct CSS value
 
                 if (originalEnglishWish && originalEnglishWish.trim() !== '') {
-                    englishWish.innerHTML = processWishText(originalEnglishWish);
+                    englishWishElement.innerHTML = processWishText(originalEnglishWish);
+                    englishWishElement.style.fontFamily = settings.englishFont || defaultSettings.englishFont;
+                    englishWishElement.style.color = settings.englishColor || defaultSettings.englishColor;
+                    englishWishElement.style.fontSize = settings.englishSize || defaultSettings.englishSize; // Direct CSS value
+                    
                     translateBtn.classList.remove('hidden');
                 } else {
-                    englishWish.classList.add('hidden');
+                    englishWishElement.classList.add('hidden');
                     translateBtn.classList.add('hidden');
                 }
-
-                if (settings.hindiFont) hindiWish.style.fontFamily = settings.hindiFont;
-                if (settings.hindiColor) hindiWish.style.color = settings.hindiColor;
-                if (settings.hindiSize) hindiWish.style.fontSize = settings.hindiSize;
-
-                if (settings.englishFont) englishWish.style.fontFamily = settings.englishFont;
-                if (settings.englishColor) englishWish.style.color = settings.englishColor;
-                if (settings.englishSize) englishWish.style.fontSize = settings.englishSize;
 
                 // Set Share Description
                 shareDescription = settings.shareDescription || defaultSettings.shareDescription;
 
                 // Set Media (Video or Image)
-                if (settings.mediaUrl) {
+                if (settings.mediaUrl && settings.mediaUrl.trim() !== '') {
                     mediaBox.innerHTML = ''; // Clear previous content
+                    let mediaElement = null;
                     if (settings.mediaUrl.toLowerCase().endsWith('.mp4') || settings.mediaUrl.toLowerCase().endsWith('.webm')) {
-                        const video = document.createElement('video');
-                        video.src = settings.mediaUrl;
-                        video.autoplay = true;
-                        video.loop = true;
-                        video.muted = true;
-                        video.controls = false;
-                        video.style.width = '100%';
-                        video.style.height = 'auto';
-                        video.style.display = 'block';
-                        mediaBox.appendChild(video);
-                    } else if (settings.mediaUrl.trim() !== '') {
-                        const img = document.createElement('img');
-                        img.src = settings.mediaUrl;
-                        img.style.width = '100%';
-                        img.style.height = 'auto';
-                        img.style.display = 'block';
-                        mediaBox.appendChild(img);
+                        mediaElement = document.createElement('video');
+                        mediaElement.autoplay = true;
+                        mediaElement.loop = true;
+                        mediaElement.muted = true; // Muted for autoplay
+                        mediaElement.controls = false;
+                    } else {
+                        mediaElement = document.createElement('img');
                     }
+                    mediaElement.src = settings.mediaUrl;
+                    mediaElement.style.width = '100%';
+                    mediaElement.style.height = 'auto';
+                    mediaElement.style.display = 'block';
+                    mediaBox.appendChild(mediaElement);
                 }
 
                 // Set Title Frame Image
                 if (settings.frameUrl && settings.frameUrl.trim() !== '') {
                     titleFrameImage.src = settings.frameUrl;
-                    titleFrameImage.onload = adjustFrameHeightsAndTextPadding; // Call adjustment function
-                    titleFrameImage.onerror = function() {
-                        this.parentElement.style.display = 'none';
+                    // Use a listener for image loading to adjust dimensions
+                    titleFrameImage.onload = adjustFrameHeightsAndTextPadding; 
+                    titleFrameImage.onerror = function() { // Handle broken image links
                         console.error('Failed to load title frame image:', this.src);
+                        this.parentElement.style.display = 'none';
                     };
                 } else {
-                    titleFrameImage.style.display = 'none';
+                    titleFrameImage.style.display = 'none'; // Hide if no frame URL
                 }
 
-                // Set Content Frame Image
+                // Set Content Frame Image (Wish Box Background)
                 if (settings.wishBgUrl && settings.wishBgUrl.trim() !== '') {
                     contentFrameImage.src = settings.wishBgUrl;
-                    contentFrameImage.onload = adjustFrameHeightsAndTextPadding; // Call adjustment function
+                    contentFrameImage.onload = adjustFrameHeightsAndTextPadding; 
                     contentFrameImage.onerror = function() {
-                        contentFrameImage.style.display = 'none';
                         console.error('Failed to load content frame image:', this.src);
+                        this.parentElement.style.display = 'none';
                     };
+                    // Apply background size and repeat properties to the container
+                    contentFrameImage.parentElement.style.objectFit = settings.wishBgSize || 'cover';
+                    contentFrameImage.parentElement.style.backgroundRepeat = settings.wishBgRepeat || 'no-repeat';
                 } else {
-                    contentFrameImage.style.display = 'none';
+                    contentFrameImage.style.display = 'none'; // Hide if no background URL
                 }
 
                 // Set Audio
                 if (settings.audioUrl && settings.audioUrl.trim() !== '') {
                     backgroundAudio.src = settings.audioUrl;
-                    playBackgroundAudio();
+                    if (settings.autoplay) {
+                        playBackgroundAudio();
+                    }
                 }
 
                 // Apply Button Styles
                 applyButtonStyles(settings.buttonStyle, settings.buttonColor);
 
-                // Check for Second Page Content
-                if (settings.secondPageContent) {
-                    secondPage.style.display = 'flex';
+                // Check for Second Page Content presence
+                if (settings.secondPageContent) { // Assuming this setting might be added later
+                    secondPageSection.style.display = 'flex';
                     hasSecondPageContent = true;
                 }
 
@@ -687,12 +722,15 @@
                     initAnimations(settings);
                 }
 
-                // Adjust scroll height
+                // Adjust scroll height based on whether there's a second page
                 adjustScrollHeight();
+
+                // Final adjustment after all elements are potentially loaded
+                setTimeout(adjustFrameHeightsAndTextPadding, 100); // Small delay for image loading
 
             } catch (error) {
                 console.error('Error loading settings from Supabase:', error);
-                applyDefaultSettings();
+                applyDefaultSettings(); // Fallback to defaults
             }
         }
         
@@ -700,13 +738,17 @@
         function applyDefaultSettings() {
             document.title = defaultSettings.title;
             festivalTitle.textContent = defaultSettings.title;
-            hindiWish.innerHTML = processWishText(defaultSettings.hindiWish);
-            englishWish.innerHTML = processWishText(defaultSettings.englishWish);
+            
+            hindiWishElement.innerHTML = processWishText(defaultSettings.hindiWish);
+            englishWishElement.innerHTML = processWishText(defaultSettings.englishWish);
+            
             shareDescription = defaultSettings.shareDescription;
             
+            // Hide frame images if no default URL is set or if they are meant to be optional
             titleFrameImage.style.display = 'none';
             contentFrameImage.style.display = 'none';
             
+            // Show translate button only if English wish exists
             if (defaultSettings.englishWish && defaultSettings.englishWish.trim() !== '') {
                 translateBtn.classList.remove('hidden');
             } else {
@@ -719,7 +761,7 @@
 
         // Initialize animations
         function initAnimations(settings) {
-            animationContainer.innerHTML = '';
+            animationContainer.innerHTML = ''; // Clear any existing animations
             
             const emojiSet = getEmojiSet(settings.emojiType, settings.customEmojis);
             const quantity = getAnimationQuantity(settings.animationQuantity, settings.customQuantity);
@@ -735,56 +777,58 @@
         function createEmoji(emojiSet, speed, animationType) {
             const emoji = document.createElement('div');
             emoji.textContent = emojiSet[Math.floor(Math.random() * emojiSet.length)];
-            emoji.style.fontSize = `${Math.random() * 20 + 16}px`;
+            emoji.style.fontSize = `${Math.random() * 20 + 16}px`; // Random size for emojis
         
-                switch(animationType) {
-              case 'fall':
-                  emoji.className = 'falling-emoji';
-                  emoji.style.top = '-50px';
-                  emoji.style.left = `${Math.random() * 100}%`; // random horizontal position
-                  emoji.style.fontSize = `${1 + Math.random() * 2}rem`; // optional: random size
-                  emoji.style.animationDuration = `${(2 + Math.random() * 3) / speed}s`; // random speed
-                  break;              
+            switch(animationType) {
+                case 'fall':
+                    emoji.className = 'falling-emoji';
+                    emoji.style.top = '-50px'; // Start above viewport
+                    emoji.style.left = `${Math.random() * 100}%`; // Random horizontal position
+                    emoji.style.fontSize = `${1 + Math.random() * 2}rem`; // Optional: random size for falling emojis
+                    emoji.style.animationDuration = `${(2 + Math.random() * 3) / speed}s`; // Random duration, adjusted by speed
+                    break;              
                 case 'swirl':
                     emoji.className = 'swirling-emoji';
-                    emoji.style.animationDuration = `${8 / speed}s`;
+                    emoji.style.animationDuration = `${8 / speed}s`; // Adjust duration based on speed
                     emoji.style.left = `${Math.random() * 100}%`;
                     emoji.style.top = `${Math.random() * 100}%`;
                     break;
                 case 'fireworks':
                     emoji.className = 'fireworks-emoji';
-                    emoji.style.setProperty('--tx', `${Math.random() * 100 - 50}px`);
-                    emoji.style.setProperty('--ty', `${Math.random() * 100 - 50}px`);
-                    emoji.style.left = '50%';
+                    emoji.style.setProperty('--tx', `${Math.random() * 200 - 100}px`); // Random horizontal offset
+                    emoji.style.setProperty('--ty', `${Math.random() * 200 - 100}px`); // Random vertical offset
+                    emoji.style.left = '50%'; // Center point
                     emoji.style.top = '50%';
-                    emoji.style.animationDuration = `${1 / speed}s`;
+                    emoji.style.animationDuration = `${1 / speed}s`; // Fast animation, speed factor
                     break;
                 case 'confetti':
-                    emoji.className = 'fireworks-emoji';
+                    emoji.className = 'fireworks-emoji'; // Re-using fireworks style for confetti
                     emoji.style.setProperty('--tx', `${Math.random() * 200 - 100}px`);
                     emoji.style.setProperty('--ty', `${Math.random() * 200 - 100}px`);
                     emoji.style.left = '50%';
                     emoji.style.top = '50%';
-                    emoji.style.animationDuration = `${1.5 / speed}s`;
+                    emoji.style.animationDuration = `${1.5 / speed}s`; // Slightly longer than fireworks
                     break;
-                default: // 'float' animation
+                default: // 'float' animation (default)
                     emoji.className = 'floating-emoji';
-                    emoji.style.animationDuration = `${3 / speed}s`;
+                    emoji.style.animationDuration = `${3 / speed}s`; // Adjust duration based on speed
                     emoji.style.left = `${Math.random() * 100}%`;
                     emoji.style.top = `${Math.random() * 100}%`;
             }
         
             animationContainer.appendChild(emoji);
             
+            // For animations that should repeat, we don't need to add an event listener.
+            // For 'fall', 'fireworks', 'confetti', we want to remove the emoji and create a new one.
             if (animationType === 'fall' || animationType === 'fireworks' || animationType === 'confetti') {
                 emoji.addEventListener('animationend', () => {
                     emoji.remove();
-                    createEmoji(emojiSet, speed, animationType);
+                    createEmoji(emojiSet, speed, animationType); // Create a replacement
                 });
             }
         }
         
-        // Helper function to get a set of emojis
+        // Helper function to get a set of emojis based on type or custom input
         function getEmojiSet(type, customEmojis) {
             const sets = {
                 flowers: ['🌸', '🌺', '🌻', '🌼', '🌷', '💐'],
@@ -793,16 +837,17 @@
                 festive: ['🎉', '🎊', '🪅', '🎁', '🧧'],
                 hearts: ['❤️', '🧡', '💛', '💚', '💙', '💜'],
                 stars: ['⭐', '🌟', '✨', '💫'],
-                mixed: ['🎉', '✨', '❤️', '🌸', '🌟', '🎶']
+                mixed: ['🎉', '✨', '❤️', '🌸', '🌟', '🎶', '💖', '💫']
             };
             
             if (type === 'custom' && customEmojis) {
-                return customEmojis.split(',').map(e => e.trim()).filter(e => e.length > 0);
+                const emojis = customEmojis.split(',').map(e => e.trim()).filter(e => e.length > 0);
+                if (emojis.length > 0) return emojis;
             }
-            return sets[type] || sets.mixed;
+            return sets[type] || sets.mixed; // Fallback to mixed if type invalid or custom emojis are empty
         }
         
-        // Helper function to get animation quantity
+        // Helper function to get animation quantity (number of emojis)
         function getAnimationQuantity(type, customQuantity) {
             const quantities = {
                 low: 5,
@@ -813,30 +858,33 @@
             
             if (type === 'custom' && customQuantity) {
                 const qty = parseInt(customQuantity);
-                return !isNaN(qty) && qty > 0 ? Math.min(100, qty) : 10; 
+                // Ensure quantity is a positive number, with a reasonable max
+                if (!isNaN(qty) && qty > 0) return Math.min(100, qty); 
             }
-            return quantities[type] || 10;
+            return quantities[type] || 10; // Default to medium
         }
         
-        // Helper function to get animation speed
+        // Helper function to get animation speed multiplier
         function getAnimationSpeed(type, customSpeed) {
             if (type === 'custom' && customSpeed) {
                 const speed = parseFloat(customSpeed);
-                return !isNaN(speed) && speed > 0 ? speed : 1; 
+                // Ensure speed is a valid positive number
+                if (!isNaN(speed) && speed > 0) return speed; 
             }
-            return parseFloat(type) || 1;
+            return parseFloat(type) || 1; // Default to 1x speed
         }
         
-        // Apply button styles
+        // Apply button styles based on settings
         function applyButtonStyles(style, color) {
             const buttons = [shareBtn, copyBtn];
             
+            // Ensure default values if not provided
             if (!style) style = 'gradient';
             if (!color) color = '#4CAF50';
 
             if (style === 'gradient') {
                 const color1 = color;
-                const color2 = adjustColor(color, -20);
+                const color2 = adjustColor(color, -20); // Make a slightly darker shade for the second color
                 
                 buttons.forEach(btn => {
                     btn.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
@@ -858,7 +906,7 @@
             }
         }
         
-        // Helper function to adjust color brightness/darkness
+       // Helper function to adjust color brightness/darkness for gradients
         function adjustColor(color, amount) {
             let usePound = false;
             if (color[0] === "#") {
@@ -866,147 +914,147 @@
                 usePound = true;
             }
 
+            // Parse hex to RGB
             let r = parseInt(color.substring(0, 2), 16);
             let g = parseInt(color.substring(2, 4), 16);
             let b = parseInt(color.substring(4, 6), 16);
 
+            // Adjust RGB values, clamping between 0 and 255
             r = Math.min(255, Math.max(0, r + amount));
             g = Math.min(255, Math.max(0, g + amount));
             b = Math.min(255, Math.max(0, b + amount));
 
+            // Convert back to hex
             const newColor = `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
             return usePound ? newColor : newColor.slice(1);
         }
         
-        // Adjust scroll behavior for the body
+        // Adjust scroll behavior for the body to manage single/multiple pages
         function adjustScrollHeight() {
+            // If there's no second page content, ensure body takes full viewport height.
+            // If there is, let it naturally grow with content.
             if (!hasSecondPageContent) {
                  document.body.style.minHeight = '100vh';
                  document.documentElement.style.height = 'auto';
-                 document.body.style.overflowY = 'auto';
+                 document.body.style.overflowY = 'auto'; // Allow scrolling if content exceeds viewport
             } else {
-                document.body.style.minHeight = '100vh';
+                document.body.style.minHeight = '100vh'; // Still ensure minimum height
                 document.body.style.height = 'auto';
                 document.body.style.overflowY = 'auto';
             }
         }
         
-        // Show name input and buttons when name is entered
-        userName.addEventListener('input', () => {
-            if (userName.value.trim()) {
-                actionButtons.classList.remove('hidden');
+        // Show name input and action buttons when a name is entered
+        userNameInput.addEventListener('input', () => {
+            if (userNameInput.value.trim()) {
+                actionButtonsContainer.classList.remove('hidden');
             } else {
-                actionButtons.classList.add('hidden');
+                actionButtonsContainer.classList.add('hidden');
             }
         });
         
         // Translate button click handler
         translateBtn.addEventListener('click', () => {
+            // Check if there's an English wish to show
             if (!originalEnglishWish || originalEnglishWish.trim() === '') {
-                englishWish.textContent = "";
+                englishWishElement.textContent = ""; // Clear if empty
                 translateBtn.classList.add('hidden');
                 return;
             }
             
-            if (isTranslated) {
-                hindiWish.classList.remove('hidden');
-                englishWish.classList.add('hidden');
+            if (isTranslated) { // Currently showing English, translate back to Hindi
+                hindiWishElement.classList.remove('hidden');
+                englishWishElement.classList.add('hidden');
                 translateBtn.textContent = 'Translate to English';
-            } else {
-                hindiWish.classList.add('hidden');
-                englishWish.classList.remove('hidden');
+            } else { // Currently showing Hindi, translate to English
+                hindiWishElement.classList.add('hidden');
+                englishWishElement.classList.remove('hidden');
                 translateBtn.textContent = 'Show in Hindi';
             }
-            isTranslated = !isTranslated;
+            isTranslated = !isTranslated; // Toggle the state
         });
         
         // Share button click handler
         shareBtn.addEventListener('click', async () => {
-            const name = userName.value.trim() || "Someone";
-            let shareMessage = `${name} ${shareDescription}\n${fixedShareUrl}`;
+            const name = userNameInput.value.trim() || "Someone";
+            const shareMessage = `${name} ${shareDescription}\n${FIXED_SHARE_URL}`;
 
             try {
-                if (navigator.share) {
+                if (navigator.share) { // Web Share API for mobile
                     await navigator.share({
                         title: document.title,
                         text: shareMessage,
-                        url: fixedShareUrl
+                        url: FIXED_SHARE_URL
                     });
-                } else if (navigator.clipboard) {
+                } else if (navigator.clipboard) { // Clipboard API for desktop (or fallback)
                     await navigator.clipboard.writeText(shareMessage);
-                    alert('Share text copied to clipboard!');
+                    alert('Share message copied to clipboard!');
+                    // Optionally, attempt to open WhatsApp on mobile
                     if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                         window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
                     }
-                } else {
+                } else { // Fallback for older browsers/environments
+                    // Try opening WhatsApp on mobile
                     if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                         window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
                     } else {
-                        const textArea = document.createElement('textarea');
-                        textArea.value = shareMessage;
-                        document.body.appendChild(textArea);
-                        textArea.select();
-                        try {
-                            document.execCommand('copy');
-                            alert('Share text copied to clipboard!');
-                        } catch (e) {
-                            console.error('execCommand copy failed:', e);
-                            alert('Could not copy text automatically. Please copy manually: ' + shareMessage);
-                        }
-                        document.body.removeChild(textArea);
+                        // For desktop, copy to clipboard manually if clipboard API fails
+                        fallbackCopyText(shareMessage);
                     }
                 }
             } catch (err) {
                 console.error('Error during sharing:', err);
-                alert('Could not share the wish. Please try copying the link manually: ' + fixedShareUrl);
+                alert('Could not share the wish. Please try copying the link manually: ' + FIXED_SHARE_URL);
             }
         });
         
         // Copy button click handler
         copyBtn.addEventListener('click', () => {
-            const name = userName.value.trim() || "Someone";
-            const shareMessage = `${name} ${shareDescription}\n${fixedShareUrl}`;
+            const name = userNameInput.value.trim() || "Someone";
+            const shareMessage = `${name} ${shareDescription}\n${FIXED_SHARE_URL}`;
             
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(shareMessage).then(() => {
                     alert('Wish copied to clipboard!');
                 }).catch(err => {
                     console.error('Failed to copy text using Clipboard API:', err);
-                    fallbackCopyText(shareMessage);
+                    fallbackCopyText(shareMessage); // Use fallback if Clipboard API fails
                 });
             } else {
                 fallbackCopyText(shareMessage);
             }
         });
         
-        // Fallback copy method using execCommand
+        // Fallback copy method using execCommand (for older browsers)
         function fallbackCopyText(text) {
             const textArea = document.createElement('textarea');
             textArea.value = text;
+            // Make the textarea invisible
             textArea.style.position = 'absolute';
             textArea.style.left = '-9999px';
             document.body.appendChild(textArea);
             textArea.select();
             
             try {
-                document.execCommand('copy');
+                document.execCommand('copy'); // Execute the copy command
                 alert('Wish copied to clipboard!');
             } catch (err) {
                 console.error('Fallback copy failed:', err);
                 alert('Could not copy text. Please select and copy manually.');
             }
             
-            document.body.removeChild(textArea);
-        }
-        
-        // Helper function to process wish text, replacing newlines with <br> tags
-        function processWishText(text) {
-            if (!text) return '';
-            return text.replace(/\n/g, '<br>');
+            document.body.removeChild(textArea); // Remove the temporary textarea
         }
         
         // Load settings and initialize the page when the DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', loadSettings);
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+            // Add a resize listener to re-adjust frames/text in case of orientation changes or window resizing
+            window.addEventListener('resize', () => {
+                adjustFrameHeightsAndTextPadding();
+                adjustScrollHeight();
+            });
+        });
     </script>
 </body>
 </html>
