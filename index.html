@@ -36,7 +36,7 @@
         .background-container {
             position: relative; /* Establishes a positioning context for backgrounds */
             width: 100%;
-            min-height: 100vh; /* Ensures it covers at least the full viewport height */
+            min-height: 100vh; /* Ensures it covers at least the viewport height */
             overflow: hidden; /* Prevents background elements from overflowing */
         }
 
@@ -98,7 +98,7 @@
             align-items: center; /* Centers content horizontally */
             justify-content: center; /* Centers content vertically */
             padding: 2rem 1rem; /* Adds padding around the content */
-            box-sizing: border-box; /* Ensures padding is included in the element's total width and height */
+            box-sizing: border-box; /* Ensures padding is included in the element's total dimensions */
         }
         
         /* Title Frame Container - Holds the frame image and the title text */
@@ -153,7 +153,7 @@
             justify-content: center;
             align-items: center;
             z-index: 1; /* Above background layers */
-            aspect-ratio: 16 / 9; /* Default aspect ratio, adjusted by image's actual aspect ratio */
+            /* Aspect ratio is set dynamically by JS based on image */
         }
         
         .content-frame-image {
@@ -183,7 +183,7 @@
             font-weight: bold;
             line-height: 1.2; /* Line height for text */
             margin-bottom: 1rem; /* Space between wish lines */
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Text shadow for readability */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Text shadow */
             white-space: pre-line; /* Respects newlines entered in the admin panel */
             width: 100%;
             color: white; /* Default text color */
@@ -219,7 +219,7 @@
             font-size: 1rem;
             border: none; /* Remove default border */
             cursor: pointer; /* Indicate it's clickable */
-            z-index: 1; /* Ensure buttons are above background layers */
+            z-index: 1; /* Ensure buttons are above backgrounds */
         }
         
         /* Example gradient style for buttons */
@@ -235,9 +235,9 @@
             cursor: pointer;
             font-size: 0.9rem;
             margin-top: 1rem;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Text shadow for readability */
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Text shadow */
             z-index: 1;
-            pointer-events: auto; /* Ensure the link is clickable */
+            pointer-events: auto; /* Make it clickable */
         }
         
         /* Bottom Ad Container */
@@ -511,12 +511,12 @@
 
         // Function to play background audio, respecting browser autoplay policies
         function playBackgroundAudio() {
-            if (backgroundAudio.src && !audioPlayAttempted) { // Check if audio source exists and play hasn't been attempted
+            if (backgroundAudio.src && !audioPlayAttempted) { // Only if audio source exists and play hasn't been attempted
                 const playPromise = backgroundAudio.play(); // Attempt to play audio
                 
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        audioPlayAttempted = true; // Mark play attempt
+                        audioPlayAttempted = true; // Mark play as attempted
                         console.log('Background audio playing.');
                     })
                     .catch(error => {
@@ -525,7 +525,7 @@
                         const onceOptions = { once: true }; // Listen only once
                         document.body.addEventListener('click', () => {
                             backgroundAudio.play().then(() => {
-                                audioPlayAttempted = true; // Mark play attempt after interaction
+                                audioPlayAttempted = true; // Mark play as attempted after interaction
                                 console.log('Background audio playing after user interaction.');
                             }).catch(e => console.log('Autoplay still prevented:', e)); // Handle cases where even interaction fails
                         }, onceOptions);
@@ -534,9 +534,9 @@
             }
         }
         
-        // Function to dynamically adjust frame heights and text padding
+        // Function to dynamically adjust frame heights and text padding based on loaded content
         function adjustFrameHeightsAndTextPadding() {
-            // Adjust Title Frame height and title font size based on image dimensions and screen size
+            // Adjust Title Frame height and title font size
             if (titleFrameImage.src && titleFrameImage.complete) { // Ensure image is loaded
                 if (titleFrameImage.naturalHeight > 0 && titleFrameImage.naturalWidth > 0) {
                     const aspectRatio = titleFrameImage.naturalHeight / titleFrameImage.naturalWidth;
@@ -555,7 +555,7 @@
                 } else { // Handle broken image links or zero dimensions
                     titleFrameImage.parentElement.style.display = 'none'; 
                 }
-            } else { // If image is not loaded yet or no src is set, hide the container
+            } else { // Hide if image is not loaded yet or no src is set
                 titleFrameImage.parentElement.style.display = titleFrameImage.src ? 'flex' : 'none';
             }
             
@@ -566,7 +566,7 @@
                     const containerWidth = contentFrameImage.parentElement.offsetWidth;
                     contentFrameImage.parentElement.style.height = `${containerWidth * aspectRatio}px`; // Set height based on aspect ratio
                     
-                    // Dynamically adjust padding of wish text container based on text length
+                    // Dynamically adjust padding of wish text container based on text length for better fitting
                     const textElement = isTranslated ? englishWishElement : hindiWishElement; // Get the currently displayed text element
                     const textContent = textElement.innerHTML.replace(/<br>/g, ''); // Remove <br> tags for accurate length calculation
                     const textLength = textContent.length;
@@ -576,7 +576,7 @@
                     const minPaddingPercent = 8;  // Min padding percentage
                     const sensitivityFactor = 0.5; // Adjust how much padding decreases per character
                     
-                    const paddingPercent = Math.max(minPaddingPercent, basePaddingPercent - (textLength - 50) * sensitivityFactor); // Formula ensures padding is within limits
+                    const paddingPercent = Math.max(minPaddingPercent, basePaddingPercent - (textLength - 50) * sensitivityFactor); // Formula ensures padding stays within limits
                     
                     document.querySelector('.wish-text-container').style.padding = `${paddingPercent}%`; // Apply calculated padding
 
@@ -603,7 +603,7 @@
                     .eq('id', 'festival_settings')
                     .single(); // Fetch the single settings record
 
-                // Merge fetched settings with default settings to ensure all properties exist
+                // Merge fetched settings with default settings to ensure all properties are present
                 const settings = (data && data.value) ? { ...defaultSettings, ...data.value } : defaultSettings;
 
                 // Apply Backgrounds
@@ -619,7 +619,7 @@
                 if (settings.secondBackground) {
                     if (settings.secondBackground.startsWith('http') || settings.secondBackground.startsWith('data:')) {
                         secondBackground.style.backgroundImage = `url('${settings.secondBackground}')`;
-                        secondBackground.style.display = 'block'; // Make the second background visible
+                        secondBackground.style.display = 'block'; // Make the second background element visible
                     } else {
                         secondBackground.style.background = settings.secondBackground;
                         secondBackground.style.display = 'block';
@@ -633,7 +633,8 @@
                 // Apply Title Styles (Font, Color, Size)
                 festivalTitle.style.fontFamily = settings.titleFont || defaultSettings.titleFont;
                 festivalTitle.style.color = settings.titleColor || defaultSettings.titleColor;
-                festivalTitle.style.fontSize = settings.titleSize || defaultSettings.titleSize; // Apply size directly
+                // Apply font size directly as it comes in CSS units (e.g., '2rem', 'text-4xl')
+                festivalTitle.style.fontSize = settings.titleSize || defaultSettings.titleSize; 
 
                 // Set Wishes and their styles
                 originalHindiWish = settings.hindiWish || defaultSettings.hindiWish;
@@ -642,18 +643,18 @@
                 hindiWishElement.innerHTML = processWishText(originalHindiWish); // Set Hindi wish with <br> tags
                 hindiWishElement.style.fontFamily = settings.hindiFont || defaultSettings.hindiFont;
                 hindiWishElement.style.color = settings.hindiColor || defaultSettings.hindiColor;
-                hindiWishElement.style.fontSize = settings.hindiSize || defaultSettings.hindiSize; // Apply size directly
+                hindiWishElement.style.fontSize = settings.hindiSize || defaultSettings.hindiSize; // Apply font size directly
 
                 // Handle English wish and translation button visibility
                 if (originalEnglishWish && originalEnglishWish.trim() !== '') {
                     englishWishElement.innerHTML = processWishText(originalEnglishWish);
                     englishWishElement.style.fontFamily = settings.englishFont || defaultSettings.englishFont;
                     englishWishElement.style.color = settings.englishColor || defaultSettings.englishColor;
-                    englishWishElement.style.fontSize = settings.englishSize || defaultSettings.englishSize;
+                    englishWishElement.style.fontSize = settings.englishSize || defaultSettings.englishSize; // Apply font size directly
                     
-                    translateBtn.classList.remove('hidden'); // Show translate button
+                    translateBtn.classList.remove('hidden'); // Show the translate button
                 } else {
-                    englishWishElement.classList.add('hidden'); // Hide if no English wish
+                    englishWishElement.classList.add('hidden'); // Hide if no English wish is available
                     translateBtn.classList.add('hidden');
                 }
 
@@ -681,10 +682,10 @@
                     mediaBox.appendChild(mediaElement);
                 }
 
-                // Set Title Frame Image (overlaid on media)
+                // Set Title Frame Image
                 if (settings.frameUrl && settings.frameUrl.trim() !== '') {
                     titleFrameImage.src = settings.frameUrl;
-                    // Use onload to ensure dimensions are ready before adjusting layout
+                    // Use onload event to ensure dimensions are ready before adjusting layout
                     titleFrameImage.onload = adjustFrameHeightsAndTextPadding; 
                     titleFrameImage.onerror = function() { // Handle cases where image loading fails
                         console.error('Failed to load title frame image:', this.src);
@@ -703,8 +704,8 @@
                         this.parentElement.style.display = 'none'; // Hide frame container if image fails
                     };
                     // Apply background size and repeat properties to the parent container of the image
-                    contentFrameImage.parentElement.style.objectFit = settings.wishBgSize || 'cover';
-                    contentFrameImage.parentElement.style.backgroundRepeat = settings.wishBgRepeat || 'no-repeat';
+                    contentFrameImage.parentElement.style.objectFit = settings.wishBgSize || 'cover'; // Default to 'cover' if not specified
+                    contentFrameImage.parentElement.style.backgroundRepeat = settings.wishBgRepeat || 'no-repeat'; // Default to 'no-repeat'
                 } else {
                     contentFrameImage.style.display = 'none'; // Hide frame if no URL is provided
                 }
@@ -732,7 +733,7 @@
                     initAnimations(settings);
                 }
 
-                // Adjust scroll height and overflow based on the presence of the second page
+                // Adjust scroll height and overflow properties based on the presence of the second page
                 adjustScrollHeight();
 
                 // Perform a final adjustment after all elements might have loaded to ensure correct layout
@@ -830,11 +831,11 @@
         
             animationContainer.appendChild(emoji); // Add the created emoji to the animation container
             
-            // For animations that should only play once per element (fall, fireworks, confetti),
+            // For animations that should disappear after playing once (fall, fireworks, confetti),
             // add an event listener to remove the element and create a new one when the animation ends.
             if (animationType === 'fall' || animationType === 'fireworks' || animationType === 'confetti') {
                 emoji.addEventListener('animationend', () => {
-                    emoji.remove(); // Remove the emoji element once its animation is finished
+                    emoji.remove(); // Remove the emoji element after its animation is finished
                     createEmoji(emojiSet, speed, animationType); // Create a replacement emoji to maintain quantity
                 });
             }
@@ -896,7 +897,7 @@
 
             if (style === 'gradient') {
                 const color1 = color;
-                const color2 = adjustColor(color, -20); // Create a slightly darker shade for the second gradient color
+                const color2 = adjustColor(color, -20); // Create a slightly darker shade for the gradient
                 
                 buttons.forEach(btn => {
                     btn.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
@@ -913,7 +914,7 @@
                 buttons.forEach(btn => {
                     btn.style.background = 'transparent'; // Make background transparent
                     btn.style.border = `2px solid ${color}`; // Set border color from settings
-                    btn.style.color = color; // Set text color to match the border
+                    btn.style.color = color; // Set text color to match the border color
                 });
             }
         }
@@ -1003,7 +1004,7 @@
                     if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                         window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
                     }
-                } else { // Fallback for older browsers or environments lacking Clipboard API
+                } else { // Fallback for older browsers or environments without Clipboard API
                     // Attempt to open WhatsApp on mobile
                     if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                         window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
