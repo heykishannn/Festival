@@ -1,3 +1,5 @@
+--- START OF FILE index.html ---
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -229,19 +231,19 @@
             color: white;
         }
         
-        /* Translate Text Link Style */
-        .translate-text {
+        /* Translate Text Link Style - Adjusted to be below username */
+        .translate-text-below-input {
             color: #1F51FF; /* Blue color for the link */
             text-decoration: underline; /* Underline to indicate it's a link */
             cursor: pointer;
             font-size: 0.9rem;
-            /* Positioned absolutely relative to the nearest positioned ancestor */
-            position: absolute;
-            right: 1rem; /* Align to the right side */
-            top: 0.5rem; /* Position from the top */
+            margin-top: 0.5rem; /* Space above the button */
             text-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Text shadow */
             z-index: 10; /* Higher z-index to be on top of username field if needed */
             pointer-events: auto; /* Make it clickable */
+            width: 90%; /* Match input width for alignment */
+            max-width: 400px; /* Match input max-width */
+            text-align: right; /* Align text to the right */
         }
         
         /* Bottom Ad Container */
@@ -339,9 +341,9 @@
                 padding: 10%; /* Increase padding on smaller screens for better text fit */
             }
             /* Adjust translate button position for smaller screens */
-            .translate-text {
-                top: 0.2rem;
-                right: 0.2rem;
+            .translate-text-below-input {
+                right: 1rem; /* Align to the right side */
+                top: 0.5rem; /* Position from the top */
                 font-size: 0.8rem;
             }
         }
@@ -381,12 +383,17 @@
     <div class="wish-text-container">
         <p id="hindiWish" class="wish-text">शुभकामनाएं</p>
         <p id="englishWish" class="wish-text hidden">Best Wishes</p>
-        <div id="translateBtn" class="translate-text hidden">Translate to English</div>
+        <!-- Translate button is now placed below the username field -->
     </div>
                 </div>
                 
                 <!-- Username Input Field -->
                 <input type="text" id="userName" placeholder="Enter your name" class="username-field">
+                
+                <!-- Translate button is moved here, below the username field -->
+                <div id="translateBtnContainer" class="flex justify-center w-full">
+                    <div id="translateBtn" class="translate-text-below-input hidden">Translate to English</div>
+                </div>
                 
                 <!-- Action Buttons (Share/Copy) - Initially hidden -->
                 <div id="actionButtons" class="hidden flex flex-col items-center gap-4 mt-6" style="z-index: 1;">
@@ -470,6 +477,7 @@
         const shareBtn = document.getElementById('shareBtn');
         const copyBtn = document.getElementById('copyBtn');
         const translateBtn = document.getElementById('translateBtn'); // Translate button
+        const translateBtnContainer = document.getElementById('translateBtnContainer'); // Container for the translate button
         const backgroundAudio = document.getElementById('backgroundAudio');
         const bottomAd = document.getElementById('bottomAd');
         const footerAd = document.getElementById('footerAd');
@@ -1082,3 +1090,4 @@
     </script>
 </body>
 </html>
+--- END OF FILE ---
