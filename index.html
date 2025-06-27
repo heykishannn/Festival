@@ -3,465 +3,451 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Festival Admin Panel</title>
+    <title>Festival Wishes</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Poppins and Noto Sans Devanagari -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        .shine {
-            background: linear-gradient(90deg, #fff7ae 25%, #ffe066 50%, #fff7ae 75%);
-            background-size: 200% 100%;
-            animation: shine 2s linear infinite;
+        /* Basic Reset and Base Styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+            scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+            font-family: 'Poppins', sans-serif; /* Default font for the entire page */
         }
-        @keyframes shine {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        .festive-border {
-            border: 4px solid transparent;
-            border-image: linear-gradient(90deg, #eab308, #ea580c, #a21caf, #f59e42, #eab308) 1;
-        }
-        .festive-shadow {
-            box-shadow: 0 8px 32px 0 rgba(234, 88, 12, 0.25), 0 1.5px 4px 0 #a21caf33;
-        }
-        .festive-bg {
-            background: linear-gradient(135deg, #fff7ae 0%, #fef3c7 60%, #fde68a 100%);
-        }
-        .festive-accent {
-            background: repeating-linear-gradient(
-                135deg,
-                #f59e42 0px,
-                #f59e42 8px,
-                #eab308 8px,
-                #eab308 16px
-            );
-        }
-        .festive-underline {
-            text-decoration: underline wavy #ea580c 3px;
-        }
-        .festive-btn {
-            background: linear-gradient(90deg, #eab308 0%, #ea580c 100%);
-            color: #fff;
-        }
-        .festive-btn:hover {
-            background: linear-gradient(90deg, #ea580c 0%, #eab308 100%);
-            color: #fff;
-        }
-        .toast {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            color: white;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: slideIn 0.3s forwards, fadeOut 3s 1s forwards;
-            z-index: 1000;
-        }
-        @keyframes slideIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeOut {
-            to { opacity: 0; transform: translateY(20px); }
-        }
-        .custom-editor {
-            display: none;
-            position: fixed;
+        
+        /* Animation Container - Overlays everything for displaying animations */
+        .animation-container {
+            position: fixed; /* Stays in place */
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            pointer-events: none; /* Allows clicks to pass through to elements behind */
+            z-index: 1; /* Positioned below content but above backgrounds */
+            overflow: hidden; /* Hides any animations that go outside the viewport */
         }
-        .editor-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            width: 90%;
-            max-width: 600px;
-        }
-        .custom-option {
-            display: none; /* Hidden by default */
-            margin-top: 0.5rem;
-        }
-        /* Show custom option input when its parent select is set to 'custom' */
-        select[id$="Font"]:has(option[value="custom"]:checked) ~ input[id$="Font"],
-        select[id$="ColorType"]:has(option[value="custom"]:checked) ~ input[id$="Color"],
-        select[id$="Size"]:has(option[value="custom"]:checked) ~ input[id$="Size"],
-        select[id$="Speed"]:has(option[value="custom"]:checked) ~ input[id$="Speed"],
-        select[id$="Quantity"]:has(option[value="custom"]:checked) ~ input[id$="Quantity"],
-        select[id$="EmojiType"]:has(option[value="custom"]:checked) ~ input[id$="EmojiType"],
-        select[id$="ButtonColorType"]:has(option[value="custom"]:checked) ~ input[id$="ButtonColor"]
-        {
-            display: block;
+        
+        /* Background Container - Holds the main and second background layers */
+        .background-container {
+            position: relative; /* Establishes a positioning context for backgrounds */
+            width: 100%;
+            min-height: 100vh; /* Ensures it covers at least the viewport height */
+            overflow: hidden; /* Prevents background elements from overflowing */
         }
 
-        .preview-container img, .preview-container video {
-            max-width: 100%;
-            max-height: 200px;
-            display: block;
-            margin: 0 auto;
+        /* Media Box - Displays the main uploaded image or video */
+        .media-box {
+            width: 90%; /* Responsive width */
+            max-width: 800px; /* Consistent maximum width */
+            margin: 0 auto 3rem; /* Center horizontally with bottom margin */
+            border-radius: 16px; /* Rounded corners for the media box */
+            overflow: hidden; /* Clips content within the border radius */
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Adds depth with a shadow */
+            z-index: 2; /* Ensures the media box is above background layers */
+	    }
+        
+        /* Main Background Layer */
+        .main-bg {
+            position: absolute; /* Positioned relative to .background-container */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh; /* Initially covers the entire viewport */
+            z-index: -1; /* Positioned behind all content */
+            background-size: cover; /* Scales the background to cover the entire container */
+            background-position: center; /* Centers the background image */
+            background-repeat: no-repeat; /* Prevents the background image from repeating */
+        }
+        
+        /* Second Background Layer - Appears below the first page */
+        .second-bg {
+            position: absolute;
+            top: 100vh; /* Starts directly after the first page section */
+            left: 0;
+            width: 100%;
+            height: 300vh; /* Ample height to allow scrolling if needed */
+            z-index: -1; /* Positioned behind all content */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: none; /* Hidden by default; shown only if a second background is set */
+        }
+        
+        /* Content Container - Holds all the visual elements like frames and text */
+        .content-container {
+            position: relative; /* Establishes a positioning context for absolute elements inside */
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            z-index: 2; /* Ensures content is above background layers */
+            flex-direction: column; /* Stacks child elements (page sections) vertically */
+        }
+        
+        /* Page Section - Represents a distinct "page" of content */
+        .page-section {
+            position: relative; /* Context for absolute positioning of frames and text */
+            width: 100%;
+            min-height: 100vh; /* Each section aims to fill the viewport height */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centers content horizontally */
+            justify-content: center; /* Centers content vertically */
+            padding: 2rem 1rem; /* Adds padding around the content */
+            box-sizing: border-box; /* Ensures padding is included in the element's total dimensions */
+        }
+        
+        /* Title Frame Container - Holds the title frame image and the title text */
+        .title-frame-container {
+            position: relative; /* For absolute positioning of the text */
+            width: 90%; /* Responsive width */
+            max-width: 800px; /* Consistent maximum width */
+            margin-bottom: 2rem; /* Space below the title block */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1; /* Ensures it's above background layers */
+        }
+        
+        .title-frame-image {
+            width: 100%; /* Make the image fill its container */
+            display: block; /* Removes extra space below the image */
+            height: auto; /* Maintain the image's aspect ratio */
+            object-fit: contain; /* Ensure the image fits without stretching or cropping */
+        }
+        
+        .title-text-container {
+            position: absolute; /* Positions text directly over the frame image */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-sizing: border-box;
+            pointer-events: none; /* Allows clicks to pass through to elements behind */
+        }
+        
+        .title-text {
+            font-size: 2rem; /* Default font size, adjusted by JS based on admin settings */
+            font-weight: bold;
+            color: white; /* Default text color */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Text shadow for better readability */
+            width: 100%;
+            max-width: 100%; /* Prevent text from touching container edges */
+            line-height: 1.2; /* Sets line height for better text flow */
+        }
+        
+        /* Content Frame Container - Holds the wish box background image */
+        .content-frame-container {
+            position: relative; /* Context for absolute positioning of text */
+            width: 90%; /* Responsive width */
+            max-width: 800px; /* Consistent maximum width */
+            margin-bottom: 2rem; /* Space below the content block */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1; /* Above background layers */
+            /* Aspect ratio will be set dynamically by JS based on image dimensions */
+        }
+        
+        .content-frame-image {
+            width: 100%;
+            height: 100%; /* Make the image fill its parent container */
+            object-fit: contain; /* Scales the image to fit while maintaining aspect ratio */
+            display: block; /* Removes extra space below the image */
+        }
+        
+        .wish-text-container {
+            position: absolute; /* Positions text directly over the content frame image */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column; /* Stacks wishes vertically */
+            justify-content: center; /* Centers content vertically */
+            align-items: center; /* Centers content horizontally */
+            text-align: center;
+            box-sizing: border-box;
+            pointer-events: none; /* Allows clicks to pass through */
+            overflow: hidden; /* Hides any content that might spill out */
+        }
+        
+        .wish-text {
+            font-weight: bold;
+            line-height: 1.2; /* Line height for text */
+            margin-bottom: 1rem; /* Space between wish lines */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Text shadow */
+            white-space: pre-line; /* Respects newlines entered in the admin panel */
+            width: 100%;
+            color: white; /* Default text color */
+            max-width: 100%; /* Prevent text from touching container edges */
+        }
+        
+        /* Username Input Field */
+        .username-field {
+            background: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+            border: 2px solid white; /* White border */
+            backdrop-filter: blur(10px); /* Blur effect for the background */
+            -webkit-backdrop-filter: blur(10px); /* Safari compatibility */
+            border-radius: 40px; /* Rounded corners */
+            padding: 12px 20px;
+            color: white; /* Text color */
+            font-size: 16px;
+            outline: none; /* Remove default outline on focus */
+            width: 90%;
+            max-width: 400px; /* Maximum width for the input field */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2); /* Subtle shadow */
+            margin-bottom: 1rem; /* Space below the input */
+            font-family: inherit; /* Inherit font from the body */
+        }
+        
+        /* Action Buttons (Share/Copy) */
+        .action-btn {
+            padding: 0.8rem 2rem;
+            border-radius: 24px; /* Pill-shaped buttons */
+            font-weight: 600;
+            transition: all 0.3s ease; /* Smooth transitions for hover effects */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-family: 'Poppins', sans-serif; /* Consistent font */
+            font-size: 1rem;
+            border: none; /* Remove default border */
+            cursor: pointer; /* Indicate it's clickable */
+            z-index: 1; /* Ensure buttons are above backgrounds */
+        }
+        
+        /* Example gradient style for buttons */
+        .btn-gradient {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32); /* Green gradient */
+            color: white;
+        }
+        
+        /* Translate Text Link Style */
+        .translate-text {
+            color: #1F51FF; /* Blue color for the link */
+            text-decoration: underline; /* Underline to indicate it's a link */
+            cursor: pointer;
+            font-size: 0.9rem;
+            /* Positioned absolutely relative to the nearest positioned ancestor (.page-section or .content-container) */
+            position: absolute;
+            right: 1rem; /* Align to the right side */
+            top: 0.5rem; /* Position from the top */
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Text shadow */
+            z-index: 10; /* Higher z-index to ensure it's visible */
+            pointer-events: auto; /* Make it clickable */
+        }
+        
+        /* Bottom Ad Container */
+        .bottom-ad-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+            box-sizing: border-box;
+            z-index: 100; /* High z-index to stay on top */
+        }
+        
+        .bottom-ad {
+            width: 100%;
+            max-width: 800px; /* Match other content widths */
+            height: auto;
+            min-height: 90px; /* Minimum height for the ad placeholder */
+            z-index: 100;
+            background-color: transparent;
+            border-radius: 8px;
+            overflow: hidden; /* Clip ad content if necessary */
+        }
+        
+        /* Fixed Footer Ad */
+        .footer-ad {
+            position: fixed; /* Stays fixed at the bottom of the viewport */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px; /* Fixed height for the footer ad */
+            background-color: #f0f0f0; /* Light background color */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100; /* High z-index to ensure it remains visible */
+        }
+        
+        .footer-ad-content {
+            width: 468px; /* Standard ad width */
+            height: 60px; /* Standard ad height */
+            background-color: #e0e0e0; /* Placeholder background color */
+        }
+
+        /* Animation Styles - CSS keyframe animations for emojis */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); } /* Gentle bobbing motion */
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100px); opacity: 1; } /* Start above the viewport */
+            100% { transform: translateY(100vh); opacity: 1; } /* Fall to the bottom of the viewport */
+        }
+
+        @keyframes swirl {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(50px, 50px) rotate(180deg); } /* Rotate and move */
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        @keyframes fireworks {
+            0% { transform: translate(0, 0) scale(0.5); opacity: 1; } /* Start small */
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; } /* Expand and fade out */
+        }
+
+        .floating-emoji {
+            position: absolute;
+            animation: float 3s ease-in-out infinite; /* Apply float animation indefinitely */
+            font-size: 24px; /* Default emoji size */
+        }
+        .falling-emoji {
+            position: absolute;
+            animation: fall linear forwards; /* Apply fall animation, forwards to keep end state */
+        }
+        .swirling-emoji {
+            position: absolute;
+            animation: swirl 5s linear infinite; /* Apply swirl animation indefinitely */
+        }
+        .fireworks-emoji {
+            position: absolute;
+            animation: fireworks 1s ease-out forwards; /* Apply fireworks animation */
+        }
+        
+        /* Responsive Adjustments - Media Queries */
+        @media (max-width: 768px) {
+            .title-text {
+                font-size: 1.5rem; /* Smaller title on tablets and phones */
+            }
+            .wish-text {
+                font-size: 1rem; /* Smaller wish text on smaller screens */
+            }
+            .title-text-container, .wish-text-container {
+                padding: 10%; /* Increase padding on smaller screens for better text fit */
+            }
+            /* Adjust translate button position for smaller screens */
+            .translate-text {
+                top: 0.2rem;
+                right: 0.2rem;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 sm:p-6 font-sans bg-gradient-to-br from-yellow-100 via-orange-100 to-purple-100 festive-bg">
-    <div class="w-full max-w-5xl rounded-3xl festive-border festive-shadow p-6 sm:p-8 bg-white/90 backdrop-blur-md">
-        <h1 class="text-3xl sm:4xl md:text-5xl font-extrabold text-center text-yellow-700 mb-8 festive-underline shine tracking-wide">
-            🎉 Festival Admin Panel 🎉
-        </h1>
+<body>
+    <!-- Animation Container -->
+    <div id="animationContainer" class="animation-container"></div>
+    
+    <!-- Background Container -->
+    <div class="background-container">
+        <!-- Background Layers -->
+        <div id="mainBackground" class="main-bg"></div>
+        <div id="secondBackground" class="second-bg"></div>
         
-        <!-- Wishes Section -->
-        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-yellow-400 festive-bg festive-shadow">
-            <div class="festive-accent p-3 sm:p-4 rounded-t-lg">
-                <h2 class="text-lg sm:text-xl font-bold text-purple-800">Wishes</h2>
-            </div>
-            <div class="p-4 sm:p-6">
-                <form id="settingsForm" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-yellow-800">Title</label>
-                        <div class="flex gap-2">
-                            <input type="text" id="title" class="flex-1 p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900">
-                            <button type="button" onclick="openEditor('title')" class="px-3 bg-yellow-100 rounded-lg border border-yellow-300">Edit</button>
-                        </div>
-                        <div class="mt-2 grid grid-cols-3 gap-2">
-                            <div>
-                                <label class="block text-xs font-semibold text-yellow-800">Font</label>
-                                <select id="titleFont" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                    <option value="'Poppins', sans-serif">Poppins</option>
-                                    <option value="'Noto Sans Devanagari', sans-serif">Noto Sans</option>
-                                    <option value="Arial, sans-serif">Arial</option>
-                                    <option value="custom">Custom Font</option>
-                                </select>
-                                <input type="text" id="customTitleFont" placeholder="Enter custom font family" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-yellow-800">Color</label>
-                                <select id="titleColorType" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                    <option value="preset">Preset Colors</option>
-                                    <option value="custom">Custom Color</option>
-                                </select>
-                                <input type="color" id="titleColor" value="#4c1d95" class="custom-option w-full h-8">
-                                <input type="text" id="customTitleColor" placeholder="Enter hex code" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-yellow-800">Size</label>
-                                <select id="titleSize" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                    <option value="text-xl">Small</option>
-                                    <option value="text-2xl">Medium</option>
-                                    <option value="text-3xl">Large</option>
-                                    <option value="text-4xl">X-Large</option>
-                                    <option value="text-5xl">XX-Large</option>
-                                    <option value="custom">Custom Size</option>
-                                </select>
-                                <input type="text" id="customTitleSize" placeholder="Enter custom size (e.g., 2rem)" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-yellow-800">Hindi Wish</label>
-                            <div class="flex gap-2">
-                                <textarea id="hindiWish" class="flex-1 p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900 resize-y h-32"></textarea>
-                                <button type="button" onclick="openEditor('hindiWish')" class="px-3 bg-yellow-100 rounded-lg border border-yellow-300">Edit</button>
-                            </div>
-                            <div class="mt-2 space-y-2">
-                                <div>
-                                    <label class="block text-xs font-semibold text-yellow-800">Hindi Font</label>
-                                    <select id="hindiFont" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                        <option value="'Noto Sans Devanagari', sans-serif">Noto Sans Devanagari</option>
-                                        <option value="'Poppins', sans-serif">Poppins</option>
-                                        <option value="Arial, sans-serif">Arial</option>
-                                        <option value="custom">Custom Font</option>
-                                    </select>
-                                    <input type="text" id="customHindiFont" placeholder="Enter custom font name" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-yellow-800">Hindi Text Color</label>
-                                    <select id="hindiColorType" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                        <option value="preset">Preset Colors</option>
-                                        <option value="custom">Custom Color</option>
-                                    </select>
-                                    <input type="color" id="hindiColor" value="#4c1d95" class="custom-option w-full h-8">
-                                    <input type="text" id="customHindiColor" placeholder="Enter hex code" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-yellow-800">Hindi Text Size</label>
-                                    <select id="hindiSize" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                        <option value="1rem">Small</option>
-                                        <option value="1.25rem">Medium</option>
-                                        <option value="1.5rem">Large</option>
-                                        <option value="2rem">X-Large</option>
-                                        <option value="2.5rem">XX-Large</option>
-                                        <option value="custom">Custom Size</option>
-                                    </select>
-                                    <input type="text" id="customHindiSize" placeholder="Enter custom size (e.g., 1.8rem)" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-semibold text-yellow-800">English Wish</label>
-                            <div class="flex gap-2">
-                                <textarea id="englishWish" class="flex-1 p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900 resize-y h-32"></textarea>
-                                <button type="button" onclick="openEditor('englishWish')" class="px-3 bg-yellow-100 rounded-lg border border-yellow-300">Edit</button>
-                            </div>
-                            <div class="mt-2 space-y-2">
-                                <div>
-                                    <label class="block text-xs font-semibold text-yellow-800">English Font</label>
-                                    <select id="englishFont" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                        <option value="'Poppins', sans-serif">Poppins</option>
-                                        <option value="Arial, sans-serif">Arial</option>
-                                        <option value="Georgia, serif">Georgia</option>
-                                        <option value="custom">Custom Font</option>
-                                    </select>
-                                    <input type="text" id="customEnglishFont" placeholder="Enter custom font name" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-yellow-800">English Text Color</label>
-                                    <select id="englishColorType" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                        <option value="preset">Preset Colors</option>
-                                        <option value="custom">Custom Color</option>
-                                    </select>
-                                    <input type="color" id="englishColor" value="#4c1d95" class="custom-option w-full h-8">
-                                    <input type="text" id="customEnglishColor" placeholder="Enter hex code" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-yellow-800">English Text Size</label>
-                                    <select id="englishSize" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                        <option value="1rem">Small</option>
-                                        <option value="1.25rem">Medium</option>
-                                        <option value="1.5rem">Large</option>
-                                        <option value="2rem">X-Large</option>
-                                        <option value="2.5rem">XX-Large</option>
-                                        <option value="custom">Custom Size</option>
-                                    </select>
-                                    <input type="text" id="customEnglishSize" placeholder="Enter custom size (e.g., 1.8rem)" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-yellow-800">Share Description</label>
-                        <textarea id="shareDescription" class="w-full p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900 resize-y h-16" placeholder="Custom text that will appear when users share"></textarea>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-yellow-800">Background Color/Image URL</label>
-                            <input type="text" id="background" class="w-full p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900" placeholder="Hex color code or image URL">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-yellow-800">Second Page Background</label>
-                            <input type="text" id="secondBackground" class="w-full p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900" placeholder="Hex color code or image URL">
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Main Media Upload Section -->
-        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-purple-400 festive-bg festive-shadow">
-            <div class="bg-gradient-to-r from-purple-700 via-pink-500 to-yellow-400 p-3 sm:p-4 rounded-t-lg">
-                <h2 class="text-lg sm:text-xl font-bold text-yellow-50">Main Media Upload</h2>
-            </div>
-            <div class="p-4 sm:p-6">
-                <label class="block text-sm font-semibold text-purple-800 mb-2">Image/Video/GIF (Top Media)</label>
-                <div id="mediaDropArea" class="drag-drop p-4 sm:p-6 rounded-lg text-center cursor-pointer border-4 border-dashed border-yellow-400 hover:border-purple-500 bg-gradient-to-br from-yellow-50 to-pink-100 transition-all duration-200">
-                    <p id="mediaPlaceholder" class="text-purple-700 flex items-center justify-center gap-2 text-sm sm:text-base">
-                        <span>🎨 Drag & drop or click to upload (Image, Video, GIF)</span>
-                    </p>
-                    <div id="mediaPreview" class="preview-container hidden mt-4"></div>
-                    <input type="file" id="media" accept="image/*,video/*,.gif" class="hidden">
+        <!-- Content Container -->
+        <div class="content-container">
+            <!-- First Page Section -->
+            <section class="page-section">
+                <!-- Media Box: Displays uploaded image or video -->
+                <div id="mediaBox" class="media-box">
+                    <!-- Media element will be dynamically inserted here -->
                 </div>
-            </div>
-        </div>
-
-        <!-- Title Frame Image Upload Section -->
-        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-blue-400 festive-bg festive-shadow">
-            <div class="bg-gradient-to-r from-blue-600 via-green-400 to-teal-400 p-3 sm:p-4 rounded-t-lg">
-                <h2 class="text-lg sm:text-xl font-bold text-white">Title Frame Image</h2>
-            </div>
-            <div class="p-4 sm:p-6">
-                <label class="block text-sm font-semibold text-blue-800 mb-2">Title Frame Image (PNG with transparency recommended)</label>
-                <div id="titleFrameDropArea" class="drag-drop p-4 sm:p-6 rounded-lg text-center cursor-pointer border-4 border-dashed border-blue-400 hover:border-teal-500 bg-gradient-to-br from-blue-50 to-teal-100 transition-all duration-200">
-                    <p id="titleFramePlaceholder" class="text-blue-700 flex items-center justify-center gap-2 text-sm sm:text-base">
-                        <span>🖼️ Drag & drop or click to upload title frame PNG</span>
-                    </p>
-                    <div id="titleFramePreview" class="preview-container hidden mt-4"></div>
-                    <input type="file" id="titleFrameImageInput" accept="image/png, image/jpeg, image/gif" class="hidden">
-                </div>
-            </div>
-        </div>
-
-        <!-- Wish Box Background Section -->
-        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-green-400 festive-bg festive-shadow">
-            <div class="bg-gradient-to-r from-green-600 via-teal-400 to-blue-400 p-3 sm:p-4 rounded-t-lg">
-                <h2 class="text-lg sm:text-xl font-bold text-white">Wish Box Background Image</h2>
-            </div>
-            <div class="p-4 sm:p-6">
-                <label class="block text-sm font-semibold text-green-800 mb-2">Wish Box Background Image</label>
-                <div id="wishBgDropArea" class="drag-drop p-4 sm:p-6 rounded-lg text-center cursor-pointer border-4 border-dashed border-green-400 hover:border-blue-500 bg-gradient-to-br from-green-50 to-blue-100 transition-all duration-200">
-                    <p id="wishBgPlaceholder" class="text-green-700 flex items-center justify-center gap-2 text-sm sm:text-base">
-                        <span>🎁 Drag & drop or click to upload wish box background</span>
-                    </p>
-                    <div id="wishBgPreview" class="preview-container hidden mt-4"></div>
-                    <input type="file" id="wishBg" accept="image/*" class="hidden">
-                </div>
-                <div class="mt-4 grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-green-800">Background Size</label>
-                        <select id="wishBgSize" class="w-full p-2 sm:p-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent bg-green-50 font-semibold text-green-900">
-                            <option value="cover">Cover</option>
-                            <option value="contain">Contain</option>
-                            <option value="auto">Auto</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-green-800">Background Repeat</label>
-                        <select id="wishBgRepeat" class="w-full p-2 sm:p-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent bg-green-50 font-semibold text-green-900">
-                            <option value="no-repeat">No Repeat</option>
-                            <option value="repeat">Repeat</option>
-                            <option value="repeat-x">Repeat X</option>
-                            <option value="repeat-y">Repeat Y</option>
-                        </select>
+                
+                <!-- Title Frame: Holds the title frame image and overlaid title text -->
+                <div class="title-frame-container">
+                    <img id="titleFrameImage" class="title-frame-image" src="" alt="Title Frame">
+                    <div class="title-text-container">
+                        <h1 id="festivalTitle" class="title-text">Festival Wishes</h1>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Audio Upload Section -->
-        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-orange-400 festive-bg festive-shadow">
-            <div class="bg-gradient-to-r from-orange-600 via-yellow-400 to-pink-400 p-3 sm:p-4 rounded-t-lg">
-                <h2 class="text-lg sm:text-xl font-bold text-white">Audio Upload</h2>
-            </div>
-            <div class="p-4 sm:p-6">
-                <label class="block text-sm font-semibold text-orange-800 mb-2">Background Audio</label>
-                <div id="audioDropArea" class="drag-drop p-4 sm:p-6 rounded-lg text-center cursor-pointer border-4 border-dashed border-orange-400 hover:border-pink-500 bg-gradient-to-br from-yellow-50 to-orange-100 transition-all duration-200">
-                    <p id="audioPlaceholder" class="text-orange-700 flex items-center justify-center gap-2 text-sm sm:text-base">
-                        <span>🎵 Drag & drop or click to upload (Audio)</span>
-                    </p>
-                    <div id="audioPreview" class="preview-container hidden mt-4"></div>
-                    <input type="file" id="audio" accept="audio/*" class="hidden">
-                </div>
-            </div>
-        </div>
-
-        <!-- Effects Section -->
-        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-pink-400 festive-bg festive-shadow">
-            <div class="bg-gradient-to-r from-pink-600 via-yellow-400 to-purple-500 p-3 sm:p-4 rounded-t-lg">
-                <h2 class="text-lg sm:text-xl font-bold text-white">Effects & Design</h2>
-            </div>
-            <div class="p-4 sm:p-6">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Autoplay Audio</label>
-                        <select id="autoplay" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="true">True</option>
-                            <option value="false">False</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Animation Type</label>
-                        <select id="animationType" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="float">Floating Emojis</option>
-                            <option value="fall">Falling Emojis</option>
-                            <option value="swirl">Swirling Emojis</option>
-                            <option value="fireworks">Fireworks</option>
-                            <option value="confetti">Confetti</option>
-                            <option value="custom">Custom Animation</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Animation Speed</label>
-                        <select id="animationSpeed" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="0.5">Very Slow (0.5x)</option>
-                            <option value="0.75">Slow (0.75x)</option>
-                            <option value="1" selected>Normal (1x)</option>
-                            <option value="1.5">Fast (1.5x)</option>
-                            <option value="2">Very Fast (2x)</option>
-                            <option value="custom">Custom Speed</option>
-                        </select>
-                        <input type="number" id="customSpeed" placeholder="Enter custom speed" step="0.1" min="0.1" max="5" class="custom-option w-full p-2 border border-pink-200 rounded-lg bg-pink-50 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Animation Quantity</label>
-                        <select id="animationQuantity" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="low">Low</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="high">High</option>
-                            <option value="very-high">Very High</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                        <input type="number" id="customQuantity" placeholder="Enter quantity" min="1" max="100" class="custom-option w-full p-2 border border-pink-200 rounded-lg bg-pink-50 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Emoji Type</label>
-                        <select id="emojiType" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="flowers">Flowers</option>
-                            <option value="diyas">Diyas</option>
-                            <option value="rangoli">Rangoli</option>
-                            <option value="festive">Festive Symbols</option>
-                            <option value="hearts">Hearts</option>
-                            <option value="stars">Stars</option>
-                            <option value="mixed">Mixed</option>
-                            <option value="custom">Custom Emojis</option>
-                        </select>
-                        <input type="text" id="customEmojis" placeholder="Enter emojis separated by commas" class="custom-option w-full p-2 border border-pink-200 rounded-lg bg-pink-50 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Animation Enable</label>
-                        <select id="animationEnable" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="true">True</option>
-                            <option value="false">False</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Button Style</label>
-                        <select id="buttonStyle" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="gradient">Gradient</option>
-                            <option value="solid">Solid Color</option>
-                            <option value="outline">Outline</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Button Color</label>
-                        <select id="buttonColorType" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="preset">Preset Colors</option>
-                            <option value="custom">Custom Color</option>
-                        </select>
-                        <input type="color" id="buttonColor" value="#eab308" class="custom-option w-full h-8">
-                        <input type="text" id="customButtonColor" placeholder="Enter hex code" class="custom-option w-full p-2 border border-pink-200 rounded-lg bg-pink-50 text-sm">
+                
+                <!-- Content Frame: Holds the wish box background image and overlaid wishes -->
+                <div class="content-frame-container">
+                    <img id="contentFrameImage" class="content-frame-image" src="" alt="Content Frame">
+                    <div class="wish-text-container">
+                        <p id="hindiWish" class="wish-text">शुभकामनाएं</p>
+                        <p id="englishWish" class="wish-text hidden">Best Wishes</p>
+                        <div id="translateBtn" class="translate-text hidden">Translate to English</div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 mt-6 sm:mt-8">
-            <button type="submit" form="settingsForm" class="festive-btn px-8 py-3 rounded-full font-bold shadow-xl text-lg transition-all hover:scale-105">💾 Save</button>
-            <button type="button" id="resetBtn" class="bg-gradient-to-r from-gray-600 to-gray-800 text-white px-8 py-3 rounded-full font-bold shadow-xl text-lg transition-all hover:scale-105">🔄 Reset</button>
+                
+                <!-- Username Input Field -->
+                <input type="text" id="userName" placeholder="Enter your name" class="username-field">
+                
+                <!-- Action Buttons (Share/Copy) - Initially hidden -->
+                <div id="actionButtons" class="hidden flex flex-col items-center gap-4 mt-6" style="z-index: 1;">
+                    <button id="shareBtn" class="action-btn btn-gradient hover:shadow-lg hover:scale-105 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12a2.5 2.5 0 0 1 1.088 2.076z"/>
+                        </svg>
+                        Share
+                    </button>
+                    <button id="copyBtn" class="action-btn btn-gradient hover:shadow-lg hover:scale-105 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                        </svg>
+                        Copy
+                    </button>
+                </div>
+                
+                <!-- Bottom Ad Placeholder -->
+                <div class="bottom-ad-container">
+                    <div id="bottomAd" class="bottom-ad">
+                        <!-- Ad Script Placeholder -->
+                        <script type="text/javascript">
+                            atOptions = {
+                                'key' : '8a596a14d2ea184cd9b6372e267b931c',
+                                'format' : 'iframe',
+                                'height' : 50,
+                                'width' : 320,
+                                'params' : {}
+                            };
+                        </script>
+                        <script type="text/javascript" src="//www.highperformanceformat.com/8a596a14d2ea184cd9b6372e267b931c/invoke.js"></script>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Second Page Section - Initially hidden -->
+            <section id="secondPage" class="page-section">
+                <!-- Additional content can be added here if the admin sets it up -->
+            </section>
         </div>
     </div>
-
-    <!-- Custom Editor Modal -->
-    <div id="customEditor" class="custom-editor">
-        <div class="editor-content">
-            <h3 class="text-xl font-bold mb-4" id="editorTitle">Edit Content</h3>
-            <textarea id="editorTextarea" class="w-full p-3 border border-gray-300 rounded-lg h-40"></textarea>
-            <div class="mt-4 flex justify-end gap-3">
-                <button id="cancelEdit" class="px-4 py-2 bg-gray-200 rounded-lg">Cancel</button>
-                <button id="saveEdit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Save</button>
-            </div>
+    
+    <!-- Fixed Footer Ad -->
+    <div class="footer-ad">
+        <div id="footerAd" class="footer-ad-content">
+            <!-- Ad Script Placeholder -->
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : 'f3980c7d80f3803dbaf4228f02da605b',
+                    'format' : 'iframe',
+                    'height' : 60,
+                    'width' : 468,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="//www.highperformanceformat.com/f3980c7d80f3803dbaf4228f02da605b/invoke.js"></script>
         </div>
     </div>
-
+    
+    <!-- Audio Element - For background music -->
+    <audio id="backgroundAudio" loop></audio>
+    
     <script>
         // Initialize Supabase Client
         const supabaseUrl = 'https://udupfqyxsxfmcekumrph.supabase.co';
@@ -567,10 +553,10 @@
                     // Set height of the container to maintain the image's aspect ratio
                     titleFrameImage.parentElement.style.height = `${containerWidth * aspectRatio}px`; 
                     
-                    // Font size is applied directly from settings. No dynamic adjustment needed here.
+                    // Font size is applied directly from settings, not dynamically adjusted here based on image size.
                     
                 } else { // Handle broken image links or zero dimensions
-                    titleFrameImage.parentElement.style.display = 'none'; // Hide the container if image is invalid
+                    titleFrameImage.parentElement.style.display = 'none'; 
                 }
             } else { // Hide if image is not loaded yet or no src is set
                 titleFrameImage.parentElement.style.display = titleFrameImage.src ? 'flex' : 'none';
@@ -650,7 +636,7 @@
                 // Apply Title Styles (Font, Color, Size)
                 festivalTitle.style.fontFamily = settings.titleFont || defaultSettings.titleFont;
                 festivalTitle.style.color = settings.titleColor || defaultSettings.titleColor;
-                // Apply font size directly from settings. If 'custom' is selected, use custom value, else use the selected value.
+                // Apply font size directly from settings. If 'custom', use custom value, else selected value.
                 festivalTitle.style.fontSize = (settings.titleSize === 'custom' && settings.customTitleSize)
                                              ? settings.customTitleSize
                                              : settings.titleSize || defaultSettings.titleSize;
