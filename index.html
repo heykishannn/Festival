@@ -3,458 +3,485 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Festival Wishes</title>
+    <title>Festival Admin Panel</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Reset and Base Styles */
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
-            scroll-behavior: smooth; /* Smooth scrolling for anchor links */
-            font-family: 'Poppins', sans-serif; /* Default font */
+        .shine {
+            background: linear-gradient(90deg, #fff7ae 25%, #ffe066 50%, #fff7ae 75%);
+            background-size: 200% 100%;
+            animation: shine 2s linear infinite;
         }
-        
-        /* Animation Container - Overlays everything for animations */
-        .animation-container {
-            position: fixed; /* Stays in place */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none; /* Allows clicks to pass through to elements behind */
-            z-index: 1; /* Below content, but above backgrounds */
-            overflow: hidden; /* Hides emojis that go outside the viewport */
+        @keyframes shine {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
-        
-        /* Background Container - Holds the main and second backgrounds */
-        .background-container {
-            position: relative; /* For absolute positioning of backgrounds */
-            width: 100%;
-            min-height: 100vh; /* Ensure it covers at least the viewport height */
-            overflow: hidden; /* Prevent background overflow */
+        .festive-border {
+            border: 4px solid transparent;
+            border-image: linear-gradient(90deg, #eab308, #ea580c, #a21caf, #f59e42, #eab308) 1;
         }
-
-        /* Media Box - Displays the main image or video */
-        .media-box {
-            width: 90%; /* Responsive width */
-            max-width: 800px; /* Consistent maximum width */
-            margin: 0 auto 3rem; /* Center horizontally with bottom margin */
-            border-radius: 16px; /* Rounded corners */
-            overflow: hidden; /* Clip content within the border radius */
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Nice shadow for depth */
-            z-index: 2; /* Ensure it's above background layers */
-	    }
-        
-        .main-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh; /* Initially covers the viewport */
-            z-index: -1; /* Position behind all content */
-            background-size: cover; /* Scale background to cover the area */
-            background-position: center; /* Center the background image */
-            background-repeat: no-repeat; /* Prevent background repetition */
+        .festive-shadow {
+            box-shadow: 0 8px 32px 0 rgba(234, 88, 12, 0.25), 0 1.5px 4px 0 #a21caf33;
         }
-        
-        .second-bg {
-            position: absolute;
-            top: 100vh; /* Starts after the first page section */
-            left: 0;
-            width: 100%;
-            height: 300vh; /* Generous height to accommodate scrolling */
-            z-index: -1; /* Position behind all content */
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            display: none; /* Hidden by default, shown only if a second background is set */
+        .festive-bg {
+            background: linear-gradient(135deg, #fff7ae 0%, #fef3c7 60%, #fde68a 100%);
         }
-        
-        /* Content Container - Holds all the visual elements */
-        .content-container {
-            position: relative; /* Context for absolute positioning of frames and text */
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            z-index: 2; /* Ensure content is above backgrounds */
-            flex-direction: column; /* Stack sections vertically */
+        .festive-accent {
+            background: repeating-linear-gradient(
+                135deg,
+                #f59e42 0px,
+                #f59e42 8px,
+                #eab308 8px,
+                #eab308 16px
+            );
         }
-        
-        /* Page Section - Represents a single "page" of content */
-        .page-section {
-            position: relative; /* Context for absolute positioning of frames and text */
-            width: 100%;
-            min-height: 100vh; /* Each section fills the viewport height */
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* Center content horizontally */
-            justify-content: center; /* Center content vertically */
-            padding: 2rem 1rem; /* Add padding around the content */
-            box-sizing: border-box; /* Padding included in element's total dimensions */
+        .festive-underline {
+            text-decoration: underline wavy #ea580c 3px;
         }
-        
-        /* Title Frame Container - Holds the frame image and title text */
-        .title-frame-container {
-            position: relative; /* For absolute positioning of text */
-            width: auto; /* Width determined by image or max-width */
-            max-width: 800px; /* Consistent maximum width */
-            margin-bottom: 2rem; /* Space below the title block */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1; /* Ensure it's above background layers */
+        .festive-btn {
+            background: linear-gradient(90deg, #eab308 0%, #ea580c 100%);
+            color: #fff;
         }
-        
-        .title-frame-image {
-            width: 100%; /* Make image fill its container */
-            display: block; /* Remove extra space below the image */
-            height: auto; /* Maintain aspect ratio */
+        .festive-btn:hover {
+            background: linear-gradient(90deg, #ea580c 0%, #eab308 100%);
+            color: #fff;
         }
-        
-        .title-text-container {
-            position: absolute; /* Position text over the frame image */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            box-sizing: border-box;
-            pointer-events: none; /* Allow clicks to pass through to elements below */
-        }
-        
-        .title-text {
-            font-size: 2rem; /* Default size, adjusted by JS for responsiveness */
-            font-weight: bold;
-            color: white; /* Default text color */
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Text shadow for better readability */
-            width: 100%;
-            max-width: 100%; /* Prevent text from touching container edges */
-            line-height: 1.2; /* Good line height for titles */
-        }
-        
-        /* Content Frame Container - Holds the wish box background image */
-        .content-frame-container {
-            position: relative; /* For absolute positioning of text */
-            width: 100%; /* Responsive width */
-            max-width: 800px; /* Consistent maximum width */
-            margin-bottom: 2rem; /* Space below the content block */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1; /* Above background layers */
-            aspect-ratio: 16 / 9; /* Default aspect ratio, overridden by image's aspect ratio */
-        }
-        
-        .content-frame-image {
-            width: 100%;
-            height: 100%; /* Make image fill its parent container */
-            object-fit: contain; /* Scale image to fit while maintaining aspect ratio */
-            display: flex; /* Remove extra space below the image */
-        }
-        
-        .wish-text-container {
-            position: absolute; /* Position text over the wish box background */
-            top: 0;
-            left: 0;
-            width: auto;
-            height: auto;
-            display: flex;
-            flex-direction: column; /* Stack wishes vertically */
-            justify-content: center; /* Center vertically */
-            align-items: center; /* Center horizontally */
-            text-align: center;
-            box-sizing: border-box;
-            pointer-events: none; /* Allow clicks to pass through */
-            overflow: hidden; /* Hide content if it exceeds container boundaries */
-        }
-        
-        .wish-text {
-            font-weight: bold;
-            line-height: 1.2rem; /* Line height for text */
-            margin-bottom: 1rem; /* Space between wish lines */
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Text shadow */
-            white-space: pre-line; /* Respect newlines entered in the admin panel */
-            width: 100%;
-            color: white; /* Default text color */
-            max-width: 100%; /* Prevent text from touching container edges */
-        }
-        
-        /* Username Field */
-        .username-field {
-            background: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
-            border: 2px solid white; /* White border */
-            backdrop-filter: blur(10px); /* Blur effect */
-            -webkit-backdrop-filter: blur(10px); /* Safari compatibility */
-            border-radius: 40px; /* Rounded corners */
-            padding: 12px 20px;
-            color: white; /* Text color */
-            font-size: 16px;
-            outline: none; /* Remove focus outline */
-            width: 90%;
-            max-width: 400px; /* Max width for the input field */
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2); /* Subtle shadow */
-            margin-bottom: 1rem; /* Space below the input */
-            font-family: inherit; /* Inherit font from body */
-        }
-        
-        /* Action Buttons (Share/Copy) */
-        .action-btn {
-            padding: 0.8rem 2rem;
-            border-radius: 24px; /* Pill shape */
-            font-weight: 600;
-            transition: all 0.3s ease; /* Smooth transitions for hover effects */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            font-family: 'Poppins', sans-serif; /* Consistent font */
-            font-size: 1rem;
-            border: none; /* Remove default border */
-            cursor: pointer; /* Indicate it's clickable */
-            z-index: 1; /* Ensure buttons are above backgrounds */
-        }
-        
-        .btn-gradient {
-            background: linear-gradient(135deg, #4CAF50, #2E7D32); /* Example gradient */
+        .toast {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
             color: white;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.3s forwards, fadeOut 3s 1s forwards;
+            z-index: 1000;
         }
-        
-        /* Translate Text Link */
-        .translate-text {
-            color: #1F51FF; /* Blue color */
-            text-decoration: underline; /* Underline for link appearance */
-            cursor: pointer;
-            font-size: 0.9rem;
-            margin-top: 1rem;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Text shadow */
-            z-index: 1;
-            pointer-events: auto; /* Make it clickable */
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
         }
-        
-        /* Bottom Ad Container */
-        .bottom-ad-container {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            padding: 1rem;
-            box-sizing: border-box;
-            z-index: 100; /* High z-index to stay on top */
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateY(20px); }
         }
-        
-        .bottom-ad {
-            width: 100%;
-            max-width: 800px; /* Match other content widths */
-            height: auto;
-            min-height: 90px; /* Minimum height for ad placeholder */
-            z-index: 100;
-            background-color: transparent;
-            border-radius: 8px;
-            overflow: hidden; /* Clip ad content if necessary */
-        }
-        
-        /* Fixed Footer Ad */
-        .footer-ad {
-            position: fixed; /* Stays at the bottom */
-            bottom: 0;
+        .custom-editor {
+            display: none;
+            position: fixed;
+            top: 0;
             left: 0;
             width: 100%;
-            height: 50px; /* Fixed height */
-            background-color: #f0f0f0; /* Light background */
-            display: flex;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
             justify-content: center;
             align-items: center;
-            z-index: 100; /* High z-index to remain visible */
         }
-        
-        .footer-ad-content {
-            width: 468px; /* Standard ad width */
-            height: 60px; /* Standard ad height */
-            background-color: #e0e0e0; /* Placeholder background */
+        .editor-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            width: 90%;
+            max-width: 600px;
         }
-
-        /* Animation Styles - CSS keyframe animations for emojis */
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(10deg); } /* Gentle bobbing motion */
-            100% { transform: translateY(0px) rotate(0deg); }
+        .custom-option {
+            display: none; /* Hidden by default */
+            margin-top: 0.5rem;
         }
-
-        @keyframes fall {
-            0% { transform: translateY(-100px); opacity: 1; } /* Start above viewport */
-            100% { transform: translateY(100vh); opacity: 1; } /* Fall to the bottom */
-        }
-
-        @keyframes swirl {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(50px, 50px) rotate(180deg); } /* Rotate and move */
-            100% { transform: translate(0, 0) rotate(360deg); }
+        /* Show custom option input when its parent select is set to 'custom' */
+        select[id$="Font"]:has(option[value="custom"]:checked) ~ input[id$="Font"],
+        select[id$="ColorType"]:has(option[value="custom"]:checked) ~ input[id$="Color"],
+        select[id$="Size"]:has(option[value="custom"]:checked) ~ input[id$="Size"],
+        select[id$="Speed"]:has(option[value="custom"]:checked) ~ input[id$="Speed"],
+        select[id$="Quantity"]:has(option[value="custom"]:checked) ~ input[id$="Quantity"],
+        select[id$="EmojiType"]:has(option[value="custom"]:checked) ~ input[id$="EmojiType"],
+        select[id$="ButtonColorType"]:has(option[value="custom"]:checked) ~ input[id$="ButtonColor"]
+        {
+            display: block;
         }
 
-        @keyframes fireworks {
-            0% { transform: translate(0, 0) scale(0.5); opacity: 1; } /* Start small */
-            100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; } /* Expand and fade out */
-        }
-
-        /* Applying animation classes to emoji elements */
-        .floating-emoji {
-            position: absolute;
-            animation: float 3s ease-in-out infinite; /* Apply float animation */
-            font-size: 24px; /* Default emoji size */
-        }
-        .falling-emoji {
-            position: absolute;
-            animation: fall linear forwards; /* Apply fall animation */
-        }
-        .swirling-emoji {
-            position: absolute;
-            animation: swirl 5s linear infinite; /* Apply swirl animation */
-        }
-        .fireworks-emoji {
-            position: absolute;
-            animation: fireworks 1s ease-out forwards; /* Apply fireworks animation */
-        }
-        
-        /* Responsive Adjustments - Media Queries */
-        @media (max-width: 100%px) {
-            .title-text {
-                font-size: 1.5rem; /* Smaller title on tablets and phones */
-            }
-            .wish-text {
-                font-size: 1rem; /* Smaller wish text on smaller screens */
-            }
-            .title-text-container, .wish-text-container {
-                padding: 10%; /* More padding on smaller screens to ensure text fits well */
-            }
+        .preview-container img, .preview-container video {
+            max-width: 100%;
+            max-height: 200px;
+            display: block;
+            margin: 0 auto;
         }
     </style>
 </head>
-<body>
-    <!-- Animation Container -->
-    <div id="animationContainer" class="animation-container"></div>
-    
-    <!-- Background Container -->
-    <div class="background-container">
-        <!-- Background Layers -->
-        <div id="mainBackground" class="main-bg"></div>
-        <div id="secondBackground" class="second-bg"></div>
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-6 font-sans bg-gradient-to-br from-yellow-100 via-orange-100 to-purple-100 festive-bg">
+    <div class="w-full max-w-5xl rounded-3xl festive-border festive-shadow p-6 sm:p-8 bg-white/90 backdrop-blur-md">
+        <h1 class="text-3xl sm:4xl md:text-5xl font-extrabold text-center text-yellow-700 mb-8 festive-underline shine tracking-wide">
+            🎉 Festival Admin Panel 🎉
+        </h1>
         
-        <!-- Content Container -->
-        <div class="content-container">
-            <!-- First Page Section -->
-            <section class="page-section">
-                <!-- Media Box: Displays uploaded image or video -->
-                <div id="mediaBox" class="media-box">
-                    <!-- Media element will be inserted here by JavaScript -->
+        <!-- Wishes Section -->
+        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-yellow-400 festive-bg festive-shadow">
+            <div class="festive-accent p-3 sm:p-4 rounded-t-lg">
+                <h2 class="text-lg sm:text-xl font-bold text-purple-800">Wishes</h2>
+            </div>
+            <div class="p-4 sm:p-6">
+                <form id="settingsForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-yellow-800">Title</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="title" class="flex-1 p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900">
+                            <button type="button" onclick="openEditor('title')" class="px-3 bg-yellow-100 rounded-lg border border-yellow-300">Edit</button>
+                        </div>
+                        <div class="mt-2 grid grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-yellow-800">Font</label>
+                                <select id="titleFont" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                    <option value="'Poppins', sans-serif">Poppins</option>
+                                    <option value="'Noto Sans Devanagari', sans-serif">Noto Sans</option>
+                                    <option value="Arial, sans-serif">Arial</option>
+                                    <option value="custom">Custom Font</option>
+                                </select>
+                                <input type="text" id="customTitleFont" placeholder="Enter custom font family" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-yellow-800">Color</label>
+                                <select id="titleColorType" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                    <option value="preset">Preset Colors</option>
+                                    <option value="custom">Custom Color</option>
+                                </select>
+                                <input type="color" id="titleColor" value="#4c1d95" class="custom-option w-full h-8">
+                                <input type="text" id="customTitleColor" placeholder="Enter hex code" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-yellow-800">Size</label>
+                                <select id="titleSize" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                    <option value="text-xl">Small</option>
+                                    <option value="text-2xl">Medium</option>
+                                    <option value="text-3xl">Large</option>
+                                    <option value="text-4xl">X-Large</option>
+                                    <option value="text-5xl">XX-Large</option>
+                                    <option value="custom">Custom Size</option>
+                                </select>
+                                <input type="text" id="customTitleSize" placeholder="Enter custom size (e.g., 2rem)" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-yellow-800">Hindi Wish</label>
+                            <div class="flex gap-2">
+                                <textarea id="hindiWish" class="flex-1 p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900 resize-y h-32"></textarea>
+                                <button type="button" onclick="openEditor('hindiWish')" class="px-3 bg-yellow-100 rounded-lg border border-yellow-300">Edit</button>
+                            </div>
+                            <div class="mt-2 space-y-2">
+                                <div>
+                                    <label class="block text-xs font-semibold text-yellow-800">Hindi Font</label>
+                                    <select id="hindiFont" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                        <option value="'Noto Sans Devanagari', sans-serif">Noto Sans Devanagari</option>
+                                        <option value="'Poppins', sans-serif">Poppins</option>
+                                        <option value="Arial, sans-serif">Arial</option>
+                                        <option value="custom">Custom Font</option>
+                                    </select>
+                                    <input type="text" id="customHindiFont" placeholder="Enter custom font name" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-yellow-800">Hindi Text Color</label>
+                                    <select id="hindiColorType" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                        <option value="preset">Preset Colors</option>
+                                        <option value="custom">Custom Color</option>
+                                    </select>
+                                    <input type="color" id="hindiColor" value="#4c1d95" class="custom-option w-full h-8">
+                                    <input type="text" id="customHindiColor" placeholder="Enter hex code" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-yellow-800">Hindi Text Size</label>
+                                    <select id="hindiSize" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                        <option value="1rem">Small</option>
+                                        <option value="1.25rem">Medium</option>
+                                        <option value="1.5rem">Large</option>
+                                        <option value="2rem">X-Large</option>
+                                        <option value="2.5rem">XX-Large</option>
+                                        <option value="custom">Custom Size</option>
+                                    </select>
+                                    <input type="text" id="customHindiSize" placeholder="Enter custom size (e.g., 1.8rem)" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-yellow-800">English Wish</label>
+                            <div class="flex gap-2">
+                                <textarea id="englishWish" class="flex-1 p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900 resize-y h-32"></textarea>
+                                <button type="button" onclick="openEditor('englishWish')" class="px-3 bg-yellow-100 rounded-lg border border-yellow-300">Edit</button>
+                            </div>
+                            <div class="mt-2 space-y-2">
+                                <div>
+                                    <label class="block text-xs font-semibold text-yellow-800">English Font</label>
+                                    <select id="englishFont" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                        <option value="'Poppins', sans-serif">Poppins</option>
+                                        <option value="Arial, sans-serif">Arial</option>
+                                        <option value="Georgia, serif">Georgia</option>
+                                        <option value="custom">Custom Font</option>
+                                    </select>
+                                    <input type="text" id="customEnglishFont" placeholder="Enter custom font name" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-yellow-800">English Text Color</label>
+                                    <select id="englishColorType" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                        <option value="preset">Preset Colors</option>
+                                        <option value="custom">Custom Color</option>
+                                    </select>
+                                    <input type="color" id="englishColor" value="#4c1d95" class="custom-option w-full h-8">
+                                    <input type="text" id="customEnglishColor" placeholder="Enter hex code" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-yellow-800">English Text Size</label>
+                                    <select id="englishSize" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                        <option value="1rem">Small</option>
+                                        <option value="1.25rem">Medium</option>
+                                        <option value="1.5rem">Large</option>
+                                        <option value="2rem">X-Large</option>
+                                        <option value="2.5rem">XX-Large</option>
+                                        <option value="custom">Custom Size</option>
+                                    </select>
+                                    <input type="text" id="customEnglishSize" placeholder="Enter custom size (e.g., 1.8rem)" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-yellow-800">Share Description</label>
+                        <textarea id="shareDescription" class="w-full p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900 resize-y h-16" placeholder="Custom text that will appear when users share"></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-yellow-800">Background Color/Image URL</label>
+                            <input type="text" id="background" class="w-full p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900" placeholder="Hex color code or image URL">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-yellow-800">Second Page Background</label>
+                            <input type="text" id="secondBackground" class="w-full p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900" placeholder="Hex color code or image URL">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Media Upload Section -->
+        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-purple-400 festive-bg festive-shadow">
+            <div class="bg-gradient-to-r from-purple-700 via-pink-500 to-yellow-400 p-3 sm:p-4 rounded-t-lg">
+                <h2 class="text-lg sm:text-xl font-bold text-yellow-50">Main Media Upload</h2>
+            </div>
+            <div class="p-4 sm:p-6">
+                <label class="block text-sm font-semibold text-purple-800 mb-2">Image/Video/GIF (Top Media)</label>
+                <div id="mediaDropArea" class="drag-drop p-4 sm:p-6 rounded-lg text-center cursor-pointer border-4 border-dashed border-yellow-400 hover:border-purple-500 bg-gradient-to-br from-yellow-50 to-pink-100 transition-all duration-200">
+                    <p id="mediaPlaceholder" class="text-purple-700 flex items-center justify-center gap-2 text-sm sm:text-base">
+                        <span>🎨 Drag & drop or click to upload (Image, Video, GIF)</span>
+                    </p>
+                    <div id="mediaPreview" class="preview-container hidden mt-4"></div>
+                    <input type="file" id="media" accept="image/*,video/*,.gif" class="hidden">
                 </div>
-                
-                <!-- Title Frame: Displays the frame image and overlaid title -->
-                <div class="title-frame-container">
-                    <img id="titleFrameImage" class="title-frame-image" src="" alt="Title Frame">
-                    <div class="title-text-container">
-                        <h1 id="festivalTitle" class="title-text">Festival Wishes</h1>
+            </div>
+        </div>
+
+        <!-- Title Frame Image Upload Section -->
+        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-blue-400 festive-bg festive-shadow">
+            <div class="bg-gradient-to-r from-blue-600 via-green-400 to-teal-400 p-3 sm:p-4 rounded-t-lg">
+                <h2 class="text-lg sm:text-xl font-bold text-white">Title Frame Image</h2>
+            </div>
+            <div class="p-4 sm:p-6">
+                <label class="block text-sm font-semibold text-blue-800 mb-2">Title Frame Image (PNG with transparency recommended)</label>
+                <div id="titleFrameDropArea" class="drag-drop p-4 sm:p-6 rounded-lg text-center cursor-pointer border-4 border-dashed border-blue-400 hover:border-teal-500 bg-gradient-to-br from-blue-50 to-teal-100 transition-all duration-200">
+                    <p id="titleFramePlaceholder" class="text-blue-700 flex items-center justify-center gap-2 text-sm sm:text-base">
+                        <span>🖼️ Drag & drop or click to upload title frame PNG</span>
+                    </p>
+                    <div id="titleFramePreview" class="preview-container hidden mt-4"></div>
+                    <input type="file" id="titleFrameImageInput" accept="image/png, image/jpeg, image/gif" class="hidden">
+                </div>
+            </div>
+        </div>
+
+        <!-- Wish Box Background Section -->
+        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-green-400 festive-bg festive-shadow">
+            <div class="bg-gradient-to-r from-green-600 via-teal-400 to-blue-400 p-3 sm:p-4 rounded-t-lg">
+                <h2 class="text-lg sm:text-xl font-bold text-white">Wish Box Background Image</h2>
+            </div>
+            <div class="p-4 sm:p-6">
+                <label class="block text-sm font-semibold text-green-800 mb-2">Wish Box Background Image</label>
+                <div id="wishBgDropArea" class="drag-drop p-4 sm:p-6 rounded-lg text-center cursor-pointer border-4 border-dashed border-green-400 hover:border-blue-500 bg-gradient-to-br from-green-50 to-blue-100 transition-all duration-200">
+                    <p id="wishBgPlaceholder" class="text-green-700 flex items-center justify-center gap-2 text-sm sm:text-base">
+                        <span>🎁 Drag & drop or click to upload wish box background</span>
+                    </p>
+                    <div id="wishBgPreview" class="preview-container hidden mt-4"></div>
+                    <input type="file" id="wishBg" accept="image/*" class="hidden">
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-green-800">Background Size</label>
+                        <select id="wishBgSize" class="w-full p-2 sm:p-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent bg-green-50 font-semibold text-green-900">
+                            <option value="cover">Cover</option>
+                            <option value="contain">Contain</option>
+                            <option value="auto">Auto</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-green-800">Background Repeat</label>
+                        <select id="wishBgRepeat" class="w-full p-2 sm:p-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent bg-green-50 font-semibold text-green-900">
+                            <option value="no-repeat">No Repeat</option>
+                            <option value="repeat">Repeat</option>
+                            <option value="repeat-x">Repeat X</option>
+                            <option value="repeat-y">Repeat Y</option>
+                        </select>
                     </div>
                 </div>
-                
-                <!-- Content Frame: Displays the wish box background and overlaid text -->
-                <div class="content-frame-container">
-                    <img id="contentFrameImage" class="content-frame-image" src="" alt="Content Frame">
-                    <div class="wish-text-container">
-                        <p id="hindiWish" class="wish-text">शुभकामनाएं</p>
-                        <p id="englishWish" class="wish-text hidden">Best Wishes</p>
-                        <div id="translateBtn" class="translate-text hidden">Translate to English</div>
+            </div>
+        </div>
+
+        <!-- Audio Upload Section -->
+        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-orange-400 festive-bg festive-shadow">
+            <div class="bg-gradient-to-r from-orange-600 via-yellow-400 to-pink-400 p-3 sm:p-4 rounded-t-lg">
+                <h2 class="text-lg sm:text-xl font-bold text-white">Audio Upload</h2>
+            </div>
+            <div class="p-4 sm:p-6">
+                <label class="block text-sm font-semibold text-orange-800 mb-2">Background Audio</label>
+                <div id="audioDropArea" class="drag-drop p-4 sm:p-6 rounded-lg text-center cursor-pointer border-4 border-dashed border-orange-400 hover:border-pink-500 bg-gradient-to-br from-yellow-50 to-orange-100 transition-all duration-200">
+                    <p id="audioPlaceholder" class="text-orange-700 flex items-center justify-center gap-2 text-sm sm:text-base">
+                        <span>🎵 Drag & drop or click to upload (Audio)</span>
+                    </p>
+                    <div id="audioPreview" class="preview-container hidden mt-4"></div>
+                    <input type="file" id="audio" accept="audio/*" class="hidden">
+                </div>
+            </div>
+        </div>
+
+        <!-- Effects Section -->
+        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-pink-400 festive-bg festive-shadow">
+            <div class="bg-gradient-to-r from-pink-600 via-yellow-400 to-purple-500 p-3 sm:p-4 rounded-t-lg">
+                <h2 class="text-lg sm:text-xl font-bold text-white">Effects & Design</h2>
+            </div>
+            <div class="p-4 sm:p-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-pink-800">Autoplay Audio</label>
+                        <select id="autoplay" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-pink-800">Animation Type</label>
+                        <select id="animationType" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
+                            <option value="float">Floating Emojis</option>
+                            <option value="fall">Falling Emojis</option>
+                            <option value="swirl">Swirling Emojis</option>
+                            <option value="fireworks">Fireworks</option>
+                            <option value="confetti">Confetti</option>
+                            <option value="custom">Custom Animation</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-pink-800">Animation Speed</label>
+                        <select id="animationSpeed" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
+                            <option value="0.5">Very Slow (0.5x)</option>
+                            <option value="0.75">Slow (0.75x)</option>
+                            <option value="1" selected>Normal (1x)</option>
+                            <option value="1.5">Fast (1.5x)</option>
+                            <option value="2">Very Fast (2x)</option>
+                            <option value="custom">Custom Speed</option>
+                        </select>
+                        <input type="number" id="customSpeed" placeholder="Enter custom speed" step="0.1" min="0.1" max="5" class="custom-option w-full p-2 border border-pink-200 rounded-lg bg-pink-50 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-pink-800">Animation Quantity</label>
+                        <select id="animationQuantity" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="very-high">Very High</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                        <input type="number" id="customQuantity" placeholder="Enter quantity" min="1" max="100" class="custom-option w-full p-2 border border-pink-200 rounded-lg bg-pink-50 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-pink-800">Emoji Type</label>
+                        <select id="emojiType" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
+                            <option value="flowers">Flowers</option>
+                            <option value="diyas">Diyas</option>
+                            <option value="rangoli">Rangoli</option>
+                            <option value="festive">Festive Symbols</option>
+                            <option value="hearts">Hearts</option>
+                            <option value="stars">Stars</option>
+                            <option value="mixed">Mixed</option>
+                            <option value="custom">Custom Emojis</option>
+                        </select>
+                        <input type="text" id="customEmojis" placeholder="Enter emojis separated by commas" class="custom-option w-full p-2 border border-pink-200 rounded-lg bg-pink-50 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-pink-800">Animation Enable</label>
+                        <select id="animationEnable" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-pink-800">Button Style</label>
+                        <select id="buttonStyle" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
+                            <option value="gradient">Gradient</option>
+                            <option value="solid">Solid Color</option>
+                            <option value="outline">Outline</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-pink-800">Button Color</label>
+                        <select id="buttonColorType" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
+                            <option value="preset">Preset Colors</option>
+                            <option value="custom">Custom Color</option>
+                        </select>
+                        <input type="color" id="buttonColor" value="#eab308" class="custom-option w-full h-8">
+                        <input type="text" id="customButtonColor" placeholder="Enter hex code" class="custom-option w-full p-2 border border-pink-200 rounded-lg bg-pink-50 text-sm">
                     </div>
                 </div>
-                
-                <!-- Username Input Field -->
-                <input type="text" id="userName" placeholder="Enter your name" class="username-field">
-                
-                <!-- Action Buttons (Share/Copy) - Hidden until username is entered -->
-                <div id="actionButtons" class="hidden flex flex-col items-center gap-4 mt-6" style="z-index: 1;">
-                    <button id="shareBtn" class="action-btn btn-gradient hover:shadow-lg hover:scale-105 flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12a2.5 2.5 0 0 1 1.088 2.076z"/>
-                        </svg>
-                        Share
-                    </button>
-                    <button id="copyBtn" class="action-btn btn-gradient hover:shadow-lg hover:scale-105 flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-                            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-                        </svg>
-                        Copy
-                    </button>
-                </div>
-                
-                <!-- Bottom Ad Placeholder -->
-                <div class="bottom-ad-container">
-                    <div id="bottomAd" class="bottom-ad">
-                        <!-- Ad Script Placeholder -->
-                        <script type="text/javascript">
-                            atOptions = {
-                                'key' : '8a596a14d2ea184cd9b6372e267b931c',
-                                'format' : 'iframe',
-                                'height' : 50,
-                                'width' : 320,
-                                'params' : {}
-                            };
-                        </script>
-                        <script type="text/javascript" src="//www.highperformanceformat.com/8a596a14d2ea184cd9b6372e267b931c/invoke.js"></script>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Second Page Section - Initially hidden -->
-            <section id="secondPage" class="page-section">
-                <!-- Additional content can be added here if the admin sets it up -->
-            </section>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 mt-6 sm:mt-8">
+            <button type="submit" form="settingsForm" class="festive-btn px-8 py-3 rounded-full font-bold shadow-xl text-lg transition-all hover:scale-105">💾 Save</button>
+            <button type="button" id="resetBtn" class="bg-gradient-to-r from-gray-600 to-gray-800 text-white px-8 py-3 rounded-full font-bold shadow-xl text-lg transition-all hover:scale-105">🔄 Reset</button>
         </div>
     </div>
-    
-    <!-- Fixed Footer Ad -->
-    <div class="footer-ad">
-        <div id="footerAd" class="footer-ad-content">
-            <!-- Ad Script Placeholder -->
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : 'f3980c7d80f3803dbaf4228f02da605b',
-                    'format' : 'iframe',
-                    'height' : 60,
-                    'width' : 468,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="//www.highperformanceformat.com/f3980c7d80f3803dbaf4228f02da605b/invoke.js"></script>
+
+    <!-- Custom Editor Modal -->
+    <div id="customEditor" class="custom-editor">
+        <div class="editor-content">
+            <h3 class="text-xl font-bold mb-4" id="editorTitle">Edit Content</h3>
+            <textarea id="editorTextarea" class="w-full p-3 border border-gray-300 rounded-lg h-40"></textarea>
+            <div class="mt-4 flex justify-end gap-3">
+                <button id="cancelEdit" class="px-4 py-2 bg-gray-200 rounded-lg">Cancel</button>
+                <button id="saveEdit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Save</button>
+            </div>
         </div>
     </div>
-    
-    <!-- Audio Element - For background music -->
-    <audio id="backgroundAudio" loop></audio>
-    
+
     <script>
         // Initialize Supabase Client
         const supabaseUrl = 'https://udupfqyxsxfmcekumrph.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkdXBmcXl4c3hmbWNla3VtcnBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1NTgxOTYsImV4cCI6MjA2NjEzNDE5Nn0.-ndlXo0XeRrzONovcOeiMZxeYY4st7XUXyVdWZVbZJs';
         const supaClient = window.supabase.createClient(supabaseUrl, supabaseKey);
         
-        // DOM Element References - Get references to all necessary elements
+        // DOM Element References - Store references to frequently used DOM elements
         const mainBackground = document.getElementById('mainBackground');
         const secondBackground = document.getElementById('secondBackground');
-        const mediaBox = document.getElementById('mediaBox');
-        const titleFrameImage = document.getElementById('titleFrameImage');
+        const mediaBox = document.getElementById('mediaBox'); // Main media element
+        const titleFrameImage = document.getElementById('titleFrameImage'); // Image for title frame
         const festivalTitle = document.getElementById('festivalTitle');
-        const contentFrameImage = document.getElementById('contentFrameImage');
+        const contentFrameImage = document.getElementById('contentFrameImage'); // Image for wish box background
         const hindiWishElement = document.getElementById('hindiWish');
         const englishWishElement = document.getElementById('englishWish');
         const userNameInput = document.getElementById('userName');
         const actionButtonsContainer = document.getElementById('actionButtons');
         const shareBtn = document.getElementById('shareBtn');
         const copyBtn = document.getElementById('copyBtn');
-        const translateBtn = document.getElementById('translateBtn');
+        const translateBtn = document.getElementById('translateBtn'); // Translate button
         const backgroundAudio = document.getElementById('backgroundAudio');
         const bottomAd = document.getElementById('bottomAd');
         const footerAd = document.getElementById('footerAd');
@@ -464,12 +491,12 @@
         // Constants
         const FIXED_SHARE_URL = 'https://heykishannn.github.io/Festival/'; // The base URL for sharing
         
-        // State variables
-        let isTranslated = false; // Track if the English wish is currently displayed
+        // State variables to track current status
+        let isTranslated = false; // Track if English wish is currently displayed
         let originalHindiWish = 'शुभकामनाएं'; // Default Hindi wish
         let originalEnglishWish = 'Best Wishes'; // Default English wish
         let shareDescription = 'sent you festival wishes!'; // Default text for sharing
-        let hasSecondPageContent = false; // Flag if the second page is used
+        let hasSecondPageContent = false; // Flag to indicate if the second page is used
         let audioPlayAttempted = false; // Flag to prevent multiple audio play attempts
         
         // Default settings for fallback if Supabase fails or no settings are found
@@ -479,9 +506,9 @@
             hindiWish: 'शुभकामनाएं',
             englishWish: 'Best Wishes',
             shareDescription: 'sent you festival wishes!',
-            frameUrl: '',
-            wishBgUrl: '',
-            mediaUrl: '',
+            mediaUrl: '', // URL for the main media (image/video)
+            titleFrameUrl: '', // URL for the title frame image
+            wishBgUrl: '', // URL for the wish box background image
             audioUrl: '',
             animationEnable: false,
             animationType: 'float',
@@ -490,16 +517,16 @@
             animationQuantity: 'medium',
             customQuantity: '',
             animationSpeed: '1',
-            titleFont: "'Poppins', sans-serif", titleColor: '#4c1d95', titleSize: 'text-3xl',
-            hindiFont: "'Noto Sans Devanagari', sans-serif", hindiColor: '#4c1d95', hindiSize: '1.5rem',
-            englishFont: "'Poppins', sans-serif", englishColor: '#4c1d95', englishSize: '1.5rem',
+            titleFont: "'Poppins', sans-serif", titleColor: '#4c1d95', titleSize: '2rem', // Default title styles with size
+            hindiFont: "'Noto Sans Devanagari', sans-serif", hindiColor: '#4c1d95', hindiSize: '1.5rem', // Default Hindi wish styles with size
+            englishFont: "'Poppins', sans-serif", englishColor: '#4c1d95', englishSize: '1.5rem', // Default English wish styles with size
             buttonStyle: 'gradient', buttonColor: '#4CAF50'
         };
         
-        // Event Listener: Resume audio playback when the tab becomes visible
+        // Event Listener: Resume audio playback when the tab becomes visible again
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
-                playBackgroundAudio(); // Attempt to play audio
+                playBackgroundAudio(); // Attempt to play audio when tab is active
             } else {
                 backgroundAudio.pause(); // Pause audio when tab is hidden
             }
@@ -508,20 +535,20 @@
         // Function to play background audio, respecting browser autoplay policies
         function playBackgroundAudio() {
             if (backgroundAudio.src && !audioPlayAttempted) { // Only if audio source exists and play hasn't been attempted
-                const playPromise = backgroundAudio.play(); // Attempt to play
+                const playPromise = backgroundAudio.play(); // Attempt to play audio
                 
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        audioPlayAttempted = true; // Mark as attempted
+                        audioPlayAttempted = true; // Mark play as attempted
                         console.log('Background audio playing.');
                     })
                     .catch(error => {
                         console.log('Autoplay prevented:', error);
-                        // If autoplay is blocked, prompt user interaction (e.g., click) to play audio
+                        // If autoplay is blocked, listen for user interaction (like a click) to play audio
                         const onceOptions = { once: true }; // Listen only once
                         document.body.addEventListener('click', () => {
                             backgroundAudio.play().then(() => {
-                                audioPlayAttempted = true;
+                                audioPlayAttempted = true; // Mark play as attempted after interaction
                                 console.log('Background audio playing after user interaction.');
                             }).catch(e => console.log('Autoplay still prevented:', e)); // Handle cases where even interaction fails
                         }, onceOptions);
@@ -530,67 +557,61 @@
             }
         }
         
-        // Function to adjust frame heights and text padding dynamically
+        // Function to dynamically adjust frame heights and text padding based on loaded content
         function adjustFrameHeightsAndTextPadding() {
-            // Adjust Title Frame height and title font size
+            // Adjust Title Frame height based on the uploaded image's aspect ratio
             if (titleFrameImage.src && titleFrameImage.complete) { // Ensure image is loaded
                 if (titleFrameImage.naturalHeight > 0 && titleFrameImage.naturalWidth > 0) {
                     const aspectRatio = titleFrameImage.naturalHeight / titleFrameImage.naturalWidth;
                     const containerWidth = titleFrameImage.parentElement.offsetWidth;
-                    titleFrameImage.parentElement.style.height = `${containerWidth * aspectRatio}px`; // Set height based on aspect ratio
+                    // Set height of the container to maintain the image's aspect ratio
+                    titleFrameImage.parentElement.style.height = `${containerWidth * aspectRatio}px`; 
                     
-                    // Responsive font size for title based on screen width and container size
-                    const maxWidthPixels = 800; // Reference max width
-                    const responsiveScale = Math.min(1, containerWidth / maxWidthPixels); // Scale factor
-                    let baseFontSizePx = 36; // Base font size for large screens
-                    if (window.innerWidth < 768) baseFontSizePx = 28; // Smaller base for tablets/phones
-                    if (window.innerWidth < 480) baseFontSizePx = 24; // Even smaller for small phones
-                    
-                    festivalTitle.style.fontSize = `${baseFontSizePx * responsiveScale}px`; // Apply calculated font size
+                    // Font size is applied directly from settings. No dynamic adjustment needed here.
                     
                 } else { // Handle broken image links or zero dimensions
-                    titleFrameImage.parentElement.style.display = 'none'; 
+                    titleFrameImage.parentElement.style.display = 'none'; // Hide the container if image is invalid
                 }
-            } else { // Hide if image is not loaded or no src is set
+            } else { // Hide if image is not loaded yet or no src is set
                 titleFrameImage.parentElement.style.display = titleFrameImage.src ? 'flex' : 'none';
             }
             
-            // Adjust Content Frame height and wish text container padding
+            // Adjust Content Frame height based on the uploaded image's aspect ratio
             if (contentFrameImage.src && contentFrameImage.complete) { // Ensure image is loaded
                 if (contentFrameImage.naturalHeight > 0 && contentFrameImage.naturalWidth > 0) {
                     const aspectRatio = contentFrameImage.naturalHeight / contentFrameImage.naturalWidth;
                     const containerWidth = contentFrameImage.parentElement.offsetWidth;
                     contentFrameImage.parentElement.style.height = `${containerWidth * aspectRatio}px`; // Set height based on aspect ratio
                     
-                    // Dynamically adjust padding of wish text container based on text length
-                    const textElement = isTranslated ? englishWishElement : hindiWishElement; // Get currently displayed text
-                    const textContent = textElement.innerHTML.replace(/<br>/g, ''); // Remove <br> for accurate length calculation
+                    // Dynamically adjust padding of wish text container based on text length for better fitting
+                    const textElement = isTranslated ? englishWishElement : hindiWishElement; // Get the currently displayed text element
+                    const textContent = textElement.innerHTML.replace(/<br>/g, ''); // Remove <br> tags for accurate length calculation
                     const textLength = textContent.length;
                     
-                    // Calculate padding to ensure text fits well and background is visible
+                    // Calculate padding percentage: decrease padding for longer text to reveal more background
                     const basePaddingPercent = 25; // Max padding percentage
                     const minPaddingPercent = 8;  // Min padding percentage
-                    const sensitivityFactor = 0.5; // Adjust for how quickly padding decreases
+                    const sensitivityFactor = 0.5; // Adjust how much padding decreases per character
                     
-                    const paddingPercent = Math.max(minPaddingPercent, basePaddingPercent - (textLength - 50) * sensitivityFactor); // Formula for padding
+                    const paddingPercent = Math.max(minPaddingPercent, basePaddingPercent - (textLength - 50) * sensitivityFactor); // Formula ensures padding stays within limits
                     
                     document.querySelector('.wish-text-container').style.padding = `${paddingPercent}%`; // Apply calculated padding
 
                 } else { // Handle broken image links or zero dimensions
                     contentFrameImage.parentElement.style.display = 'none';
                 }
-            } else { // Hide if image is not loaded or no src is set
+            } else { // Hide frame if image is not loaded or no src is set
                 contentFrameImage.parentElement.style.display = contentFrameImage.src ? 'flex' : 'none';
             }
         }
 
-        // Function to process wish text: converts newlines into <br> tags
+        // Function to process wish text: converts newlines into <br> tags for HTML display
         function processWishText(text) {
             if (!text) return ''; // Return empty string if text is null or undefined
             return text.replace(/\n/g, '<br>'); // Replace newline characters with <br> tags
         }
 
-        // Function to load settings from Supabase
+        // Function to load settings from Supabase and apply them to the page
         async function loadSettings() {
             try {
                 const { data, error } = await supaClient
@@ -599,7 +620,7 @@
                     .eq('id', 'festival_settings')
                     .single(); // Fetch the single settings record
 
-                // Merge fetched settings with defaults to ensure all properties are present
+                // Merge fetched settings with default settings to ensure all properties are present
                 const settings = (data && data.value) ? { ...defaultSettings, ...data.value } : defaultSettings;
 
                 // Apply Backgrounds
@@ -607,14 +628,15 @@
                     if (settings.background.startsWith('http') || settings.background.startsWith('data:')) {
                         mainBackground.style.backgroundImage = `url('${settings.background}')`; // Use URL for images
                     } else {
-                        mainBackground.style.background = settings.background; // Use direct value for gradients/colors
+                        mainBackground.style.background = settings.background; // Use value directly for gradients/colors
                     }
                 }
 
+                // Apply Second Background if provided
                 if (settings.secondBackground) {
                     if (settings.secondBackground.startsWith('http') || settings.secondBackground.startsWith('data:')) {
                         secondBackground.style.backgroundImage = `url('${settings.secondBackground}')`;
-                        secondBackground.style.display = 'block'; // Show the second background element
+                        secondBackground.style.display = 'block'; // Make the second background element visible
                     } else {
                         secondBackground.style.background = settings.secondBackground;
                         secondBackground.style.display = 'block';
@@ -628,7 +650,10 @@
                 // Apply Title Styles (Font, Color, Size)
                 festivalTitle.style.fontFamily = settings.titleFont || defaultSettings.titleFont;
                 festivalTitle.style.color = settings.titleColor || defaultSettings.titleColor;
-                festivalTitle.style.fontSize = settings.titleSize || defaultSettings.titleSize; // Apply direct CSS value
+                // Apply font size directly from settings. If 'custom' is selected, use custom value, else use the selected value.
+                festivalTitle.style.fontSize = (settings.titleSize === 'custom' && settings.customTitleSize)
+                                             ? settings.customTitleSize
+                                             : settings.titleSize || defaultSettings.titleSize;
 
                 // Set Wishes and their styles
                 originalHindiWish = settings.hindiWish || defaultSettings.hindiWish;
@@ -637,35 +662,40 @@
                 hindiWishElement.innerHTML = processWishText(originalHindiWish); // Set Hindi wish with <br> tags
                 hindiWishElement.style.fontFamily = settings.hindiFont || defaultSettings.hindiFont;
                 hindiWishElement.style.color = settings.hindiColor || defaultSettings.hindiColor;
-                hindiWishElement.style.fontSize = settings.hindiSize || defaultSettings.hindiSize;
+                // Apply font size directly from settings. If 'custom', use custom value, else selected value.
+                hindiWishElement.style.fontSize = (settings.hindiSize === 'custom' && settings.customHindiSize)
+                                                ? settings.customHindiSize
+                                                : settings.hindiSize || defaultSettings.hindiSize;
 
                 // Handle English wish and translation button visibility
                 if (originalEnglishWish && originalEnglishWish.trim() !== '') {
                     englishWishElement.innerHTML = processWishText(originalEnglishWish);
                     englishWishElement.style.fontFamily = settings.englishFont || defaultSettings.englishFont;
                     englishWishElement.style.color = settings.englishColor || defaultSettings.englishColor;
-                    englishWishElement.style.fontSize = settings.englishSize || defaultSettings.englishSize;
+                    englishWishElement.style.fontSize = (settings.englishSize === 'custom' && settings.customEnglishSize)
+                                                      ? settings.customEnglishSize
+                                                      : settings.englishSize || defaultSettings.englishSize; // Apply size directly
                     
                     translateBtn.classList.remove('hidden'); // Show translate button
                 } else {
-                    englishWishElement.classList.add('hidden'); // Hide if no English wish
+                    englishWishElement.classList.add('hidden'); // Hide if no English wish is available
                     translateBtn.classList.add('hidden');
                 }
 
                 // Set Share Description text
                 shareDescription = settings.shareDescription || defaultSettings.shareDescription;
 
-                // Set Media (Image or Video)
+                // Set Media (Image or Video) for the main media box
                 if (settings.mediaUrl && settings.mediaUrl.trim() !== '') {
-                    mediaBox.innerHTML = ''; // Clear any previous media
+                    mediaBox.innerHTML = ''; // Clear any previous media content
                     let mediaElement = null;
-                    // Determine if it's a video or image based on URL extension
+                    // Determine if it's a video or image based on the URL extension
                     if (settings.mediaUrl.toLowerCase().endsWith('.mp4') || settings.mediaUrl.toLowerCase().endsWith('.webm')) {
                         mediaElement = document.createElement('video');
                         mediaElement.autoplay = true; // Autoplay video
-                        mediaElement.loop = true;      // Loop video
+                        mediaElement.loop = true;      // Loop video playback
                         mediaElement.muted = true;     // Mute video for autoplay compliance
-                        mediaElement.controls = false; // No controls needed for background video
+                        mediaElement.controls = false; // Hide controls for background video
                     } else {
                         mediaElement = document.createElement('img'); // It's an image
                     }
@@ -677,9 +707,9 @@
                 }
 
                 // Set Title Frame Image
-                if (settings.frameUrl && settings.frameUrl.trim() !== '') {
-                    titleFrameImage.src = settings.frameUrl;
-                    // Use onload to ensure dimensions are ready before adjusting layout
+                if (settings.titleFrameUrl && settings.titleFrameUrl.trim() !== '') {
+                    titleFrameImage.src = settings.titleFrameUrl;
+                    // Use onload event to ensure dimensions are ready before adjusting layout
                     titleFrameImage.onload = adjustFrameHeightsAndTextPadding; 
                     titleFrameImage.onerror = function() { // Handle cases where image loading fails
                         console.error('Failed to load title frame image:', this.src);
@@ -697,9 +727,9 @@
                         console.error('Failed to load content frame image:', this.src);
                         this.parentElement.style.display = 'none'; // Hide frame container if image fails
                     };
-                    // Apply background size and repeat properties to the parent container
-                    contentFrameImage.parentElement.style.objectFit = settings.wishBgSize || 'cover';
-                    contentFrameImage.parentElement.style.backgroundRepeat = settings.wishBgRepeat || 'no-repeat';
+                    // Apply background size and repeat properties to the parent container of the image
+                    contentFrameImage.parentElement.style.objectFit = settings.wishBgSize || 'cover'; // Default to 'cover' if not specified
+                    contentFrameImage.parentElement.style.backgroundRepeat = settings.wishBgRepeat || 'no-repeat'; // Default to 'no-repeat'
                 } else {
                     contentFrameImage.style.display = 'none'; // Hide frame if no URL is provided
                 }
@@ -713,7 +743,7 @@
                     }
                 }
 
-                // Apply Button Styles based on admin's selection
+                // Apply Button Styles based on admin's choices
                 applyButtonStyles(settings.buttonStyle, settings.buttonColor);
 
                 // Check if the second page content is enabled (admin sets a flag)
@@ -727,11 +757,12 @@
                     initAnimations(settings);
                 }
 
-                // Adjust scroll height and overflow based on whether there's a second page
+                // Adjust scroll height and overflow properties based on the presence of the second page
                 adjustScrollHeight();
 
                 // Perform a final adjustment after all elements might have loaded, to ensure correct layout
-                setTimeout(adjustFrameHeightsAndTextPadding, 100); // Small delay to allow images to load
+                // Using a small timeout helps ensure all DOM manipulations are complete
+                setTimeout(adjustFrameHeightsAndTextPadding, 100); 
 
             } catch (error) {
                 console.error('Error loading settings from Supabase:', error);
@@ -749,11 +780,11 @@
             
             shareDescription = defaultSettings.shareDescription;
             
-            // Hide frame images by default if no default URL is set (they are optional)
+            // Hide frame images by default if no default URL is set (frames are optional)
             titleFrameImage.style.display = 'none';
             contentFrameImage.style.display = 'none';
             
-            // Show translate button only if an English wish is defined in defaults
+            // Show the translate button only if an English wish is defined in the defaults
             if (defaultSettings.englishWish && defaultSettings.englishWish.trim() !== '') {
                 translateBtn.classList.remove('hidden');
             } else {
@@ -761,19 +792,19 @@
             }
 
             applyButtonStyles(defaultSettings.buttonStyle, defaultSettings.buttonColor); // Apply default button styles
-            adjustScrollHeight(); // Adjust scroll based on default page structure
+            adjustScrollHeight(); // Adjust scroll based on the default page structure
         }
 
         // Initialize animations based on loaded settings
         function initAnimations(settings) {
             animationContainer.innerHTML = ''; // Clear any existing animations before starting new ones
             
-            const emojiSet = getEmojiSet(settings.emojiType, settings.customEmojis); // Get the emoji set
-            const quantity = getAnimationQuantity(settings.animationQuantity, settings.customQuantity); // Get the number of emojis
+            const emojiSet = getEmojiSet(settings.emojiType, settings.customEmojis); // Get the set of emojis to use
+            const quantity = getAnimationQuantity(settings.animationQuantity, settings.customQuantity); // Get the number of emojis to display
             const speed = getAnimationSpeed(settings.animationSpeed, settings.customSpeed); // Get the animation speed multiplier
-            const animationType = settings.animationType || 'float'; // Default to 'float' if not specified
+            const animationType = settings.animationType || 'float'; // Default to 'float' if type is not specified
             
-            // Create the specified number of emoji elements
+            // Create the specified number of emoji elements and append them to the animation container
             for (let i = 0; i < quantity; i++) {
                 createEmoji(emojiSet, speed, animationType);
             }
@@ -782,8 +813,8 @@
         // Function to create and append a single animated emoji element
         function createEmoji(emojiSet, speed, animationType) {
             const emoji = document.createElement('div');
-            emoji.textContent = emojiSet[Math.floor(Math.random() * emojiSet.length)]; // Pick random emoji from the set
-            emoji.style.fontSize = `${Math.random() * 20 + 16}px`; // Randomize emoji size
+            emoji.textContent = emojiSet[Math.floor(Math.random() * emojiSet.length)]; // Pick a random emoji from the set
+            emoji.style.fontSize = `${Math.random() * 20 + 16}px`; // Randomize emoji size for variety
         
             switch(animationType) {
                 case 'fall':
@@ -795,47 +826,48 @@
                     break;              
                 case 'swirl':
                     emoji.className = 'swirling-emoji';
-                    emoji.style.animationDuration = `${8 / speed}s`; // Adjust duration by speed
+                    emoji.style.animationDuration = `${8 / speed}s`; // Adjust duration based on speed
                     emoji.style.left = `${Math.random() * 100}%`;
                     emoji.style.top = `${Math.random() * 100}%`;
                     break;
                 case 'fireworks':
                     emoji.className = 'fireworks-emoji';
-                    emoji.style.setProperty('--tx', `${Math.random() * 200 - 100}px`); // Random horizontal offset
-                    emoji.style.setProperty('--ty', `${Math.random() * 200 - 100}px`); // Random vertical offset
+                    emoji.style.setProperty('--tx', `${Math.random() * 200 - 100}px`); // Random horizontal offset for explosion
+                    emoji.style.setProperty('--ty', `${Math.random() * 200 - 100}px`); // Random vertical offset for explosion
                     emoji.style.left = '50%'; // Center point for explosion
                     emoji.style.top = '50%';
                     emoji.style.animationDuration = `${1 / speed}s`; // Fast animation, scaled by speed
                     break;
                 case 'confetti':
-                    emoji.className = 'fireworks-emoji'; // Re-use fireworks animation styling
+                    emoji.className = 'fireworks-emoji'; // Re-use fireworks animation styling for confetti
                     emoji.style.setProperty('--tx', `${Math.random() * 200 - 100}px`);
                     emoji.style.setProperty('--ty', `${Math.random() * 200 - 100}px`);
                     emoji.style.left = '50%';
                     emoji.style.top = '50%';
                     emoji.style.animationDuration = `${1.5 / speed}s`; // Slightly longer duration for confetti
                     break;
-                default: // 'float' animation (default)
+                default: // 'float' animation (default behavior)
                     emoji.className = 'floating-emoji';
-                    emoji.style.animationDuration = `${3 / speed}s`; // Adjust duration by speed
+                    emoji.style.animationDuration = `${3 / speed}s`; // Adjust duration based on speed
                     emoji.style.left = `${Math.random() * 100}%`;
                     emoji.style.top = `${Math.random() * 100}%`;
             }
         
             animationContainer.appendChild(emoji); // Add the created emoji to the animation container
             
-            // For animations that should disappear after playing once (fall, fireworks, confetti)
+            // For animations that should disappear after playing once (fall, fireworks, confetti),
+            // add an event listener to remove the element and create a new one when the animation ends.
             if (animationType === 'fall' || animationType === 'fireworks' || animationType === 'confetti') {
                 emoji.addEventListener('animationend', () => {
-                    emoji.remove(); // Remove the emoji element after animation ends
-                    createEmoji(emojiSet, speed, animationType); // Create a replacement emoji
+                    emoji.remove(); // Remove the emoji element after its animation is finished
+                    createEmoji(emojiSet, speed, animationType); // Create a replacement emoji to maintain quantity
                 });
             }
         }
         
         // Helper function to get an emoji set based on type or custom input
         function getEmojiSet(type, customEmojis) {
-            const sets = { // Predefined emoji sets
+            const sets = { // Predefined emoji sets for different animation types
                 flowers: ['🌸', '🌺', '🌻', '🌼', '🌷', '💐'],
                 diyas: ['🪔', '✨', '🕯️', '🌟'],
                 rangoli: ['🟡', '🔴', '🟢', '🔵', '🟣'],
@@ -846,15 +878,15 @@
             };
             
             if (type === 'custom' && customEmojis) {
-                const emojis = customEmojis.split(',').map(e => e.trim()).filter(e => e.length > 0); // Split and clean custom emojis
-                if (emojis.length > 0) return emojis; // Return custom emojis if valid
+                const emojis = customEmojis.split(',').map(e => e.trim()).filter(e => e.length > 0); // Split custom emojis and clean them
+                if (emojis.length > 0) return emojis; // Return custom emojis if they are valid
             }
-            return sets[type] || sets.mixed; // Fallback to 'mixed' if type is invalid or custom emojis are empty
+            return sets[type] || sets.mixed; // Fallback to the 'mixed' set if type is invalid or custom emojis are empty
         }
         
         // Helper function to get the desired animation quantity (number of emojis)
         function getAnimationQuantity(type, customQuantity) {
-            const quantities = { // Mapping of quantity levels to numbers
+            const quantities = { // Mapping of quantity levels to the number of emojis
                 low: 5,
                 medium: 10,
                 high: 20,
@@ -863,10 +895,10 @@
             
             if (type === 'custom' && customQuantity) {
                 const qty = parseInt(customQuantity);
-                // Ensure quantity is a positive number, capped at 100
+                // Ensure quantity is a positive number and cap it at 100 for performance
                 if (!isNaN(qty) && qty > 0) return Math.min(100, qty); 
             }
-            return quantities[type] || 10; // Default to medium quantity
+            return quantities[type] || 10; // Default to medium quantity if type is invalid
         }
         
         // Helper function to get the animation speed multiplier
@@ -876,10 +908,10 @@
                 // Ensure speed is a valid positive number
                 if (!isNaN(speed) && speed > 0) return speed; 
             }
-            return parseFloat(type) || 1; // Default to 1x speed
+            return parseFloat(type) || 1; // Default to 1x speed if type is invalid or not 'custom'
         }
         
-        // Apply button styles based on selected style and color
+        // Function to apply button styles based on admin's selected style and color
         function applyButtonStyles(style, color) {
             const buttons = [shareBtn, copyBtn]; // Apply styles to both action buttons
             
@@ -899,14 +931,14 @@
             } else if (style === 'solid') {
                 buttons.forEach(btn => {
                     btn.style.background = color;
-                    btn.style.border = 'none'; // Remove border for solid style
+                    btn.style.border = 'none'; // Remove border for solid color style
                     btn.style.color = 'white';
                 });
             } else if (style === 'outline') {
                 buttons.forEach(btn => {
-                    btn.style.background = 'transparent'; // Transparent background
-                    btn.style.border = `2px solid ${color}`; // Border color matches the selected color
-                    btn.style.color = color; // Text color matches the border color
+                    btn.style.background = 'transparent'; // Make background transparent
+                    btn.style.border = `2px solid ${color}`; // Set border color from settings
+                    btn.style.color = color; // Set text color to match the border color
                 });
             }
         }
@@ -916,7 +948,7 @@
             let usePound = false;
             if (color[0] === "#") { // Check if hex code starts with #
                 color = color.slice(1); // Remove #
-                usePound = true;
+                usePound = true; // Remember to add # back later
             }
 
             // Parse hex color string into RGB components
@@ -934,65 +966,65 @@
             return usePound ? newColor : newColor.slice(1); // Return with # if original color had it
         }
         
-        // Adjust scroll height and overflow based on whether the second page content is used
+        // Adjust scroll height and overflow properties based on whether the second page content is used
         function adjustScrollHeight() {
-            if (!hasSecondPageContent) { // If only one page of content
+            if (!hasSecondPageContent) { // If only one page of content is expected
                  document.body.style.minHeight = '100vh'; // Ensure body takes full viewport height
                  document.documentElement.style.height = 'auto';
                  document.body.style.overflowY = 'auto'; // Allow scrolling if content exceeds viewport height
-            } else { // If multiple pages, let content determine height
-                document.body.style.minHeight = '100vh'; // Still maintain minimum height
+            } else { // If multiple pages are possible
+                document.body.style.minHeight = '100vh'; // Maintain minimum height
                 document.body.style.height = 'auto';
                 document.body.style.overflowY = 'auto';
             }
         }
         
-        // Event Listener for username input: shows action buttons when a name is entered
+        // Event Listener for the username input field: shows action buttons once a name is entered
         userNameInput.addEventListener('input', () => {
-            if (userNameInput.value.trim()) { // Check if username input is not empty
-                actionButtonsContainer.classList.remove('hidden'); // Show the buttons
+            if (userNameInput.value.trim()) { // Check if the username input is not empty after trimming whitespace
+                actionButtonsContainer.classList.remove('hidden'); // Show the share and copy buttons
             } else {
-                actionButtonsContainer.classList.add('hidden'); // Hide buttons if input is cleared
+                actionButtonsContainer.classList.add('hidden'); // Hide buttons if the input is cleared
             }
         });
         
         // Event Listener for the translate button: toggles between Hindi and English wishes
         translateBtn.addEventListener('click', () => {
-            // Only proceed if an English wish is actually available
+            // Only proceed if an English wish is actually available to display
             if (!originalEnglishWish || originalEnglishWish.trim() === '') {
-                englishWishElement.textContent = ""; // Clear if empty
-                translateBtn.classList.add('hidden'); // Hide the button
+                englishWishElement.textContent = ""; // Clear the English wish if it's empty
+                translateBtn.classList.add('hidden'); // Hide the translate button
                 return;
             }
             
-            if (isTranslated) { // Currently showing English, switch back to Hindi
-                hindiWishElement.classList.remove('hidden');
-                englishWishElement.classList.add('hidden');
+            if (isTranslated) { // If currently showing English, switch back to Hindi
+                hindiWishElement.classList.remove('hidden'); // Show Hindi wish
+                englishWishElement.classList.add('hidden'); // Hide English wish
                 translateBtn.textContent = 'Translate to English'; // Update button text
-            } else { // Currently showing Hindi, switch to English
-                hindiWishElement.classList.add('hidden');
-                englishWishElement.classList.remove('hidden');
+            } else { // If currently showing Hindi, switch to English
+                hindiWishElement.classList.add('hidden'); // Hide Hindi wish
+                englishWishElement.classList.remove('hidden'); // Show English wish
                 translateBtn.textContent = 'Show in Hindi'; // Update button text
             }
             isTranslated = !isTranslated; // Toggle the translation state
         });
         
-        // Event Listener for the share button: handles sharing functionality
+        // Event Listener for the share button: handles the sharing functionality
         shareBtn.addEventListener('click', async () => {
             const name = userNameInput.value.trim() || "Someone"; // Get username or default to "Someone"
-            const shareMessage = `${name} ${shareDescription}\n${FIXED_SHARE_URL}`; // Construct the share message
+            const shareMessage = `${name} ${shareDescription}\n${FIXED_SHARE_URL}`; // Construct the complete share message
 
             try {
-                if (navigator.share) { // Use Web Share API if available (primarily for mobile)
+                if (navigator.share) { // Use Web Share API if available (primarily for mobile devices)
                     await navigator.share({
-                        title: document.title, // Page title for sharing
-                        text: shareMessage,    // The message to share
+                        title: document.title, // Title for sharing
+                        text: shareMessage,    // The message content
                         url: FIXED_SHARE_URL   // The URL to share
                     });
-                } else if (navigator.clipboard) { // Use Clipboard API if available (desktop/modern mobile)
+                } else if (navigator.clipboard) { // Use Clipboard API if available (desktop and modern mobile browsers)
                     await navigator.clipboard.writeText(shareMessage); // Copy the message to the clipboard
                     alert('Share message copied to clipboard!');
-                    // Optionally, attempt to open WhatsApp on mobile for direct sharing
+                    // Optionally, attempt to open WhatsApp on mobile for direct sharing after copying
                     if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                         window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
                     }
@@ -1016,15 +1048,15 @@
             const name = userNameInput.value.trim() || "Someone";
             const shareMessage = `${name} ${shareDescription}\n${FIXED_SHARE_URL}`;
             
-            if (navigator.clipboard) { // Prefer Clipboard API for copying
+            if (navigator.clipboard) { // Prefer using the Clipboard API for copying
                 navigator.clipboard.writeText(shareMessage).then(() => {
                     alert('Wish copied to clipboard!');
                 }).catch(err => {
                     console.error('Failed to copy text using Clipboard API:', err);
-                    fallbackCopyText(shareMessage); // Use fallback if Clipboard API fails
+                    fallbackCopyText(shareMessage); // Use fallback method if Clipboard API fails
                 });
             } else {
-                fallbackCopyText(shareMessage); // Use fallback if Clipboard API is not available
+                fallbackCopyText(shareMessage); // Use fallback method if Clipboard API is not available
             }
         });
         
@@ -1035,7 +1067,7 @@
             // Make the textarea invisible and off-screen to avoid visual disruption
             textArea.style.position = 'absolute';
             textArea.style.left = '-9999px';
-            document.body.appendChild(textArea); // Add to DOM
+            document.body.appendChild(textArea); // Add to the DOM
             textArea.select(); // Select the text within the textarea
             
             try {
@@ -1046,13 +1078,14 @@
                 alert('Could not copy text. Please select and copy manually.');
             }
             
-            document.body.removeChild(textArea); // Remove the temporary textarea from the DOM
+            document.body.removeChild(textArea); // Remove the temporary textarea from the DOM after copying
         }
         
         // Initialize the application when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
-            loadSettings(); // Load settings from Supabase
-            // Add a resize event listener to re-adjust layout elements (frames, text sizes) on window resize or orientation change
+            loadSettings(); // Load settings from Supabase upon page load
+            // Add a resize event listener to re-adjust layout elements (frames, text sizes)
+            // This is crucial for responsiveness on window resize or orientation changes
             window.addEventListener('resize', () => {
                 adjustFrameHeightsAndTextPadding();
                 adjustScrollHeight();
