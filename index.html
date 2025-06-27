@@ -101,7 +101,7 @@
             box-sizing: border-box; /* Ensures padding is included in the element's total dimensions */
         }
         
-        /* Title Frame Container - Holds the title image and the title text */
+        /* Title Frame Container - Holds the title frame image and the title text */
         .title-frame-container {
             position: relative; /* For absolute positioning of the text */
             width: auto; /* Width determined by the image or max-width */
@@ -304,7 +304,6 @@
             100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; } /* Expand and fade out */
         }
 
-        /* Applying animation classes to emoji elements */
         .floating-emoji {
             position: absolute;
             animation: float 3s ease-in-out infinite; /* Apply float animation indefinitely */
@@ -536,16 +535,14 @@
         
         // Function to dynamically adjust frame heights and text padding based on loaded content
         function adjustFrameHeightsAndTextPadding() {
-            // Adjust Title Frame height and title font size
+            // Adjust Title Frame height and ensure image fills it correctly
             if (titleFrameImage.src && titleFrameImage.complete) { // Ensure image is loaded
                 if (titleFrameImage.naturalHeight > 0 && titleFrameImage.naturalWidth > 0) {
                     const aspectRatio = titleFrameImage.naturalHeight / titleFrameImage.naturalWidth;
                     const containerWidth = titleFrameImage.parentElement.offsetWidth;
-                    titleFrameImage.parentElement.style.height = `${containerWidth * aspectRatio}px`; // Set height based on aspect ratio
+                    titleFrameImage.parentElement.style.height = `${containerWidth * aspectRatio}px`; // Set height based on image aspect ratio
                     
-                    // Apply the font size directly from settings, not based on responsiveness adjustments
-                    // The font size is already set in px or rem by admin.
-                    // Responsive scaling is not needed here as per new requirement.
+                    // The font size is already set directly in loadSettings, so no dynamic adjustment here.
                     
                 } else { // Handle broken image links or zero dimensions
                     titleFrameImage.parentElement.style.display = 'none'; 
