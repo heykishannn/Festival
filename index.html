@@ -3,1073 +3,1081 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Festival Admin Panel</title>
+    <title>Festival Wishes</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Existing styles for shine, borders, shadows, backgrounds, etc. */
-        .shine {
-            background: linear-gradient(90deg, #fff7ae 25%, #ffe066 50%, #fff7ae 75%);
-            background-size: 200% 100%;
-            animation: shine 2s linear infinite;
+        /* Basic Reset and Base Styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+            scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+            font-family: 'Poppins', sans-serif; /* Default font for the entire page */
         }
-        @keyframes shine {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        .festive-border {
-            border: 4px solid transparent;
-            border-image: linear-gradient(90deg, #eab308, #ea580c, #a21caf, #f59e42, #eab308) 1;
-        }
-        .festive-shadow {
-            box-shadow: 0 8px 32px 0 rgba(234, 88, 12, 0.25), 0 1.5px 4px 0 #a21caf33;
-        }
-        .festive-bg {
-            background: linear-gradient(135deg, #fff7ae 0%, #fef3c7 60%, #fde68a 100%);
-        }
-        .festive-accent {
-            background: repeating-linear-gradient(
-                135deg,
-                #f59e42 0px,
-                #f59e42 8px,
-                #eab308 8px,
-                #eab308 16px
-            );
-        }
-        .festive-underline {
-            text-decoration: underline wavy #ea580c 3px;
-        }
-        .festive-btn {
-            background: linear-gradient(90deg, #eab308 0%, #ea580c 100%);
-            color: #fff;
-        }
-        .festive-btn:hover {
-            background: linear-gradient(90deg, #ea580c 0%, #eab308 100%);
-            color: #fff;
-        }
-        .toast {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            color: white;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: slideIn 0.3s forwards, fadeOut 3s 1s forwards;
-            z-index: 1000;
-        }
-        @keyframes slideIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeOut {
-            to { opacity: 0; transform: translateY(20px); }
-        }
-        .custom-editor {
-            display: none;
-            position: fixed;
+        
+        /* Animation Container - Overlays everything for displaying animations */
+        .animation-container {
+            position: fixed; /* Stays in place */
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            pointer-events: none; /* Allows clicks to pass through to elements behind */
+            z-index: 1; /* Positioned below content but above backgrounds */
+            overflow: hidden; /* Hides any animations that go outside the viewport */
         }
-        .editor-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            width: 90%;
-            max-width: 600px;
-        }
-        .custom-option {
-            display: none; /* Hidden by default */
-            margin-top: 0.5rem;
-        }
-        /* Show custom option input when its parent select is set to 'custom' */
-        select[id$="Font"]:has(option[value="custom"]:checked) ~ input[id$="Font"],
-        select[id$="ColorType"]:has(option[value="custom"]:checked) ~ input[id$="Color"],
-        select[id$="Size"]:has(option[value="custom"]:checked) ~ input[id$="Size"],
-        select[id$="Speed"]:has(option[value="custom"]:checked) ~ input[id$="Speed"],
-        select[id$="Quantity"]:has(option[value="custom"]:checked) ~ input[id$="Quantity"],
-        select[id$="EmojiType"]:has(option[value="custom"]:checked) ~ input[id$="EmojiType"],
-        select[id$="ButtonColorType"]:has(option[value="custom"]:checked) ~ input[id$="ButtonColor"]
-        {
-            display: block;
+        
+        /* Background Container - Holds the main and second background layers */
+        .background-container {
+            position: relative; /* Establishes a positioning context for backgrounds */
+            width: 100%;
+            min-height: 100vh; /* Ensures it covers at least the viewport height */
+            overflow: hidden; /* Prevents background elements from overflowing */
         }
 
-        .preview-container img, .preview-container video {
-            max-width: 100%;
-            max-height: 200px;
-            display: block;
-            margin: 0 auto;
+        /* Media Box - Displays the main uploaded image or video */
+        .media-box {
+            width: 90%; /* Responsive width */
+            max-width: 800px; /* Consistent maximum width */
+            margin: 0 auto 3rem; /* Center horizontally with bottom margin */
+            border-radius: 16px; /* Rounded corners for the media box */
+            overflow: hidden; /* Clips content within the border radius */
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Adds depth with a shadow */
+            z-index: 2; /* Ensures the media box is above background layers */
+	    }
+        
+        /* Main Background Layer */
+        .main-bg {
+            position: absolute; /* Positioned relative to .background-container */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh; /* Initially covers the entire viewport */
+            z-index: -1; /* Positioned behind all content */
+            background-size: cover; /* Scales the background to cover the entire container */
+            background-position: center; /* Centers the background image */
+            background-repeat: no-repeat; /* Prevents the background image from repeating */
+        }
+        
+        /* Second Background Layer - Appears below the first page */
+        .second-bg {
+            position: absolute;
+            top: 100vh; /* Starts directly after the first page section */
+            left: 0;
+            width: 100%;
+            height: 300vh; /* Ample height to allow scrolling if needed */
+            z-index: -1; /* Positioned behind all content */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: none; /* Hidden by default; shown only if a second background is set */
+        }
+        
+        /* Content Container - Holds all the visual elements like frames and text */
+        .content-container {
+            position: relative; /* Establishes a positioning context for absolute elements inside */
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            z-index: 2; /* Ensures content is above background layers */
+            flex-direction: column; /* Stacks child elements (page sections) vertically */
+        }
+        
+        /* Page Section - Represents a distinct "page" of content */
+        .page-section {
+            position: relative; /* Context for absolute positioning of frames and text */
+            width: 100%;
+            /* IMPORTANT: Removed min-height: 100vh here. The height will now be determined by content. */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centers content horizontally */
+            justify-content: center; /* Centers content vertically */
+            padding: 2rem 1rem; /* Adds padding around the content */
+            box-sizing: border-box; /* Ensures padding is included in the element's total dimensions */
+        }
+        
+        /* Title Frame Container - Holds the title frame image and the title text */
+        .title-frame-container {
+            position: relative; /* For absolute positioning of the text */
+            width: 90%; /* Responsive width */
+            max-width: 800px; /* Consistent maximum width */
+            margin-bottom: 2rem; /* Space below the title block */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1; /* Ensures it's above background layers */
+        }
+        
+        .title-frame-image {
+            width: 100%; /* Make the image fill its container */
+            display: block; /* Removes extra space below the image */
+            height: auto; /* Maintain the image's aspect ratio */
+            object-fit: contain; /* Ensure the image fits without stretching or cropping */
+        }
+        
+        .title-text-container {
+            position: absolute; /* Positions text directly over the frame image */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-sizing: border-box;
+            pointer-events: none; /* Allows clicks to pass through to elements behind */
+        }
+        
+        .title-text {
+            font-size: 2rem; /* Default font size, adjusted by JS based on admin settings */
+            font-weight: bold;
+            color: white; /* Default text color */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Text shadow for better readability */
+            width: 100%;
+            max-width: 100%; /* Prevent text from touching container edges */
+            line-height: 1.2; /* Sets line height for better text flow */
+        }
+        
+        /* Content Frame Container - Holds the wish box background image */
+        .content-frame-container {
+            position: relative; /* Context for absolute positioning of text */
+            width: 90%; /* Responsive width */
+            max-width: 800px; /* Consistent maximum width */
+            margin-bottom: 2rem; /* Space below the content block */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1; /* Above background layers */
+            /* Aspect ratio will be set dynamically by JS based on image dimensions */
+        }
+        
+        .content-frame-image {
+            width: 100%;
+            height: 100%; /* Make the image fill its parent container */
+            object-fit: contain; /* Scales the image to fit while maintaining aspect ratio */
+            display: block; /* Removes extra space below the image */
+        }
+        
+        .wish-text-container {
+            position: absolute; /* Positions text directly over the content frame image */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column; /* Stacks wishes vertically */
+            justify-content: center; /* Centers content vertically */
+            align-items: center; /* Centers content horizontally */
+            text-align: center;
+            box-sizing: border-box;
+            pointer-events: none; /* Allows clicks to pass through */
+            overflow: hidden; /* Hides any content that might spill out */
+        }
+        
+        .wish-text {
+            font-weight: bold;
+            line-height: 1.2; /* Line height for text */
+            margin-bottom: 1rem; /* Space between wish lines */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Text shadow */
+            white-space: pre-line; /* Respects newlines entered in the admin panel */
+            width: 100%;
+            color: white; /* Default text color */
+            max-width: 100%; /* Prevent text from touching container edges */
+        }
+        
+        /* Username Input Field */
+        .username-field {
+            background: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+            border: 2px solid white; /* White border */
+            backdrop-filter: blur(10px); /* Blur effect for the background */
+            -webkit-backdrop-filter: blur(10px); /* Safari compatibility */
+            border-radius: 40px; /* Rounded corners */
+            padding: 12px 20px;
+            color: white; /* Text color */
+            font-size: 16px;
+            outline: none; /* Remove default outline on focus */
+            width: 90%;
+            max-width: 400px; /* Maximum width for the input field */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2); /* Subtle shadow */
+            margin-bottom: 1rem; /* Space below the input */
+            font-family: inherit; /* Inherit font from the body */
+        }
+        
+        /* Action Buttons (Share/Copy) */
+        .action-btn {
+            padding: 0.8rem 2rem;
+            border-radius: 24px; /* Pill-shaped buttons */
+            font-weight: 600;
+            transition: all 0.3s ease; /* Smooth transitions for hover effects */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-family: 'Poppins', sans-serif; /* Consistent font */
+            font-size: 1rem;
+            border: none; /* Remove default border */
+            cursor: pointer; /* Indicate it's clickable */
+            z-index: 1; /* Ensure buttons are above backgrounds */
+        }
+        
+        /* Example gradient style for buttons */
+        .btn-gradient {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32); /* Green gradient */
+            color: white;
+        }
+        
+        /* Translate Text Link Style */
+        .translate-text {
+            color: #1F51FF; /* Blue color for the link */
+            text-decoration: underline; /* Underline to indicate it's a link */
+            cursor: pointer;
+            font-size: 0.9rem;
+            /* Positioned absolutely relative to the nearest positioned ancestor */
+            position: absolute;
+            right: 1rem; /* Align to the right side */
+            top: 0.5rem; /* Position from the top */
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Text shadow */
+            z-index: 10; /* Higher z-index to be on top of username field if needed */
+            pointer-events: auto; /* Make it clickable */
+        }
+        
+        /* Bottom Ad Container */
+        .bottom-ad-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+            box-sizing: border-box;
+            z-index: 100; /* High z-index to stay on top */
+        }
+        
+        .bottom-ad {
+            width: 100%;
+            max-width: 800px; /* Match other content widths */
+            height: auto;
+            min-height: 90px; /* Minimum height for the ad placeholder */
+            z-index: 100;
+            background-color: transparent;
+            border-radius: 8px;
+            overflow: hidden; /* Clip ad content if necessary */
+        }
+        
+        /* Fixed Footer Ad */
+        .footer-ad {
+            position: fixed; /* Stays fixed at the bottom of the viewport */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px; /* Fixed height for the footer ad */
+            background-color: #f0f0f0; /* Light background color */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100; /* High z-index to ensure it remains visible */
+        }
+        
+        .footer-ad-content {
+            width: 468px; /* Standard ad width */
+            height: 60px; /* Standard ad height */
+            background-color: #e0e0e0; /* Placeholder background color */
+        }
+
+        /* Animation Styles - CSS keyframe animations for emojis */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); } /* Gentle bobbing motion */
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100px); opacity: 1; } /* Start above the viewport */
+            100% { transform: translateY(100vh); opacity: 1; } /* Fall to the bottom of the viewport */
+        }
+
+        @keyframes swirl {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(50px, 50px) rotate(180deg); } /* Rotate and move */
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        @keyframes fireworks {
+            0% { transform: translate(0, 0) scale(0.5); opacity: 1; } /* Start small */
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; } /* Expand and fade out */
+        }
+
+        /* Applying animation classes to emoji elements */
+        .floating-emoji {
+            position: absolute;
+            animation: float 3s ease-in-out infinite; /* Apply float animation indefinitely */
+            font-size: 24px; /* Default emoji size */
+        }
+        .falling-emoji {
+            position: absolute;
+            animation: fall linear forwards; /* Apply fall animation, forwards to keep end state */
+        }
+        .swirling-emoji {
+            position: absolute;
+            animation: swirl 5s linear infinite; /* Apply swirl animation indefinitely */
+        }
+        .fireworks-emoji {
+            position: absolute;
+            animation: fireworks 1s ease-out forwards; /* Apply fireworks animation */
+        }
+        
+        /* Responsive Adjustments - Media Queries */
+        @media (max-width: 768px) {
+            .title-text {
+                font-size: 1.5rem; /* Smaller title on tablets and phones */
+            }
+            .wish-text {
+                font-size: 1rem; /* Smaller wish text on smaller screens */
+            }
+            .title-text-container, .wish-text-container {
+                padding: 10%; /* Increase padding on smaller screens for better text fit */
+            }
+            /* Adjust translate button position for smaller screens */
+            .translate-text {
+                top: 0.2rem;
+                right: 0.2rem;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 sm:p-6 font-sans bg-gradient-to-br from-yellow-100 via-orange-100 to-purple-100 festive-bg">
-    <div class="w-full max-w-5xl rounded-3xl festive-border festive-shadow p-6 sm:p-8 bg-white/90 backdrop-blur-md">
-        <h1 class="text-3xl sm:4xl md:text-5xl font-extrabold text-center text-yellow-700 mb-8 festive-underline shine tracking-wide">
-            🎉 Festival Admin Panel 🎉
-        </h1>
+<body>
+    <!-- Animation Container -->
+    <div id="animationContainer" class="animation-container"></div>
+    
+    <!-- Background Container -->
+    <div class="background-container">
+        <!-- Background Layers -->
+        <div id="mainBackground" class="main-bg"></div>
+        <div id="secondBackground" class="second-bg"></div>
         
-        <!-- Wishes Section -->
-        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-yellow-400 festive-bg festive-shadow">
-            <div class="festive-accent p-3 sm:p-4 rounded-t-lg">
-                <h2 class="text-lg sm:text-xl font-bold text-purple-800">Wishes</h2>
-            </div>
-            <div class="p-4 sm:p-6">
-                <form id="settingsForm" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-yellow-800">Title</label>
-                        <div class="flex gap-2">
-                            <input type="text" id="title" class="flex-1 p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900">
-                            <button type="button" onclick="openEditor('title')" class="px-3 bg-yellow-100 rounded-lg border border-yellow-300">Edit</button>
-                        </div>
-                        <div class="mt-2 grid grid-cols-3 gap-2">
-                            <div>
-                                <label class="block text-xs font-semibold text-yellow-800">Font</label>
-                                <select id="titleFont" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                    <option value="'Poppins', sans-serif">Poppins</option>
-                                    <option value="'Noto Sans Devanagari', sans-serif">Noto Sans</option>
-                                    <option value="Arial, sans-serif">Arial</option>
-                                    <option value="custom">Custom Font</option>
-                                </select>
-                                <input type="text" id="customTitleFont" placeholder="Enter custom font family" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-yellow-800">Color</label>
-                                <select id="titleColorType" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                    <option value="preset">Preset Colors</option>
-                                    <option value="custom">Custom Color</option>
-                                </select>
-                                <input type="color" id="titleColor" value="#4c1d95" class="custom-option w-full h-8">
-                                <input type="text" id="customTitleColor" placeholder="Enter hex code" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-yellow-800">Size</label>
-                                <select id="titleSize" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                    <option value="text-xl">Small</option>
-                                    <option value="text-2xl">Medium</option>
-                                    <option value="text-3xl">Large</option>
-                                    <option value="text-4xl">X-Large</option>
-                                    <option value="text-5xl">XX-Large</option>
-                                    <option value="custom">Custom Size</option>
-                                </select>
-                                <input type="text" id="customTitleSize" placeholder="Enter custom size (e.g., 2rem)" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-yellow-800">Hindi Wish</label>
-                            <div class="flex gap-2">
-                                <textarea id="hindiWish" class="flex-1 p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900 resize-y h-32"></textarea>
-                                <button type="button" onclick="openEditor('hindiWish')" class="px-3 bg-yellow-100 rounded-lg border border-yellow-300">Edit</button>
-                            </div>
-                            <div class="mt-2 space-y-2">
-                                <div>
-                                    <label class="block text-xs font-semibold text-yellow-800">Hindi Font</label>
-                                    <select id="hindiFont" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                        <option value="'Noto Sans Devanagari', sans-serif">Noto Sans Devanagari</option>
-                                        <option value="'Poppins', sans-serif">Poppins</option>
-                                        <option value="Arial, sans-serif">Arial</option>
-                                        <option value="custom">Custom Font</option>
-                                    </select>
-                                    <input type="text" id="customHindiFont" placeholder="Enter custom font name" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-yellow-800">Hindi Text Color</label>
-                                    <select id="hindiColorType" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                        <option value="preset">Preset Colors</option>
-                                        <option value="custom">Custom Color</option>
-                                    </select>
-                                    <input type="color" id="hindiColor" value="#4c1d95" class="custom-option w-full h-8">
-                                    <input type="text" id="customHindiColor" placeholder="Enter hex code" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-yellow-800">Hindi Text Size</label>
-                                    <select id="hindiSize" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                        <option value="1rem">Small</option>
-                                        <option value="1.25rem">Medium</option>
-                                        <option value="1.5rem">Large</option>
-                                        <option value="2rem">X-Large</option>
-                                        <option value="2.5rem">XX-Large</option>
-                                        <option value="custom">Custom Size</option>
-                                    </select>
-                                    <input type="text" id="customHindiSize" placeholder="Enter custom size (e.g., 1.8rem)" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-semibold text-yellow-800">English Wish</label>
-                            <div class="flex gap-2">
-                                <textarea id="englishWish" class="flex-1 p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900 resize-y h-32"></textarea>
-                                <button type="button" onclick="openEditor('englishWish')" class="px-3 bg-yellow-100 rounded-lg border border-yellow-300">Edit</button>
-                            </div>
-                            <div class="mt-2 space-y-2">
-                                <div>
-                                    <label class="block text-xs font-semibold text-yellow-800">English Font</label>
-                                    <select id="englishFont" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                        <option value="'Poppins', sans-serif">Poppins</option>
-                                        <option value="Arial, sans-serif">Arial</option>
-                                        <option value="Georgia, serif">Georgia</option>
-                                        <option value="custom">Custom Font</option>
-                                    </select>
-                                    <input type="text" id="customEnglishFont" placeholder="Enter custom font name" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-yellow-800">English Text Color</label>
-                                    <select id="englishColorType" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                        <option value="preset">Preset Colors</option>
-                                        <option value="custom">Custom Color</option>
-                                    </select>
-                                    <input type="color" id="englishColor" value="#4c1d95" class="custom-option w-full h-8">
-                                    <input type="text" id="customEnglishColor" placeholder="Enter hex code" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-yellow-800">English Text Size</label>
-                                    <select id="englishSize" class="w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                        <option value="1rem">Small</option>
-                                        <option value="1.25rem">Medium</option>
-                                        <option value="1.5rem">Large</option>
-                                        <option value="2rem">X-Large</option>
-                                        <option value="2.5rem">XX-Large</option>
-                                        <option value="custom">Custom Size</option>
-                                    </select>
-                                    <input type="text" id="customEnglishSize" placeholder="Enter custom size (e.g., 1.8rem)" class="custom-option w-full p-2 border border-orange-200 rounded-lg bg-yellow-50 text-sm">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-yellow-800">Share Description</label>
-                        <textarea id="shareDescription" class="w-full p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900 resize-y h-16" placeholder="Custom text that will appear when users share"></textarea>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-yellow-800">Background Color/Image URL</label>
-                            <input type="text" id="background" class="w-full p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900" placeholder="Hex color code or image URL">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-yellow-800">Second Page Background</label>
-                            <input type="text" id="secondBackground" class="w-full p-2 sm:p-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-yellow-50 font-semibold text-purple-900" placeholder="Hex color code or image URL">
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Media Upload Section -->
-        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-purple-400 festive-bg festive-shadow">
-            <div class="bg-gradient-to-r from-purple-700 via-pink-500 to-yellow-400 p-3 sm:p-4 rounded-t-lg">
-                <h2 class="text-lg sm:text-xl font-bold text-yellow-50">Media Upload</h2>
-            </div>
-            <div class="p-4 sm:p-6">
-                <label class="block text-sm font-semibold text-purple-800 mb-2">Image/Video/GIF (Top Media)</label>
-                <div id="mediaDropArea" class="drag-drop p-4 sm:p-6 rounded-lg text-center cursor-pointer border-4 border-dashed border-yellow-400 hover:border-purple-500 bg-gradient-to-br from-yellow-50 to-pink-100 transition-all duration-200">
-                    <p id="mediaPlaceholder" class="text-purple-700 flex items-center justify-center gap-2 text-sm sm:text-base">
-                        <span>🎨 Drag & drop or click to upload (Image, Video, GIF)</span>
-                    </p>
-                    <div id="mediaPreview" class="preview-container hidden mt-4"></div>
-                    <input type="file" id="media" accept="image/*,video/*,.gif" class="hidden">
-                </div>
-            </div>
-        </div>
-
-        <!-- Frame Image Upload Section -->
-        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-blue-400 festive-bg festive-shadow">
-            <div class="bg-gradient-to-r from-blue-600 via-green-400 to-teal-400 p-3 sm:p-4 rounded-t-lg">
-                <h2 class="text-lg sm:text-xl font-bold text-white">Frame Image</h2>
-            </div>
-            <div class="p-4 sm:p-6">
-                <label class="block text-sm font-semibold text-blue-800 mb-2">Frame Image (PNG with transparency)</label>
-                <div id="frameDropArea" class="drag-drop p-4 sm:p-6 rounded-lg text-center cursor-pointer border-4 border-dashed border-blue-400 hover:border-teal-500 bg-gradient-to-br from-blue-50 to-teal-100 transition-all duration-200">
-                    <p id="framePlaceholder" class="text-blue-700 flex items-center justify-center gap-2 text-sm sm:text-base">
-                        <span>🖼️ Drag & drop or click to upload frame PNG</span>
-                    </p>
-                    <div id="framePreview" class="preview-container hidden mt-4"></div>
-                    <input type="file" id="frame" accept="image/png" class="hidden">
-                </div>
-                <div class="mt-4 grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-blue-800">Frame Position</label>
-                        <select id="framePosition" class="w-full p-2 sm:p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-blue-50 font-semibold text-blue-900">
-                            <option value="cover">Cover (Full)</option>
-                            <option value="contain">Contain (Fit)</option>
-                            <option value="top">Top Align</option>
-                            <option value="bottom">Bottom Align</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-blue-800">Frame Opacity</label>
-                        <input type="range" id="frameOpacity" min="0" max="100" value="100" class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer">
-                        <span id="frameOpacityValue" class="text-sm text-blue-700">100%</span>
+        <!-- Content Container -->
+        <div class="content-container">
+            <!-- First Page Section -->
+            <!-- This section now holds the main elements in the desired order -->
+            <section class="page-section">
+                <!-- Title Frame: Holds the title frame image and overlaid title text -->
+                <div class="title-frame-container">
+                    <img id="titleFrameImage" class="title-frame-image" src="" alt="Title Frame">
+                    <div class="title-text-container">
+                        <h1 id="festivalTitle" class="title-text">Festival Wishes</h1>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Wish Box Background Section -->
-        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-green-400 festive-bg festive-shadow">
-            <div class="bg-gradient-to-r from-green-600 via-teal-400 to-blue-400 p-3 sm:p-4 rounded-t-lg">
-                <h2 class="text-lg sm:text-xl font-bold text-white">Wish Box Background</h2>
-            </div>
-            <div class="p-4 sm:p-6">
-                <label class="block text-sm font-semibold text-green-800 mb-2">Wish Box Background Image</label>
-                <div id="wishBgDropArea" class="drag-drop p-4 sm:p-6 rounded-lg text-center cursor-pointer border-4 border-dashed border-green-400 hover:border-blue-500 bg-gradient-to-br from-green-50 to-blue-100 transition-all duration-200">
-                    <p id="wishBgPlaceholder" class="text-green-700 flex items-center justify-center gap-2 text-sm sm:text-base">
-                        <span>🎁 Drag & drop or click to upload wish box background</span>
-                    </p>
-                    <div id="wishBgPreview" class="preview-container hidden mt-4"></div>
-                    <input type="file" id="wishBg" accept="image/*" class="hidden">
+                
+                <!-- Media Box: Displays uploaded image or video -->
+                <div id="mediaBox" class="media-box">
+                    <!-- Media element will be dynamically inserted here -->
                 </div>
-                <div class="mt-4 grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-green-800">Background Size</label>
-                        <select id="wishBgSize" class="w-full p-2 sm:p-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent bg-green-50 font-semibold text-green-900">
-                            <option value="cover">Cover</option>
-                            <option value="contain">Contain</option>
-                            <option value="auto">Auto</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-green-800">Background Repeat</label>
-                        <select id="wishBgRepeat" class="w-full p-2 sm:p-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent bg-green-50 font-semibold text-green-900">
-                            <option value="no-repeat">No Repeat</option>
-                            <option value="repeat">Repeat</option>
-                            <option value="repeat-x">Repeat X</option>
-                            <option value="repeat-y">Repeat Y</option>
-                        </select>
+                
+                <!-- Content Frame: Holds the wish box background image and overlaid wishes -->
+                <div class="content-frame-container">
+                    <img id="contentFrameImage" class="content-frame-image" src="" alt="Content Frame">
+                    <div class="wish-text-container">
+                        <p id="hindiWish" class="wish-text">शुभकामनाएं</p>
+                        <p id="englishWish" class="wish-text hidden">Best Wishes</p>
+                        <div id="translateBtn" class="translate-text hidden">Translate to English</div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Audio Upload Section -->
-        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-orange-400 festive-bg festive-shadow">
-            <div class="bg-gradient-to-r from-orange-600 via-yellow-400 to-pink-400 p-3 sm:p-4 rounded-t-lg">
-                <h2 class="text-lg sm:text-xl font-bold text-white">Audio Upload</h2>
-            </div>
-            <div class="p-4 sm:p-6">
-                <label class="block text-sm font-semibold text-orange-800 mb-2">Background Audio</label>
-                <div id="audioDropArea" class="drag-drop p-4 sm:p-6 rounded-lg text-center cursor-pointer border-4 border-dashed border-orange-400 hover:border-pink-500 bg-gradient-to-br from-yellow-50 to-orange-100 transition-all duration-200">
-                    <p id="audioPlaceholder" class="text-orange-700 flex items-center justify-center gap-2 text-sm sm:text-base">
-                        <span>🎵 Drag & drop or click to upload (Audio)</span>
-                    </p>
-                    <div id="audioPreview" class="preview-container hidden mt-4"></div>
-                    <input type="file" id="audio" accept="audio/*" class="hidden">
+                
+                <!-- Username Input Field -->
+                <input type="text" id="userName" placeholder="Enter your name" class="username-field">
+                
+                <!-- Action Buttons (Share/Copy) - Initially hidden -->
+                <div id="actionButtons" class="hidden flex flex-col items-center gap-4 mt-6" style="z-index: 1;">
+                    <button id="shareBtn" class="action-btn btn-gradient hover:shadow-lg hover:scale-105 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12a2.5 2.5 0 0 1 1.088 2.076z"/>
+                        </svg>
+                        Share
+                    </button>
+                    <button id="copyBtn" class="action-btn btn-gradient hover:shadow-lg hover:scale-105 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                        </svg>
+                        Copy
+                    </button>
                 </div>
-            </div>
-        </div>
-
-        <!-- Effects Section -->
-        <div class="mb-4 sm:mb-6 rounded-xl shadow-lg border-2 border-pink-400 festive-bg festive-shadow">
-            <div class="bg-gradient-to-r from-pink-600 via-yellow-400 to-purple-500 p-3 sm:p-4 rounded-t-lg">
-                <h2 class="text-lg sm:text-xl font-bold text-white">Effects & Design</h2>
-            </div>
-            <div class="p-4 sm:p-6">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Autoplay Audio</label>
-                        <select id="autoplay" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="true">True</option>
-                            <option value="false">False</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Animation Type</label>
-                        <select id="animationType" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="float">Floating Emojis</option>
-                            <option value="fall">Falling Emojis</option>
-                            <option value="swirl">Swirling Emojis</option>
-                            <option value="fireworks">Fireworks</option>
-                            <option value="confetti">Confetti</option>
-                            <option value="custom">Custom Animation</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Animation Speed</label>
-                        <select id="animationSpeed" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="0.5">Very Slow (0.5x)</option>
-                            <option value="0.75">Slow (0.75x)</option>
-                            <option value="1" selected>Normal (1x)</option>
-                            <option value="1.5">Fast (1.5x)</option>
-                            <option value="2">Very Fast (2x)</option>
-                            <option value="custom">Custom Speed</option>
-                        </select>
-                        <input type="number" id="customSpeed" placeholder="Enter custom speed" step="0.1" min="0.1" max="5" class="custom-option w-full p-2 border border-pink-200 rounded-lg bg-pink-50 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Animation Quantity</label>
-                        <select id="animationQuantity" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="low">Low</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="high">High</option>
-                            <option value="very-high">Very High</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                        <input type="number" id="customQuantity" placeholder="Enter quantity" min="1" max="100" class="custom-option w-full p-2 border border-pink-200 rounded-lg bg-pink-50 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Emoji Type</label>
-                        <select id="emojiType" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="flowers">Flowers</option>
-                            <option value="diyas">Diyas</option>
-                            <option value="rangoli">Rangoli</option>
-                            <option value="festive">Festive Symbols</option>
-                            <option value="hearts">Hearts</option>
-                            <option value="stars">Stars</option>
-                            <option value="mixed">Mixed</option>
-                            <option value="custom">Custom Emojis</option>
-                        </select>
-                        <input type="text" id="customEmojis" placeholder="Enter emojis separated by commas" class="custom-option w-full p-2 border border-pink-200 rounded-lg bg-pink-50 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Animation Enable</label>
-                        <select id="animationEnable" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="true">True</option>
-                            <option value="false">False</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Button Style</label>
-                        <select id="buttonStyle" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="gradient">Gradient</option>
-                            <option value="solid">Solid Color</option>
-                            <option value="outline">Outline</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-pink-800">Button Color</label>
-                        <select id="buttonColorType" class="w-full p-2 sm:p-3 border border-pink-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-pink-50 font-semibold text-pink-900">
-                            <option value="preset">Preset Colors</option>
-                            <option value="custom">Custom Color</option>
-                        </select>
-                        <input type="color" id="buttonColor" value="#eab308" class="custom-option w-full h-8">
-                        <input type="text" id="customButtonColor" placeholder="Enter hex code" class="custom-option w-full p-2 border border-pink-200 rounded-lg bg-pink-50 text-sm">
+                
+                <!-- Bottom Ad Placeholder -->
+                <div class="bottom-ad-container">
+                    <div id="bottomAd" class="bottom-ad">
+                        <!-- Ad Script Placeholder -->
+                        <script type="text/javascript">
+                            atOptions = {
+                                'key' : '8a596a14d2ea184cd9b6372e267b931c',
+                                'format' : 'iframe',
+                                'height' : 50,
+                                'width' : 320,
+                                'params' : {}
+                            };
+                        </script>
+                        <script type="text/javascript" src="//www.highperformanceformat.com/8a596a14d2ea184cd9b6372e267b931c/invoke.js"></script>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 mt-6 sm:mt-8">
-            <button type="submit" form="settingsForm" class="festive-btn px-8 py-3 rounded-full font-bold shadow-xl text-lg transition-all hover:scale-105">💾 Save</button>
-            <button type="button" id="resetBtn" class="bg-gradient-to-r from-gray-600 to-gray-800 text-white px-8 py-3 rounded-full font-bold shadow-xl text-lg transition-all hover:scale-105">🔄 Reset</button>
+            </section>
+            
+            <!-- Second Page Section - Initially hidden -->
+            <section id="secondPage" class="page-section">
+                <!-- Additional content can be added here if the admin sets it up -->
+            </section>
         </div>
     </div>
-
-    <!-- Custom Editor Modal -->
-    <div id="customEditor" class="custom-editor">
-        <div class="editor-content">
-            <h3 class="text-xl font-bold mb-4" id="editorTitle">Edit Content</h3>
-            <textarea id="editorTextarea" class="w-full p-3 border border-gray-300 rounded-lg h-40"></textarea>
-            <div class="mt-4 flex justify-end gap-3">
-                <button id="cancelEdit" class="px-4 py-2 bg-gray-200 rounded-lg">Cancel</button>
-                <button id="saveEdit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Save</button>
-            </div>
+    
+    <!-- Fixed Footer Ad -->
+    <div class="footer-ad">
+        <div id="footerAd" class="footer-ad-content">
+            <!-- Ad Script Placeholder -->
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : 'f3980c7d80f3803dbaf4228f02da605b',
+                    'format' : 'iframe',
+                    'height' : 60,
+                    'width' : 468,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="//www.highperformanceformat.com/f3980c7d80f3803dbaf4228f02da605b/invoke.js"></script>
         </div>
     </div>
-
+    
+    <!-- Audio Element - For background music -->
+    <audio id="backgroundAudio" loop></audio>
+    
     <script>
         // Initialize Supabase Client
         const supabaseUrl = 'https://udupfqyxsxfmcekumrph.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkdXBmcXl4c3hmbWNla3VtcnBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1NTgxOTYsImV4cCI6MjA2NjEzNDE5Nn0.-ndlXo0XeRrzONovcOeiMZxeYY4st7XUXyVdWZVbZJs';
         const supaClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-        // Custom Editor Functionality
-        let currentEditorField = ''; // Track which field is being edited
-        function openEditor(fieldId) {
-            currentEditorField = fieldId;
-            const field = document.getElementById(fieldId);
-            document.getElementById('editorTextarea').value = field.value; // Populate editor with current value
-            document.getElementById('editorTitle').textContent = `Edit ${fieldId.replace(/([A-Z])/g, ' $1')}`; // Set editor modal title
-            document.getElementById('customEditor').style.display = 'flex'; // Show the editor modal
-        }
-
-        // Save changes from the editor
-        document.getElementById('saveEdit').addEventListener('click', function() {
-            const value = document.getElementById('editorTextarea').value;
-            document.getElementById(currentEditorField).value = value; // Update the target input field
-            document.getElementById('customEditor').style.display = 'none'; // Hide the editor modal
+        
+        // DOM Element References - Store references to frequently used DOM elements
+        const mainBackground = document.getElementById('mainBackground');
+        const secondBackground = document.getElementById('secondBackground');
+        const mediaBox = document.getElementById('mediaBox'); // Main media element
+        const titleFrameImage = document.getElementById('titleFrameImage'); // Image for title frame
+        const festivalTitle = document.getElementById('festivalTitle');
+        const contentFrameImage = document.getElementById('contentFrameImage'); // Image for wish box background
+        const hindiWishElement = document.getElementById('hindiWish');
+        const englishWishElement = document.getElementById('englishWish');
+        const userNameInput = document.getElementById('userName');
+        const actionButtonsContainer = document.getElementById('actionButtons');
+        const shareBtn = document.getElementById('shareBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const translateBtn = document.getElementById('translateBtn'); // Translate button
+        const backgroundAudio = document.getElementById('backgroundAudio');
+        const bottomAd = document.getElementById('bottomAd');
+        const footerAd = document.getElementById('footerAd');
+        const secondPageSection = document.getElementById('secondPage');
+        const animationContainer = document.getElementById('animationContainer');
+        
+        // Constants
+        const FIXED_SHARE_URL = 'https://heykishannn.github.io/Festival/'; // The base URL for sharing
+        
+        // State variables to track current status
+        let isTranslated = false; // Track if English wish is currently displayed
+        let originalHindiWish = 'शुभकामनाएं'; // Default Hindi wish
+        let originalEnglishWish = 'Best Wishes'; // Default English wish
+        let shareDescription = 'sent you festival wishes!'; // Default text for sharing
+        let hasSecondPageContent = false; // Flag to indicate if the second page is used
+        let audioPlayAttempted = false; // Flag to prevent multiple audio play attempts
+        
+        // Default settings for fallback if Supabase fails or no settings are found
+        const defaultSettings = {
+            background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+            title: 'Festival Wishes',
+            hindiWish: 'शुभकामनाएं',
+            englishWish: 'Best Wishes',
+            shareDescription: 'sent you festival wishes!',
+            mediaUrl: '', // URL for the main media (image/video)
+            titleFrameUrl: '', // URL for the title frame image
+            wishBgUrl: '', // URL for the wish box background image
+            audioUrl: '',
+            animationEnable: false,
+            animationType: 'float',
+            emojiType: 'mixed',
+            customEmojis: '',
+            animationQuantity: 'medium',
+            customQuantity: '',
+            animationSpeed: '1',
+            titleFont: "'Poppins', sans-serif", titleColor: '#4c1d95', titleSize: '2rem', // Default title styles with size
+            hindiFont: "'Noto Sans Devanagari', sans-serif", hindiColor: '#4c1d95', hindiSize: '1.5rem', // Default Hindi wish styles with size
+            englishFont: "'Poppins', sans-serif", englishColor: '#4c1d95', englishSize: '1.5rem', // Default English wish styles with size
+            buttonStyle: 'gradient', buttonColor: '#4CAF50'
+        };
+        
+        // Event Listener: Resume audio playback when the tab becomes visible again
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                playBackgroundAudio(); // Attempt to play audio when tab is active
+            } else {
+                backgroundAudio.pause(); // Pause audio when tab is hidden
+            }
         });
 
-        // Cancel editor action
-        document.getElementById('cancelEdit').addEventListener('click', function() {
-            document.getElementById('customEditor').style.display = 'none'; // Hide the editor modal without saving
-        });
-
-        // Setup custom option visibility toggles for select elements
-        function setupCustomOptions() {
-            // Font selectors: Show custom font input if 'Custom Font' is selected
-            document.querySelectorAll('select[id$="Font"]').forEach(select => {
-                select.addEventListener('change', function() {
-                    const customInput = document.getElementById(`custom${this.id}`);
-                    if (this.value === 'custom') {
-                        if (customInput) customInput.classList.remove('hidden'); // Show custom input
-                    } else {
-                        if (customInput) customInput.classList.add('hidden'); // Hide custom input
-                    }
-                });
-            });
-            
-            // Color type selectors: Show color picker and custom input if 'Custom Color' is selected
-            document.querySelectorAll('select[id$="ColorType"]').forEach(select => {
-                select.addEventListener('change', function() {
-                    const colorInput = document.getElementById(this.id.replace('Type', '')); // The preset color input (type="color")
-                    const customColorInput = document.getElementById(`custom${this.id.replace('Type', '')}`); // The custom hex input
-                    
-                    if (this.value === 'custom') {
-                        if (colorInput) colorInput.classList.remove('hidden');
-                        if (customColorInput) customColorInput.classList.remove('hidden');
-                    } else {
-                        if (colorInput) colorInput.classList.add('hidden');
-                        if (customColorInput) customColorInput.classList.add('hidden');
-                    }
-                });
-            });
-            
-            // Other custom options: Show input field if 'Custom' is selected
-            document.getElementById('animationSpeed').addEventListener('change', function() {
-                document.getElementById('customSpeed').classList.toggle('hidden', this.value !== 'custom');
-            });
-            
-            document.getElementById('animationQuantity').addEventListener('change', function() {
-                document.getElementById('customQuantity').classList.toggle('hidden', this.value !== 'custom');
-            });
-            
-            document.getElementById('emojiType').addEventListener('change', function() {
-                document.getElementById('customEmojis').classList.toggle('hidden', this.value !== 'custom');
-            });
-            
-            // Size selectors: Show custom size input if 'Custom' is selected
-            document.getElementById('titleSize').addEventListener('change', function() {
-                document.getElementById('customTitleSize').classList.toggle('hidden', this.value !== 'custom');
-            });
-            
-            document.getElementById('hindiSize').addEventListener('change', function() {
-                document.getElementById('customHindiSize').classList.toggle('hidden', this.value !== 'custom');
-            });
-
-            document.getElementById('englishSize').addEventListener('change', function() {
-                document.getElementById('customEnglishSize').classList.toggle('hidden', this.value !== 'custom');
-            });
-            
-            // Button color type selector
-            document.getElementById('buttonColorType').addEventListener('change', function() {
-                const buttonColor = document.getElementById('buttonColor');
-                const customButtonColor = document.getElementById('customButtonColor');
-                if (this.value === 'custom') {
-                    if (buttonColor) buttonColor.classList.remove('hidden');
-                    if (customButtonColor) customButtonColor.classList.remove('hidden');
-                } else {
-                    if (buttonColor) buttonColor.classList.add('hidden');
-                    if (customButtonColor) customButtonColor.classList.add('hidden');
+        // Function to play background audio, respecting browser autoplay policies
+        function playBackgroundAudio() {
+            if (backgroundAudio.src && !audioPlayAttempted) { // Only if audio source exists and play hasn't been attempted
+                const playPromise = backgroundAudio.play(); // Attempt to play audio
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        audioPlayAttempted = true; // Mark play as attempted
+                        console.log('Background audio playing.');
+                    })
+                    .catch(error => {
+                        console.log('Autoplay prevented:', error);
+                        // If autoplay is blocked, listen for user interaction (like a click) to play audio
+                        const onceOptions = { once: true }; // Listen only once
+                        document.body.addEventListener('click', () => {
+                            backgroundAudio.play().then(() => {
+                                audioPlayAttempted = true; // Mark play as attempted after interaction
+                                console.log('Background audio playing after user interaction.');
+                            }).catch(e => console.log('Autoplay still prevented:', e)); // Handle cases where even interaction fails
+                        }, onceOptions);
+                    });
                 }
-            });
+            }
+        }
+        
+        // Function to dynamically adjust frame heights and text padding based on loaded content
+        function adjustFrameHeightsAndTextPadding() {
+            // Adjust Title Frame height based on the uploaded image's aspect ratio
+            if (titleFrameImage.src && titleFrameImage.complete) { // Ensure image is loaded
+                if (titleFrameImage.naturalHeight > 0 && titleFrameImage.naturalWidth > 0) {
+                    const aspectRatio = titleFrameImage.naturalHeight / titleFrameImage.naturalWidth;
+                    const containerWidth = titleFrameImage.parentElement.offsetWidth;
+                    // Set height of the container to maintain the image's aspect ratio
+                    titleFrameImage.parentElement.style.height = `${containerWidth * aspectRatio}px`; 
+                    
+                    // Font size is applied directly from settings. No dynamic adjustment needed here.
+                    
+                } else { // Handle broken image links or zero dimensions
+                    titleFrameImage.parentElement.style.display = 'none'; // Hide the container if image is invalid
+                }
+            } else { // Hide if image is not loaded yet or no src is set
+                titleFrameImage.parentElement.style.display = titleFrameImage.src ? 'flex' : 'none';
+            }
+            
+            // Adjust Content Frame height based on the uploaded image's aspect ratio
+            if (contentFrameImage.src && contentFrameImage.complete) { // Ensure image is loaded
+                if (contentFrameImage.naturalHeight > 0 && contentFrameImage.naturalWidth > 0) {
+                    const aspectRatio = contentFrameImage.naturalHeight / contentFrameImage.naturalWidth;
+                    const containerWidth = contentFrameImage.parentElement.offsetWidth;
+                    contentFrameImage.parentElement.style.height = `${containerWidth * aspectRatio}px`; // Set height based on aspect ratio
+                    
+                    // Dynamically adjust padding of wish text container based on text length for better fitting
+                    const textElement = isTranslated ? englishWishElement : hindiWishElement; // Get the currently displayed text element
+                    const textContent = textElement.innerHTML.replace(/<br>/g, ''); // Remove <br> tags for accurate length calculation
+                    const textLength = textContent.length;
+                    
+                    // Calculate padding percentage: decrease padding for longer text to reveal more background
+                    const basePaddingPercent = 25; // Max padding percentage
+                    const minPaddingPercent = 8;  // Min padding percentage
+                    const sensitivityFactor = 0.5; // Adjust how much padding decreases per character
+                    
+                    const paddingPercent = Math.max(minPaddingPercent, basePaddingPercent - (textLength - 50) * sensitivityFactor); // Formula ensures padding stays within limits
+                    
+                    document.querySelector('.wish-text-container').style.padding = `${paddingPercent}%`; // Apply calculated padding
 
-            // Frame opacity slider value display update
-            document.getElementById('frameOpacity').addEventListener('input', function() {
-                document.getElementById('frameOpacityValue').textContent = `${this.value}%`;
-            });
+                } else { // Handle broken image links or zero dimensions
+                    contentFrameImage.parentElement.style.display = 'none';
+                }
+            } else { // Hide frame if image is not loaded or no src is set
+                contentFrameImage.parentElement.style.display = contentFrameImage.src ? 'flex' : 'none';
+            }
         }
 
-        // Load saved settings from Supabase
+        // Function to process wish text: converts newlines into <br> tags for HTML display
+        function processWishText(text) {
+            if (!text) return ''; // Return empty string if text is null or undefined
+            return text.replace(/\n/g, '<br>'); // Replace newline characters with <br> tags
+        }
+
+        // Function to load settings from Supabase and apply them to the page
         async function loadSettings() {
             try {
                 const { data, error } = await supaClient
                     .from('settings')
                     .select('value')
                     .eq('id', 'festival_settings')
-                    .single();
+                    .single(); // Fetch the single settings record
+
+                // Merge fetched settings with default settings to ensure all properties are present
+                const settings = (data && data.value) ? { ...defaultSettings, ...data.value } : defaultSettings;
+
+                // Apply Backgrounds
+                if (settings.background) {
+                    if (settings.background.startsWith('http') || settings.background.startsWith('data:')) {
+                        mainBackground.style.backgroundImage = `url('${settings.background}')`; // Use URL for images
+                    } else {
+                        mainBackground.style.background = settings.background; // Use value directly for gradients/colors
+                    }
+                }
+
+                // Apply Second Background if provided
+                if (settings.secondBackground) {
+                    if (settings.secondBackground.startsWith('http') || settings.secondBackground.startsWith('data:')) {
+                        secondBackground.style.backgroundImage = `url('${settings.secondBackground}')`;
+                        secondBackground.style.display = 'block'; // Make the second background element visible
+                    } else {
+                        secondBackground.style.background = settings.secondBackground;
+                        secondBackground.style.display = 'block';
+                    }    
+                }
+
+                // Set Title and Meta Title
+                document.title = settings.title || defaultSettings.title;
+                festivalTitle.textContent = settings.title || defaultSettings.title;
+
+                // Apply Title Styles (Font, Color, Size)
+                festivalTitle.style.fontFamily = settings.titleFont || defaultSettings.titleFont;
+                festivalTitle.style.color = settings.titleColor || defaultSettings.titleColor;
+                // Apply font size directly from settings. If 'custom', use custom value, else selected value.
+                festivalTitle.style.fontSize = (settings.titleSize === 'custom' && settings.customTitleSize)
+                                             ? settings.customTitleSize
+                                             : settings.titleSize || defaultSettings.titleSize;
+
+                // Set Wishes and their styles
+                originalHindiWish = settings.hindiWish || defaultSettings.hindiWish;
+                originalEnglishWish = settings.englishWish || defaultSettings.englishWish;
                 
-                if (data && data.value) {
-                    const savedValue = data.value;
-                    // Populate form elements with saved values
-                    Object.keys(savedValue).forEach(key => {
-                        const element = document.getElementById(key);
-                        if (element) {
-                            if (element.type === 'checkbox') { // Handle checkboxes specifically
-                                element.checked = savedValue[key];
-                            } else {
-                                element.value = savedValue[key]; // Set value for other input types
-                            }
-                        }
-                    });
+                hindiWishElement.innerHTML = processWishText(originalHindiWish); // Set Hindi wish with <br> tags
+                hindiWishElement.style.fontFamily = settings.hindiFont || defaultSettings.hindiFont;
+                hindiWishElement.style.color = settings.hindiColor || defaultSettings.hindiColor;
+                // Apply font size directly from settings. If 'custom', use custom value, else selected value.
+                hindiWishElement.style.fontSize = (settings.hindiSize === 'custom' && settings.customHindiSize)
+                                                ? settings.customHindiSize
+                                                : settings.hindiSize || defaultSettings.hindiSize;
+
+                // Handle English wish and translation button visibility
+                if (originalEnglishWish && originalEnglishWish.trim() !== '') {
+                    englishWishElement.innerHTML = processWishText(originalEnglishWish);
+                    englishWishElement.style.fontFamily = settings.englishFont || defaultSettings.englishFont;
+                    englishWishElement.style.color = settings.englishColor || defaultSettings.englishColor;
+                    englishWishElement.style.fontSize = (settings.englishSize === 'custom' && settings.customEnglishSize)
+                                                      ? settings.customEnglishSize
+                                                      : settings.englishSize || defaultSettings.englishSize; // Apply size directly
                     
-                    // Trigger change events on selects to correctly show/hide custom inputs based on loaded values
-                    document.getElementById('titleFont').dispatchEvent(new Event('change'));
-                    document.getElementById('hindiFont').dispatchEvent(new Event('change'));
-                    document.getElementById('englishFont').dispatchEvent(new Event('change'));
-                    document.getElementById('animationSpeed').dispatchEvent(new Event('change'));
-                    document.getElementById('animationQuantity').dispatchEvent(new Event('change'));
-                    document.getElementById('emojiType').dispatchEvent(new Event('change'));
-                    document.getElementById('titleColorType').dispatchEvent(new Event('change'));
-                    document.getElementById('hindiColorType').dispatchEvent(new Event('change'));
-                    document.getElementById('englishColorType').dispatchEvent(new Event('change'));
-                    document.getElementById('buttonColorType').dispatchEvent(new Event('change'));
-                    document.getElementById('titleSize').dispatchEvent(new Event('change'));
-                    document.getElementById('hindiSize').dispatchEvent(new Event('change'));
-                    document.getElementById('englishSize').dispatchEvent(new Event('change'));
-                    
-                    // Ensure custom color inputs are visible if 'custom' was the selected type
-                    if (savedValue.titleColorType === 'custom') {
-                        document.getElementById('titleColor').classList.remove('hidden');
-                        document.getElementById('customTitleColor').classList.remove('hidden');
-                    }
-                    if (savedValue.hindiColorType === 'custom') {
-                        document.getElementById('hindiColor').classList.remove('hidden');
-                        document.getElementById('customHindiColor').classList.remove('hidden');
-                    }
-                    if (savedValue.englishColorType === 'custom') {
-                        document.getElementById('englishColor').classList.remove('hidden');
-                        document.getElementById('customEnglishColor').classList.remove('hidden');
-                    }
-                    if (savedValue.buttonColorType === 'custom') {
-                        document.getElementById('buttonColor').classList.remove('hidden');
-                        document.getElementById('customButtonColor').classList.remove('hidden');
-                    }
+                    translateBtn.classList.remove('hidden'); // Show translate button
+                } else {
+                    englishWishElement.classList.add('hidden'); // Hide if no English wish is available
+                    translateBtn.classList.add('hidden');
+                }
 
-                    // Load media previews if URLs exist in saved settings
-                    if (savedValue.mediaUrl) {
-                        const mediaPreview = document.getElementById('mediaPreview');
-                        mediaPreview.innerHTML = ''; // Clear placeholder content
-                        mediaPreview.classList.remove('hidden');
-                        document.getElementById('mediaPlaceholder').classList.add('hidden');
-                        
-                        // Create either an img or video element based on URL extension
-                        const mediaElement = savedValue.mediaUrl.includes('.mp4') || savedValue.mediaUrl.includes('.webm') 
-                            ? document.createElement('video') 
-                            : document.createElement('img');
-                        mediaElement.src = savedValue.mediaUrl;
-                        if(mediaElement.tagName === 'VIDEO') {
-                            mediaElement.controls = true; // Show controls for video
-                            mediaElement.style.width = '100%';
-                            mediaElement.style.height = 'auto';
-                        }
-                        mediaPreview.appendChild(mediaElement);
-                    }
-                    
-                    // Load audio preview if URL exists
-                    if (savedValue.audioUrl) {
-                        const audioPreview = document.getElementById('audioPreview');
-                        audioPreview.innerHTML = '';
-                        audioPreview.classList.remove('hidden');
-                        document.getElementById('audioPlaceholder').classList.add('hidden');
-                        
-                        const audioDiv = document.createElement('div');
-                        audioDiv.className = 'audio-preview flex items-center gap-2';
-                        const playBtn = document.createElement('button');
-                        playBtn.textContent = '▶';
-                        playBtn.className = 'bg-purple-600 text-white p-2 rounded-full hover:bg-purple-700 text-sm';
-                        const fileName = document.createElement('span');
-                        fileName.textContent = 'Background Audio'; // Display a generic name for audio
-                        fileName.className = 'text-gray-800 text-sm';
-                        const audio = new Audio(savedValue.audioUrl); // Create audio object for playback on click
-                        playBtn.addEventListener('click', () => audio.play());
-                        audioDiv.appendChild(playBtn);
-                        audioDiv.appendChild(fileName);
-                        audioPreview.appendChild(audioDiv);
-                    }
+                // Set Share Description text
+                shareDescription = settings.shareDescription || defaultSettings.shareDescription;
 
-                    // Load frame image preview if URL exists
-                    if (savedValue.frameUrl) {
-                        const framePreview = document.getElementById('framePreview');
-                        framePreview.innerHTML = '';
-                        framePreview.classList.remove('hidden');
-                        document.getElementById('framePlaceholder').classList.add('hidden');
-                        
-                        const img = document.createElement('img');
-                        img.src = savedValue.frameUrl;
-                        framePreview.appendChild(img);
+                // Set Media (Image or Video) for the main media box
+                if (settings.mediaUrl && settings.mediaUrl.trim() !== '') {
+                    mediaBox.innerHTML = ''; // Clear any previous media content
+                    let mediaElement = null;
+                    // Determine if it's a video or image based on the URL extension
+                    if (settings.mediaUrl.toLowerCase().endsWith('.mp4') || settings.mediaUrl.toLowerCase().endsWith('.webm')) {
+                        mediaElement = document.createElement('video');
+                        mediaElement.autoplay = true; // Autoplay video
+                        mediaElement.loop = true;      // Loop video playback
+                        mediaElement.muted = true;     // Mute video for autoplay compliance
+                        mediaElement.controls = false; // Hide controls for background video
+                    } else {
+                        mediaElement = document.createElement('img'); // It's an image
                     }
+                    mediaElement.src = settings.mediaUrl;
+                    mediaElement.style.width = '100%';
+                    mediaElement.style.height = 'auto';
+                    mediaElement.style.display = 'block';
+                    mediaBox.appendChild(mediaElement);
+                }
 
-                    // Load wish box background preview if URL exists
-                    if (savedValue.wishBgUrl) {
-                        const wishBgPreview = document.getElementById('wishBgPreview');
-                        wishBgPreview.innerHTML = '';
-                        wishBgPreview.classList.remove('hidden');
-                        document.getElementById('wishBgPlaceholder').classList.add('hidden');
-                        
-                        const img = document.createElement('img');
-                        img.src = savedValue.wishBgUrl;
-                        wishBgPreview.appendChild(img);
-                    }
+                // Set Title Frame Image
+                if (settings.titleFrameUrl && settings.titleFrameUrl.trim() !== '') {
+                    titleFrameImage.src = settings.titleFrameUrl;
+                    // Use onload event to ensure dimensions are ready before adjusting layout
+                    titleFrameImage.onload = adjustFrameHeightsAndTextPadding; 
+                    titleFrameImage.onerror = function() { // Handle cases where image loading fails
+                        console.error('Failed to load title frame image:', this.src);
+                        this.parentElement.style.display = 'none'; // Hide frame container if image is broken
+                    };
+                } else {
+                    titleFrameImage.style.display = 'none'; // Hide frame if no URL is provided
+                }
 
-                    // Update frame opacity display value
-                    if (savedValue.frameOpacity !== undefined) {
-                        document.getElementById('frameOpacity').value = savedValue.frameOpacity;
-                        document.getElementById('frameOpacityValue').textContent = `${savedValue.frameOpacity}%`;
+                // Set Content Frame Image (Wish Box Background)
+                if (settings.wishBgUrl && settings.wishBgUrl.trim() !== '') {
+                    contentFrameImage.src = settings.wishBgUrl;
+                    contentFrameImage.onload = adjustFrameHeightsAndTextPadding; // Adjust layout on image load
+                    contentFrameImage.onerror = function() { // Handle broken image links
+                        console.error('Failed to load content frame image:', this.src);
+                        this.parentElement.style.display = 'none'; // Hide frame container if image fails
+                    };
+                    // Apply background size and repeat properties to the parent container of the image
+                    contentFrameImage.parentElement.style.objectFit = settings.wishBgSize || 'cover'; // Default to 'cover' if not specified
+                    contentFrameImage.parentElement.style.backgroundRepeat = settings.wishBgRepeat || 'no-repeat'; // Default to 'no-repeat'
+                } else {
+                    contentFrameImage.style.display = 'none'; // Hide frame if no URL is provided
+                }
+
+                // Set Background Audio source
+                if (settings.audioUrl && settings.audioUrl.trim() !== '') {
+                    backgroundAudio.src = settings.audioUrl;
+                    // Play audio immediately if autoplay is enabled in settings
+                    if (settings.autoplay) {
+                        playBackgroundAudio();
                     }
                 }
+
+                // Apply Button Styles based on admin's choices
+                applyButtonStyles(settings.buttonStyle, settings.buttonColor);
+
+                // Check if the second page content is enabled (admin sets a flag)
+                if (settings.secondPageContent) { 
+                    secondPageSection.style.display = 'flex'; // Show the second page section
+                    hasSecondPageContent = true;
+                }
+
+                // Initialize animations if they are enabled
+                if (settings.animationEnable) {
+                    initAnimations(settings);
+                }
+
+                // Adjust scroll height and overflow properties based on the presence of the second page
+                adjustScrollHeight();
+
+                // Perform a final adjustment after all elements might have loaded, to ensure correct layout
+                // Using a small timeout helps ensure all DOM manipulations are complete
+                setTimeout(adjustFrameHeightsAndTextPadding, 100); 
+
             } catch (error) {
-                console.error('Error loading settings:', error);
-                // Optionally display a user-friendly error message here
+                console.error('Error loading settings from Supabase:', error);
+                applyDefaultSettings(); // Apply default settings if Supabase loading fails
             }
         }
-
-        // Show toast notifications (e.g., for save/reset success/error messages)
-        function showToast(message, type) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`; // Apply success or error styling
-            toast.textContent = message;
-            document.body.appendChild(toast); // Add the toast element to the body
-            setTimeout(() => toast.remove(), 4000); // Automatically remove the toast after 4 seconds
-        }
-
-        // Setup drag-and-drop functionality for file upload areas
-        function setupDragAndDrop(dropArea, input, preview, placeholder, accept = null) {
-            // Prevent default browser behaviors for drag events (like opening files)
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, preventDefaults, false);
-            });
-
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
+        
+        // Apply default settings if Supabase fails or no settings are found
+        function applyDefaultSettings() {
+            document.title = defaultSettings.title;
+            festivalTitle.textContent = defaultSettings.title;
+            
+            hindiWishElement.innerHTML = processWishText(defaultSettings.hindiWish);
+            englishWishElement.innerHTML = processWishText(defaultSettings.englishWish);
+            
+            shareDescription = defaultSettings.shareDescription;
+            
+            // Hide frame images by default if no default URL is set (frames are optional)
+            titleFrameImage.style.display = 'none';
+            contentFrameImage.style.display = 'none';
+            
+            // Show the translate button only if an English wish is defined in the defaults
+            if (defaultSettings.englishWish && defaultSettings.englishWish.trim() !== '') {
+                translateBtn.classList.remove('hidden');
+            } else {
+                translateBtn.classList.add('hidden');
             }
 
-            // Add/remove CSS class to visually indicate the drop area is active during drag
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropArea.addEventListener(eventName, () => dropArea.classList.add('drag-over'), false);
-            });
-            ['dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, () => dropArea.classList.remove('drag-over'), false);
-            });
-
-            // Handle file drop event
-            dropArea.addEventListener('drop', (e) => {
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    const file = files[0];
-                    // Validate file type against accepted types
-                    if (file && (!accept || file.type.match(accept))) {
-                        input.files = e.dataTransfer.files; // Assign dropped files to the hidden file input
-                        displayPreview(file, preview, placeholder, input.accept); // Show a preview of the file
-                    } else {
-                        alert(`Invalid file type. Please upload a file of type: ${accept}`); // Alert if file type is incorrect
-                    }
-                }
-            });
-
-            // Allow clicking on the drop area to trigger the file input's click event
-            dropArea.addEventListener('click', () => input.click());
-
-            // Handle file selection via the file input's change event
-            input.addEventListener('change', () => {
-                if (input.files.length > 0) {
-                    const file = input.files[0];
-                    // Validate file type
-                    if (file && (!accept || file.type.match(accept))) {
-                        displayPreview(file, preview, placeholder, input.accept); // Show preview
-                    } else {
-                        alert(`Invalid file type. Please upload a file of type: ${accept}`);
-                        input.value = ''; // Clear the input if the file type is wrong
-                    }
-                }
-            });
+            applyButtonStyles(defaultSettings.buttonStyle, defaultSettings.buttonColor); // Apply default button styles
+            adjustScrollHeight(); // Adjust scroll based on the default page structure
         }
 
-        // Display a preview of the selected file
-        function displayPreview(file, preview, placeholder, accept) {
-            preview.innerHTML = ''; // Clear any previous preview content
-            placeholder.classList.add('hidden'); // Hide placeholder text
-            preview.classList.remove('hidden'); // Show the preview area
-
-            const reader = new FileReader();
-            reader.onload = function(e) { // This function runs when the file has been read
-                if (accept.includes('image') && file.type.startsWith('image/')) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result; // Set image source from the file reader result
-                    img.style.width = '100%'; img.style.height = 'auto'; // Make image responsive
-                    preview.appendChild(img);
-                } else if (accept.includes('video') && file.type.startsWith('video/')) {
-                    const video = document.createElement('video');
-                    video.src = e.target.result; // Set video source
-                    video.controls = true; // Show video controls
-                    video.style.width = '100%'; video.style.height = 'auto';
-                    video.style.display = 'block';
-                    preview.appendChild(video);
-                } else if (accept.includes('audio') && file.type.startsWith('audio/')) {
-                    // Display a simplified audio player interface for preview
-                    const audioDiv = document.createElement('div');
-                    audioDiv.className = 'audio-preview flex items-center gap-2';
-                    const playBtn = document.createElement('button');
-                    playBtn.textContent = '▶';
-                    playBtn.className = 'bg-purple-600 text-white p-2 rounded-full hover:bg-purple-700 text-sm';
-                    const fileName = document.createElement('span');
-                    fileName.textContent = 'Background Audio'; // Display a generic name
-                    fileName.className = 'text-gray-800 text-sm';
-                    const audio = new Audio(e.target.result); // Create an audio object for playback on click
-                    playBtn.addEventListener('click', () => audio.play());
-                    audioDiv.appendChild(playBtn);
-                    audioDiv.appendChild(fileName);
-                    preview.appendChild(audioDiv);
-                }
+        // Initialize animations based on loaded settings
+        function initAnimations(settings) {
+            animationContainer.innerHTML = ''; // Clear any existing animations before starting new ones
+            
+            const emojiSet = getEmojiSet(settings.emojiType, settings.customEmojis); // Get the set of emojis to use
+            const quantity = getAnimationQuantity(settings.animationQuantity, settings.customQuantity); // Get the number of emojis to display
+            const speed = getAnimationSpeed(settings.animationSpeed, settings.customSpeed); // Get the animation speed multiplier
+            const animationType = settings.animationType || 'float'; // Default to 'float' if type is not specified
+            
+            // Create the specified number of emoji elements and append them to the animation container
+            for (let i = 0; i < quantity; i++) {
+                createEmoji(emojiSet, speed, animationType);
+            }
+        }
+        
+        // Function to create and append a single animated emoji element
+        function createEmoji(emojiSet, speed, animationType) {
+            const emoji = document.createElement('div');
+            emoji.textContent = emojiSet[Math.floor(Math.random() * emojiSet.length)]; // Pick a random emoji from the set
+            emoji.style.fontSize = `${Math.random() * 20 + 16}px`; // Randomize emoji size for variety
+        
+            switch(animationType) {
+                case 'fall':
+                    emoji.className = 'falling-emoji';
+                    emoji.style.top = '-50px'; // Start above the viewport
+                    emoji.style.left = `${Math.random() * 100}%`; // Random horizontal position
+                    emoji.style.fontSize = `${1 + Math.random() * 2}rem`; // Larger random sizes for falling effect
+                    emoji.style.animationDuration = `${(2 + Math.random() * 3) / speed}s`; // Random duration, scaled by speed
+                    break;              
+                case 'swirl':
+                    emoji.className = 'swirling-emoji';
+                    emoji.style.animationDuration = `${8 / speed}s`; // Adjust duration based on speed
+                    emoji.style.left = `${Math.random() * 100}%`;
+                    emoji.style.top = `${Math.random() * 100}%`;
+                    break;
+                case 'fireworks':
+                    emoji.className = 'fireworks-emoji';
+                    emoji.style.setProperty('--tx', `${Math.random() * 200 - 100}px`); // Random horizontal offset for explosion
+                    emoji.style.setProperty('--ty', `${Math.random() * 200 - 100}px`); // Random vertical offset for explosion
+                    emoji.style.left = '50%'; // Center point for explosion
+                    emoji.style.top = '50%';
+                    emoji.style.animationDuration = `${1 / speed}s`; // Fast animation, scaled by speed
+                    break;
+                case 'confetti':
+                    emoji.className = 'fireworks-emoji'; // Re-use fireworks animation styling for confetti
+                    emoji.style.setProperty('--tx', `${Math.random() * 200 - 100}px`);
+                    emoji.style.setProperty('--ty', `${Math.random() * 200 - 100}px`);
+                    emoji.style.left = '50%';
+                    emoji.style.top = '50%';
+                    emoji.style.animationDuration = `${1.5 / speed}s`; // Slightly longer duration for confetti
+                    break;
+                default: // 'float' animation (default behavior)
+                    emoji.className = 'floating-emoji';
+                    emoji.style.animationDuration = `${3 / speed}s`; // Adjust duration based on speed
+                    emoji.style.left = `${Math.random() * 100}%`;
+                    emoji.style.top = `${Math.random() * 100}%`;
+            }
+        
+            animationContainer.appendChild(emoji); // Add the created emoji to the animation container
+            
+            // For animations that should disappear after playing once (fall, fireworks, confetti),
+            // add an event listener to remove the element and create a new one when the animation ends.
+            if (animationType === 'fall' || animationType === 'fireworks' || animationType === 'confetti') {
+                emoji.addEventListener('animationend', () => {
+                    emoji.remove(); // Remove the emoji element after its animation is finished
+                    createEmoji(emojiSet, speed, animationType); // Create a replacement emoji to maintain quantity
+                });
+            }
+        }
+        
+        // Helper function to get an emoji set based on type or custom input
+        function getEmojiSet(type, customEmojis) {
+            const sets = { // Predefined emoji sets for different animation types
+                flowers: ['🌸', '🌺', '🌻', '🌼', '🌷', '💐'],
+                diyas: ['🪔', '✨', '🕯️', '🌟'],
+                rangoli: ['🟡', '🔴', '🟢', '🔵', '🟣'],
+                festive: ['🎉', '🎊', '🪅', '🎁', '🧧'],
+                hearts: ['❤️', '🧡', '💛', '💚', '💙', '💜'],
+                stars: ['⭐', '🌟', '✨', '💫'],
+                mixed: ['🎉', '✨', '❤️', '🌸', '🌟', '🎶', '💖', '💫'] // A general mix
             };
-            reader.readAsDataURL(file); // Read the file as a Data URL for preview purposes
-        }
-
-        // Setup drag-and-drop for all designated file upload areas on page load
-        setupDragAndDrop(
-            document.getElementById('mediaDropArea'),
-            document.getElementById('media'),
-            document.getElementById('mediaPreview'),
-            document.getElementById('mediaPlaceholder')
-        );
-
-        setupDragAndDrop(
-            document.getElementById('frameDropArea'),
-            document.getElementById('frame'),
-            document.getElementById('framePreview'),
-            document.getElementById('framePlaceholder'),
-            'image/png' // Specifically accept only PNG files for frames
-        );
-
-        setupDragAndDrop(
-            document.getElementById('wishBgDropArea'),
-            document.getElementById('wishBg'),
-            document.getElementById('wishBgPreview'),
-            document.getElementById('wishBgPlaceholder')
-        );
-
-        setupDragAndDrop(
-            document.getElementById('audioDropArea'),
-            document.getElementById('audio'),
-            document.getElementById('audioPreview'),
-            document.getElementById('audioPlaceholder')
-        );
-
-        // Function to upload a file to Supabase Storage
-        async function uploadFile(file, folder) {
-            if (!file) return null; // Return null if no file is provided
-            const fileExt = file.name.split('.').pop(); // Get the file extension
-            const fileName = `${Date.now()}.${fileExt}`; // Create a unique filename using timestamp
-            const filePath = `${folder}/${fileName}`; // Define the path within the Supabase Storage bucket
             
-            try {
-                const { data, error } = await supaClient.storage
-                    .from('festivalmedia') // Your Supabase bucket name
-                    .upload(filePath, file); // Upload the file
+            if (type === 'custom' && customEmojis) {
+                const emojis = customEmojis.split(',').map(e => e.trim()).filter(e => e.length > 0); // Split custom emojis and clean them
+                if (emojis.length > 0) return emojis; // Return custom emojis if they are valid
+            }
+            return sets[type] || sets.mixed; // Fallback to the 'mixed' set if type is invalid or custom emojis are empty
+        }
+        
+        // Helper function to get the desired animation quantity (number of emojis)
+        function getAnimationQuantity(type, customQuantity) {
+            const quantities = { // Mapping of quantity levels to the number of emojis
+                low: 5,
+                medium: 10,
+                high: 20,
+                'very-high': 30
+            };
+            
+            if (type === 'custom' && customQuantity) {
+                const qty = parseInt(customQuantity);
+                // Ensure quantity is a positive number and cap it at 100 for performance
+                if (!isNaN(qty) && qty > 0) return Math.min(100, qty); 
+            }
+            return quantities[type] || 10; // Default to medium quantity if type is invalid
+        }
+        
+        // Helper function to get the animation speed multiplier
+        function getAnimationSpeed(type, customSpeed) {
+            if (type === 'custom' && customSpeed) {
+                const speed = parseFloat(customSpeed);
+                // Ensure speed is a valid positive number
+                if (!isNaN(speed) && speed > 0) return speed; 
+            }
+            return parseFloat(type) || 1; // Default to 1x speed if type is invalid or not 'custom'
+        }
+        
+        // Function to apply button styles based on admin's selected style and color
+        function applyButtonStyles(style, color) {
+            const buttons = [shareBtn, copyBtn]; // Apply styles to both action buttons
+            
+            // Use default values if style or color are not provided
+            if (!style) style = 'gradient';
+            if (!color) color = '#4CAF50';
+
+            if (style === 'gradient') {
+                const color1 = color;
+                const color2 = adjustColor(color, -20); // Create a slightly darker shade for the gradient
                 
-                if (error) throw error; // Throw an error if the upload fails
-                
-                // Get the public URL of the uploaded file from Supabase
-                const publicUrl = supaClient.storage.from('festivalmedia').getPublicUrl(filePath).data.publicUrl;
-                return publicUrl;
-            } catch (error) {
-                console.error('Error uploading file:', error);
-                throw error; // Re-throw the error to be handled by the submit handler
+                buttons.forEach(btn => {
+                    btn.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+                    btn.style.border = 'none'; // Remove border for gradient style
+                    btn.style.color = 'white'; // Ensure text color is white
+                });
+            } else if (style === 'solid') {
+                buttons.forEach(btn => {
+                    btn.style.background = color;
+                    btn.style.border = 'none'; // Remove border for solid color style
+                    btn.style.color = 'white';
+                });
+            } else if (style === 'outline') {
+                buttons.forEach(btn => {
+                    btn.style.background = 'transparent'; // Make background transparent
+                    btn.style.border = `2px solid ${color}`; // Set border color from settings
+                    btn.style.color = color; // Set text color to match the border color
+                });
             }
         }
+        
+        // Helper function to adjust color brightness/darkness for gradients
+        function adjustColor(color, amount) {
+            let usePound = false;
+            if (color[0] === "#") { // Check if hex code starts with #
+                color = color.slice(1); // Remove #
+                usePound = true; // Remember to add # back later
+            }
 
-        // Handle the form submission event for saving settings
-        document.getElementById('settingsForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); // Prevent the default form submission behavior
-            
-            const submitButton = document.querySelector('button[type="submit"]');
-            submitButton.disabled = true; // Disable the submit button to prevent multiple submissions
-            submitButton.textContent = 'Saving...'; // Update button text to show progress
+            // Parse hex color string into RGB components
+            let r = parseInt(color.substring(0, 2), 16);
+            let g = parseInt(color.substring(2, 4), 16);
+            let b = parseInt(color.substring(4, 6), 16);
 
-            try {
-                // Get the file objects from the file input elements
-                const mediaFile = document.getElementById('media').files[0];
-                const audioFile = document.getElementById('audio').files[0];
-                const frameFile = document.getElementById('frame').files[0];
-                const wishBgFile = document.getElementById('wishBg').files[0];
+            // Adjust RGB values, clamping them between 0 (black) and 255 (white)
+            r = Math.min(255, Math.max(0, r + amount));
+            g = Math.min(255, Math.max(0, g + amount));
+            b = Math.min(255, Math.max(0, b + amount));
 
-                // Upload all files concurrently for better performance
-                const [mediaUrl, audioUrl, frameUrl, wishBgUrl] = await Promise.all([
-                    uploadFile(mediaFile, 'media'),
-                    uploadFile(audioFile, 'audio'),
-                    uploadFile(frameFile, 'frames'),
-                    uploadFile(wishBgFile, 'wishbg')
-                ]);
-
-                // Retrieve existing URLs from preview elements if no new file was uploaded, to preserve them
-                const existingMediaUrl = document.getElementById('mediaPreview').querySelector('img, video')?.src || null;
-                const existingAudioUrl = document.getElementById('audioPreview').querySelector('audio')?.src || null;
-                const existingFrameUrl = document.getElementById('framePreview').querySelector('img')?.src || null;
-                const existingWishBgUrl = document.getElementById('wishBgPreview').querySelector('img')?.src || null;
-                
-                // Determine the final URLs to save, prioritizing newly uploaded files over existing ones
-                const finalMediaUrl = mediaUrl || existingMediaUrl || null;
-                const finalAudioUrl = audioUrl || existingAudioUrl || null;
-                const finalFrameUrl = frameUrl || existingFrameUrl || null;
-                const finalWishBgUrl = wishBgUrl || existingWishBgUrl || null;
-                
-                // Collect all settings from the form inputs into a single object
-                const settings = {
-                    title: document.getElementById('title').value,
-                    hindiWish: document.getElementById('hindiWish').value,
-                    englishWish: document.getElementById('englishWish').value,
-                    shareDescription: document.getElementById('shareDescription').value,
-                    background: document.getElementById('background').value,
-                    secondBackground: document.getElementById('secondBackground').value,
-                    
-                    mediaUrl: finalMediaUrl,
-                    audioUrl: finalAudioUrl,
-                    frameUrl: finalFrameUrl,
-                    wishBgUrl: finalWishBgUrl,
-                    
-                    framePosition: document.getElementById('framePosition').value,
-                    frameOpacity: document.getElementById('frameOpacity').value,
-                    wishBgSize: document.getElementById('wishBgSize').value,
-                    wishBgRepeat: document.getElementById('wishBgRepeat').value,
-                    
-                    autoplay: document.getElementById('autoplay').value === 'true', // Convert string 'true'/'false' to boolean
-                    animationType: document.getElementById('animationType').value,
-                    animationSpeed: document.getElementById('animationSpeed').value === 'custom' ? 
-                        document.getElementById('customSpeed').value : document.getElementById('animationSpeed').value, // Use custom value if selected
-                    animationQuantity: document.getElementById('animationQuantity').value === 'custom' ? 
-                        document.getElementById('customQuantity').value : document.getElementById('animationQuantity').value, // Use custom value if selected
-                    emojiType: document.getElementById('emojiType').value,
-                    customEmojis: document.getElementById('emojiType').value === 'custom' ? 
-                        document.getElementById('customEmojis').value : null, // Save custom emojis only if type is 'custom'
-                    animationEnable: document.getElementById('animationEnable').value === 'true', // Convert string 'true'/'false' to boolean
-                    
-                    buttonStyle: document.getElementById('buttonStyle').value,
-                    buttonColor: document.getElementById('buttonColorType').value === 'custom' ? 
-                        document.getElementById('customButtonColor').value : document.getElementById('buttonColor').value, // Use custom color if selected
-                    customButtonColor: document.getElementById('buttonColorType').value === 'custom' ? 
-                        document.getElementById('customButtonColor').value : null, // Save custom color value if type is 'custom'
-                        
-                    titleFont: document.getElementById('titleFont').value,
-                    customTitleFont: document.getElementById('titleFont').value === 'custom' ? 
-                        document.getElementById('customTitleFont').value : null, // Save custom font if type is 'custom'
-                    titleColor: document.getElementById('titleColorType').value === 'custom' ? 
-                        document.getElementById('customTitleColor').value : document.getElementById('titleColor').value, // Use custom color if selected
-                    customTitleColor: document.getElementById('titleColorType').value === 'custom' ? 
-                        document.getElementById('customTitleColor').value : null, // Save custom color value if type is 'custom'
-                    titleSize: document.getElementById('titleSize').value === 'custom' ? 
-                        document.getElementById('customTitleSize').value : document.getElementById('titleSize').value, // Use custom size value if selected
-                    customTitleSize: document.getElementById('titleSize').value === 'custom' ? 
-                        document.getElementById('customTitleSize').value : null, // Save custom size value if type is 'custom'
-                        
-                    hindiFont: document.getElementById('hindiFont').value,
-                    customHindiFont: document.getElementById('hindiFont').value === 'custom' ? 
-                        document.getElementById('customHindiFont').value : null, // Save custom font if type is 'custom'
-                    hindiColor: document.getElementById('hindiColorType').value === 'custom' ? 
-                        document.getElementById('customHindiColor').value : document.getElementById('hindiColor').value, // Use custom color if selected
-                    customHindiColor: document.getElementById('hindiColorType').value === 'custom' ? 
-                        document.getElementById('customHindiColor').value : null, // Save custom color value if type is 'custom'
-                    hindiSize: document.getElementById('hindiSize').value === 'custom' ? 
-                        document.getElementById('customHindiSize').value : document.getElementById('hindiSize').value, // Use custom size value if selected
-                    customHindiSize: document.getElementById('hindiSize').value === 'custom' ? 
-                        document.getElementById('customHindiSize').value : null, // Save custom size value if type is 'custom'
-                        
-                    englishFont: document.getElementById('englishFont').value,
-                    customEnglishFont: document.getElementById('englishFont').value === 'custom' ? 
-                        document.getElementById('customEnglishFont').value : null, // Save custom font if type is 'custom'
-                    englishColor: document.getElementById('englishColorType').value === 'custom' ? 
-                        document.getElementById('customEnglishColor').value : document.getElementById('englishColor').value, // Use custom color if selected
-                    customEnglishColor: document.getElementById('englishColorType').value === 'custom' ? 
-                        document.getElementById('customEnglishColor').value : null, // Save custom color value if type is 'custom'
-                    englishSize: document.getElementById('englishSize').value === 'custom' ? 
-                        document.getElementById('customEnglishSize').value : document.getElementById('englishSize').value, // Use custom size value if selected
-                    customEnglishSize: document.getElementById('englishSize').value === 'custom' ? 
-                        document.getElementById('customEnglishSize').value : null // Save custom size value if type is 'custom'
-                };
-
-                // Upsert (insert or update) the settings record in the 'settings' table in Supabase
-                const { error: upsertError } = await supaClient
-                    .from('settings')
-                    .upsert({ id: 'festival_settings', value: settings }); // 'id' is the primary key for the settings record
-                
-                if (upsertError) throw upsertError; // Throw an error if the upsert operation fails
-                
-                showToast('Settings saved successfully!', 'success'); // Display a success notification
-            } catch (error) {
-                console.error('Error saving settings:', error);
-                showToast('Error saving settings: ' + error.message, 'error'); // Display an error notification
-            } finally {
-                // Re-enable the submit button and reset its text, regardless of success or failure
-                submitButton.disabled = false;
-                submitButton.textContent = '💾 Save';
+            // Convert the adjusted RGB components back into a hex color string
+            const newColor = `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+            return usePound ? newColor : newColor.slice(1); // Return with # if original color had it
+        }
+        
+        // Adjust scroll height and overflow properties based on whether the second page content is used
+        function adjustScrollHeight() {
+            if (!hasSecondPageContent) { // If only one page of content is expected
+                 document.body.style.minHeight = '100vh'; // Ensure body takes full viewport height
+                 document.documentElement.style.height = 'auto';
+                 document.body.style.overflowY = 'auto'; // Allow scrolling if content exceeds viewport height
+            } else { // If multiple pages are possible
+                document.body.style.minHeight = '100vh'; // Maintain minimum height
+                document.body.style.height = 'auto';
+                document.body.style.overflowY = 'auto';
+            }
+        }
+        
+        // Event Listener for the username input field: shows action buttons once a name is entered
+        userNameInput.addEventListener('input', () => {
+            if (userNameInput.value.trim()) { // Check if the username input is not empty after trimming whitespace
+                actionButtonsContainer.classList.remove('hidden'); // Show the share and copy buttons
+            } else {
+                actionButtonsContainer.classList.add('hidden'); // Hide buttons if the input is cleared
             }
         });
-
-        // Handle the reset button click to revert settings to default values
-        document.getElementById('resetBtn').addEventListener('click', async () => {
-            // Ask for user confirmation before proceeding with the reset
-            if (!confirm('Are you sure you want to reset all settings to default? This action cannot be undone.')) {
-                return; // Exit the function if the user cancels
+        
+        // Event Listener for the translate button: toggles between Hindi and English wishes
+        translateBtn.addEventListener('click', () => {
+            // Only proceed if an English wish is actually available to display
+            if (!originalEnglishWish || originalEnglishWish.trim() === '') {
+                englishWishElement.textContent = ""; // Clear the English wish if it's empty
+                translateBtn.classList.add('hidden'); // Hide the translate button
+                return;
             }
-            try {
-                // Delete the settings record from Supabase
-                const { error } = await supaClient
-                    .from('settings')
-                    .delete()
-                    .eq('id', 'festival_settings'); // Target the specific settings record by its ID
-                if (error) throw error; // Throw an error if deletion fails
-                
-                showToast('Settings reset successfully!', 'success'); // Display a success notification
-                
-                // Reset the form to its initial state (clears inputs and resets selects to default)
-                document.getElementById('settingsForm').reset();
-                
-                // Clear all preview areas and hide them
-                document.querySelectorAll('.preview-container').forEach(pc => {
-                    pc.innerHTML = '';
-                    pc.classList.add('hidden');
-                });
-                
-                // Show all placeholder texts again
-                document.querySelectorAll('.drag-drop p').forEach(p => {
-                    p.classList.remove('hidden');
-                });
-                
-                // Clear all file input values
-                document.querySelectorAll('input[type="file"]').forEach(fileInput => {
-                    fileInput.value = '';
-                });
-                
-                // Hide all custom option inputs initially
-                document.querySelectorAll('.custom-option').forEach(el => {
-                    el.classList.add('hidden');
-                });
-                
-                // Re-run setupCustomOptions to apply default states and visibility rules
-                setupCustomOptions();
+            
+            if (isTranslated) { // If currently showing English, switch back to Hindi
+                hindiWishElement.classList.remove('hidden'); // Show Hindi wish
+                englishWishElement.classList.add('hidden'); // Hide English wish
+                translateBtn.textContent = 'Translate to English'; // Update button text
+            } else { // If currently showing Hindi, switch to English
+                hindiWishElement.classList.add('hidden'); // Hide Hindi wish
+                englishWishElement.classList.remove('hidden'); // Show English wish
+                translateBtn.textContent = 'Show in Hindi'; // Update button text
+            }
+            isTranslated = !isTranslated; // Toggle the translation state
+        });
+        
+        // Event Listener for the share button: handles the sharing functionality
+        shareBtn.addEventListener('click', async () => {
+            const name = userNameInput.value.trim() || "Someone"; // Get username or default to "Someone"
+            const shareMessage = `${name} ${shareDescription}\n${FIXED_SHARE_URL}`; // Construct the complete share message
 
-                // Explicitly reset select values to their defaults for clarity
-                document.getElementById('titleFont').value = "'Poppins', sans-serif";
-                document.getElementById('hindiFont').value = "'Noto Sans Devanagari', sans-serif";
-                document.getElementById('englishFont').value = "'Poppins', sans-serif";
-                document.getElementById('animationSpeed').value = "1";
-                document.getElementById('animationQuantity').value = "medium";
-                document.getElementById('emojiType').value = "flowers";
-                document.getElementById('titleColorType').value = "preset";
-                document.getElementById('hindiColorType').value = "preset";
-                document.getElementById('englishColorType').value = "preset";
-                document.getElementById('buttonColorType').value = "preset";
-                document.getElementById('titleSize').value = "text-3xl";
-                document.getElementById('hindiSize').value = "1.5rem"; // Reset to default size
-                document.getElementById('englishSize').value = "1.5rem"; // Reset to default size
-                document.getElementById('framePosition').value = "cover";
-                document.getElementById('frameOpacity').value = "100";
-                document.getElementById('frameOpacityValue').textContent = "100%";
-                document.getElementById('wishBgSize').value = "cover";
-                document.getElementById('wishBgRepeat').value = "no-repeat";
-                
-            } catch (error) {
-                console.error('Error resetting settings:', error);
-                showToast('Error resetting settings: ' + error.message, 'error');
+            try {
+                if (navigator.share) { // Use Web Share API if available (primarily for mobile devices)
+                    await navigator.share({
+                        title: document.title, // Title for sharing
+                        text: shareMessage,    // The message content
+                        url: FIXED_SHARE_URL   // The URL to share
+                    });
+                } else if (navigator.clipboard) { // Use Clipboard API if available (desktop and modern mobile browsers)
+                    await navigator.clipboard.writeText(shareMessage); // Copy the message to the clipboard
+                    alert('Share message copied to clipboard!');
+                    // Optionally, attempt to open WhatsApp on mobile for direct sharing after copying
+                    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                        window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
+                    }
+                } else { // Fallback for older browsers or environments without Clipboard API
+                    // Attempt to open WhatsApp on mobile
+                    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                        window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
+                    } else {
+                        // For desktop, use a manual copy method if Clipboard API fails
+                        fallbackCopyText(shareMessage);
+                    }
+                }
+            } catch (err) {
+                console.error('Error during sharing:', err);
+                alert('Could not share the wish. Please try copying the link manually: ' + FIXED_SHARE_URL);
             }
         });
-
+        
+        // Event Listener for the copy button: copies the wish message to the clipboard
+        copyBtn.addEventListener('click', () => {
+            const name = userNameInput.value.trim() || "Someone";
+            const shareMessage = `${name} ${shareDescription}\n${FIXED_SHARE_URL}`;
+            
+            if (navigator.clipboard) { // Prefer using the Clipboard API for copying
+                navigator.clipboard.writeText(shareMessage).then(() => {
+                    alert('Wish copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy text using Clipboard API:', err);
+                    fallbackCopyText(shareMessage); // Use fallback method if Clipboard API fails
+                });
+            } else {
+                fallbackCopyText(shareMessage); // Use fallback method if Clipboard API is not available
+            }
+        });
+        
+        // Fallback function for copying text to clipboard using execCommand (for older browsers)
+        function fallbackCopyText(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            // Make the textarea invisible and off-screen to avoid visual disruption
+            textArea.style.position = 'absolute';
+            textArea.style.left = '-9999px';
+            document.body.appendChild(textArea); // Add to the DOM
+            textArea.select(); // Select the text within the textarea
+            
+            try {
+                document.execCommand('copy'); // Execute the copy command
+                alert('Wish copied to clipboard!');
+            } catch (err) {
+                console.error('Fallback copy failed:', err);
+                alert('Could not copy text. Please select and copy manually.');
+            }
+            
+            document.body.removeChild(textArea); // Remove the temporary textarea from the DOM after copying
+        }
+        
         // Initialize the application when the DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            setupCustomOptions(); // Set up event listeners for custom option visibility
-            loadSettings(); // Load saved settings from Supabase
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSettings(); // Load settings from Supabase upon page load
+            // Add a resize event listener to re-adjust layout elements (frames, text sizes)
+            // This is crucial for responsiveness on window resize or orientation changes
+            window.addEventListener('resize', () => {
+                adjustFrameHeightsAndTextPadding();
+                adjustScrollHeight();
+            });
         });
     </script>
 </body>
