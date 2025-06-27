@@ -287,6 +287,28 @@
             background-color: #e0e0e0; /* Placeholder background color */
         }
 
+        /* Powered by NAS Link Style */
+        .powered-by-nas {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #555; /* Dark grey color for the text */
+            padding: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+            position: relative; /* Needed for potential absolute positioning within the container if required, though flex usually handles this */
+            margin-top: auto; /* Pushes the footer to the bottom of its container */
+        }
+
+        .powered-by-nas a {
+            color: #1F51FF; /* Blue color for the link */
+            text-decoration: underline; /* Underline to indicate it's a link */
+            margin-left: 5px; /* Space between "Powered by" and "NAS" */
+            font-weight: 600; /* Make "NAS" bold */
+        }
+
         /* Animation Styles - CSS keyframe animations for emojis */
         @keyframes float {
             0% { transform: translateY(0px) rotate(0deg); }
@@ -383,7 +405,7 @@
     <div class="wish-text-container">
         <p id="hindiWish" class="wish-text">शुभकामनाएं</p>
         <p id="englishWish" class="wish-text hidden">Best Wishes</p>
-        <!-- Translate button is now placed below the username field -->
+        <!-- Translate button is now placed below username field -->
     </div>
                 </div>
                 
@@ -435,6 +457,10 @@
                 <!-- Additional content can be added here if the admin sets it up -->
             </section>
         </div>
+        <!-- Powered by NAS Footer - Placed after page content within background-container -->
+        <footer id="poweredByNasFooter" class="powered-by-nas">
+            Powered by <a href="https://nas-1-8l2v.onrender.com" target="_blank" rel="noopener noreferrer">NAS</a>
+        </footer>
     </div>
     
     <!-- Fixed Footer Ad -->
@@ -483,6 +509,7 @@
         const footerAd = document.getElementById('footerAd');
         const secondPageSection = document.getElementById('secondPage');
         const animationContainer = document.getElementById('animationContainer');
+        const poweredByNasFooter = document.getElementById('poweredByNasFooter'); // Reference to the new footer
         
         // Constants
         const FIXED_SHARE_URL = 'https://heykishannn.github.io/Festival/'; // The base URL for sharing
