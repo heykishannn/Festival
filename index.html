@@ -373,7 +373,70 @@
 	<script type='text/javascript' src='//pl26859944.profitableratecpm.com/0d/45/39/0d4539f09727c641fc77330a16feaa38.js'></script>
     <!-- Animation Container -->
     <div id="animationContainer" class="animation-container"></div>
-    
+    <!-- 🔊 Festival Tap-to-Play Banner -->
+<div id="festival-banner" onclick="playFestivalMusic()">🎵 Tap anywhere to play music 🎶</div>
+
+<audio id="festival-music" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_89b6c43d6e.mp3?filename=happy-festival-112098.mp3"></audio>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+
+  #festival-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: clamp(12px, 4vw, 20px);
+    text-align: center;
+    font-size: clamp(20px, 5vw, 32px);
+    font-family: 'Luckiest Guy', cursive;
+    z-index: 9999;
+
+    /* Festival-style Gradient Background */
+    background: linear-gradient(90deg, #ff0000, #ff9900, #ffff00, #00cc00, #00ccff, #6600cc, #ff00ff);
+    background-size: 300% 100%;
+    animation: rainbowMove 10s linear infinite;
+
+    color: yellow;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    border-radius: 0 0 20px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.3s ease-in-out;
+  }
+
+  #festival-banner.active {
+    animation: rainbowMoveFast 2s linear infinite;
+    transform: scale(1.03);
+    box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.7);
+  }
+
+  @keyframes rainbowMove {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+  }
+
+  @keyframes rainbowMoveFast {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+  }
+</style>
+
+<script>
+  let musicPlayed = false;
+  function playFestivalMusic() {
+    const music = document.getElementById("festival-music");
+    const banner = document.getElementById("festival-banner");
+
+    if (!musicPlayed) {
+      music.play().catch(e => console.log("Music play error:", e));
+      musicPlayed = true;
+      banner.classList.add("active");
+    }
+  }
+</script>
     <!-- Background Container -->
     <div class="background-container">
         <!-- Background Layers -->
