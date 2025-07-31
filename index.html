@@ -374,7 +374,9 @@
     <!-- Animation Container -->
     <div id="animationContainer" class="animation-container"></div>
     <!-- 🔊 Festival Tap-to-Play Banner -->
-<div id="festival-banner" onclick="playFestivalMusic()">🎵 Tap anywhere to play music 🎶</div>
+<div id="festival-banner" onclick="playFestivalMusic()">
+  🎵 Tap anywhere to play music 🎶
+</div>
 
 <audio id="festival-music" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_89b6c43d6e.mp3?filename=happy-festival-112098.mp3"></audio>
 
@@ -386,13 +388,15 @@
     top: 0;
     left: 0;
     width: 100%;
-    padding: clamp(12px, 4vw, 20px);
-    text-align: center;
+    height: clamp(60px, 10vw, 100px); /* Responsive height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     font-size: clamp(20px, 5vw, 32px);
     font-family: 'Luckiest Guy', cursive;
     z-index: 9999;
-
-    /* Festival-style Gradient Background */
+    
     background: linear-gradient(90deg, #ff0000, #ff9900, #ffff00, #00cc00, #00ccff, #6600cc, #ff00ff);
     background-size: 300% 100%;
     animation: rainbowMove 10s linear infinite;
