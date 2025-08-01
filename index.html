@@ -442,18 +442,6 @@
     }
   }
 </script>
-  let musicPlayed = false;
-  function playFestivalMusic() {
-    const music = document.getElementById("festival-music");
-    const banner = document.getElementById("festival-banner");
-
-    if (!musicPlayed) {
-      music.play().catch(e => console.log("Music play error:", e));
-      musicPlayed = true;
-      banner.classList.add("active");
-    }
-  }
-</script>
     <!-- Background Container -->
     <div class="background-container">
         <!-- Background Layers -->
