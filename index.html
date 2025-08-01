@@ -598,7 +598,7 @@
             englishWish: 'Best Wishes',
             shareDescription: 'sent you festival wishes!',
             mediaUrl: '', // URL for the main media (image/video)
-            titleFrameUrl: '', // URL for the title frame image
+            FrameUrl: '', // URL for the title frame image
             wishBgUrl: '', // URL for the wish box background image
             audioUrl: '',
             animationEnable: false,
@@ -798,11 +798,11 @@
                 }
 
                 // Set Title Frame Image
-                if (settings.titleFrameUrl && settings.titleFrameUrl.trim() !== '') {
-                    titleFrameImage.src = settings.titleFrameUrl;
+                if (settings.FrameUrl && settings.FrameUrl.trim() !== '') {
+                    FrameImage.src = settings.FrameUrl;
                     // Use onload event to ensure dimensions are ready before adjusting layout
-                    titleFrameImage.onload = adjustFrameHeightsAndTextPadding; 
-                    titleFrameImage.onerror = function() { // Handle cases where image loading fails
+                    FrameImage.onload = adjustFrameHeightsAndTextPadding; 
+                    FrameImage.onerror = function() { // Handle cases where image loading fails
                         console.error('Failed to load title frame image:', this.src);
                         this.parentElement.style.display = 'none'; // Hide frame container if image is broken
                     };
